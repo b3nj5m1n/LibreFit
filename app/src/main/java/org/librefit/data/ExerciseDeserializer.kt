@@ -1,0 +1,81 @@
+package org.librefit.data
+
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
+import java.util.Locale
+
+class ExerciseDeserializer : JsonDeserializer<Exercise> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Exercise {
+        val jsonObject = json.asJsonObject
+
+        val muscleListType = object : TypeToken<List<Muscle>>() {}.type
+
+        return Exercise(
+            id = jsonObject["id"].asString,
+            name = jsonObject["name"].asString,
+            force = if (jsonObject["force"].isJsonNull) {
+                null // Handle null case for force
+            } else {
+                Force.valueOf(jsonObject["force"].asString.uppercase())
+            },
+            level = Level.valueOf(jsonObject["level"].asString.uppercase()),
+            mechanic = if (jsonObject["mechanic"].isJsonNull) {
+                null // Handle null case
+            } else {
+                Mechanic.valueOf(jsonObject["mechanic"].asString.uppercase())
+            },
+            equipment = if (jsonObject["equipment"].isJsonNull) {
+                null // Handle null case for equipment
+            } else {
+                when (jsonObject["equipment"].asString) {
+                    "body only" -> Equipment.BODY_ONLY
+                    "medicine ball" -> Equipment.MEDICINE_BALL
+                    "dumbbell" -> Equipment.DUMBBELL
+                    "bands" -> Equipment.BANDS
+                    "kettlebells" -> Equipment.KETTLEBELLS
+                    "foam roll" -> Equipment.FOAM_ROLL
+                    "cable" -> Equipment.CABLE
+                    "machine" -> Equipment.MACHINE
+                    "barbell" -> Equipment.BARBELL
+                    "exercise ball" -> Equipment.EXERCISE_BALL
+                    "e-z curl bar" -> Equipment.E_Z_CURL_BAR
+                    "other" -> Equipment.OTHER
+                    else -> null // Handle unexpected values
+                }
+            },
+            primaryMuscles = if (jsonObject["primaryMuscles"].isJsonNull) {
+                emptyList() // Return an empty list if null
+            } else {
+                val muscleList = jsonObject["primaryMuscles"].asJsonArray
+                muscleList.mapNotNull { muscleElement ->
+                    val muscleName = muscleElement.asString.uppercase(Locale.ROOT).replace(" ", "_") // Convert to enum format
+                    Muscle.entries.find { it.name == muscleName } // Find the enum value
+                }
+            },
+            secondaryMuscles = if (jsonObject["secondaryMuscles"].isJsonNull) {
+                emptyList() // Return an empty list if null
+            } else {
+                val muscleList = jsonObject["secondaryMuscles"].asJsonArray
+                muscleList.mapNotNull { muscleElement ->
+                    val muscleName = muscleElement.asString.uppercase(Locale.ROOT).replace(" ", "_") // Convert to enum format
+                    Muscle.entries.find { it.name == muscleName } // Find the enum value
+                }
+            },
+            instructions = context.deserialize(jsonObject["instructions"], List::class.java),
+            category = when (jsonObject["category"].asString) {
+                "powerlifting" -> Category.POWERLIFTING
+                "strength" -> Category.STRENGTH
+                "stretching" -> Category.STRETCHING
+                "cardio" -> Category.CARDIO
+                "olympic weightlifting" -> Category.OLYMPIC_WEIGHTLIFTING
+                "strongman" -> Category.STRONGMAN
+                "plyometrics" -> Category.PLYOMETRICS
+                else -> throw IllegalArgumentException("Unknown category: ${jsonObject["category"].asString}")
+            },
+            images = context.deserialize(jsonObject["images"], List::class.java)
+        )
+    }
+}
