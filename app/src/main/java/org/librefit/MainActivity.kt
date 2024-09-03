@@ -2,9 +2,9 @@ package org.librefit
 
 import org.librefit.data.ExerciseDeserializer
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -16,7 +16,7 @@ import org.librefit.util.DataStoreManager
 import java.io.BufferedReader
 import java.io.InputStream
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {

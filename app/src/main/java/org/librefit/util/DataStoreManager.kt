@@ -18,7 +18,6 @@ class DataStoreManager (private val context: Context) {
     val themeModeKey = intPreferencesKey("theme_mode")
     val materialModeKey = booleanPreferencesKey("material_mode")
     val keepOnWorkoutScreenKey = booleanPreferencesKey("workout_screen_on")
-    val languageKey= stringPreferencesKey("language")
 
     val themeMode : Flow<ThemeMode> = context.dataStore.data.map { preferences ->
         ThemeMode.entries.find { it.value == preferences[themeModeKey] } ?: ThemeMode.SYSTEM
@@ -30,10 +29,6 @@ class DataStoreManager (private val context: Context) {
 
     val workoutScreenOn : Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[keepOnWorkoutScreenKey] ?: true
-    }
-
-    val selectedLanguage : Flow<Language> = context.dataStore.data.map { preferences ->
-        Language.entries.find { it.name == preferences[languageKey] } ?: Language.SYSTEM
     }
 
     suspend fun <T> savePreference(key: Preferences.Key<T>, value: T) {

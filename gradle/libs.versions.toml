@@ -16,6 +16,7 @@ serialization = "1.6.3"
 runtimeLivedata = "1.6.8"
 datastoreCoreAndroid = "1.1.1"
 datastoreCoreJvm = "1.1.1"
+appcompat = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +44,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 androidx-datastore-core-jvm = { group = "androidx.datastore", name = "datastore-core-jvm", version.ref = "datastoreCoreJvm" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
