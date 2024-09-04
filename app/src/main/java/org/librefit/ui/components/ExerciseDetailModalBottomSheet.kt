@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.data.Exercise
 import org.librefit.data.Muscle
+import org.librefit.util.exerciseEnumToStringId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,11 +74,25 @@ fun ExerciseDetailModalBottomSheet(
             HeadlineText(text = stringResource(id = R.string.label_details))
 
 
-            if(exercise.force != null ) Text(text = enumHeadlines(stringResource(id = R.string.label_force), exercise.force))
-            Text(text = enumHeadlines(stringResource(id = R.string.label_level), enum = exercise.level))
-            if(exercise.mechanic != null ) Text(text = enumHeadlines(stringResource(id = R.string.label_mechanic), exercise.mechanic))
-            if(exercise.equipment != null ) Text(text = enumHeadlines(stringResource(id = R.string.label_equipment), exercise.equipment))
-            Text(text = enumHeadlines(stringResource(id = R.string.label_category), exercise.category))
+            if(exercise.force != null )
+                Text(
+                    formatDetails(stringResource( R.string.label_force), stringResource(exerciseEnumToStringId(exercise.force) )
+                )
+            )
+            Text(text = formatDetails( stringResource( R.string.label_level), stringResource(exerciseEnumToStringId(exercise.level)) ) )
+            if(exercise.mechanic != null ) {
+                Text(
+                    formatDetails(stringResource( R.string.label_mechanic), stringResource(exerciseEnumToStringId(exercise.mechanic) ) )
+                )
+            }
+            if(exercise.equipment != null ) {
+                Text(
+                    formatDetails(stringResource(R.string.label_equipment), stringResource(exerciseEnumToStringId(exercise.equipment)) )
+                )
+            }
+            Text(
+                formatDetails(stringResource(R.string.label_category), stringResource(exerciseEnumToStringId(exercise.category)))
+            )
 
 
             if (exercise.primaryMuscles.isNotEmpty() || exercise.secondaryMuscles.isNotEmpty()){
@@ -98,8 +113,7 @@ fun ExerciseDetailModalBottomSheet(
             
             HeadlineText(text = stringResource(id = R.string.label_instructions))
 
-            Text(text = exercise.instructions
-                .mapIndexed{ index, instruction->
+            Text(text = exercise.instructions.mapIndexed{ index, instruction->
                     "${index+1}. $instruction"
                 }.joinToString("\n\n")
             )
@@ -107,27 +121,13 @@ fun ExerciseDetailModalBottomSheet(
     }
 }
 
-private fun enumHeadlines(type : String, enum: Enum<*>? = null, listEnum: List<Enum<*>>? = emptyList()) : AnnotatedString {
+private fun formatDetails(type: String, details : String) : AnnotatedString {
     val result = buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Medium)){ append("$type: ") }
-        append(formatExerciseEnums(enum = enum, listEnum = listEnum))
+        append(details)
     }
     return result
 }
-
-private fun formatExerciseEnums(listEnum : List<Enum<*>>? = emptyList(), enum : Enum<*>? = null) : String? {
-
-    if (listEnum != emptyList<Enum<*>>() && listEnum != null) {
-        return listEnum.map { it.name }.joinToString(", ") { word -> word.lowercase().replace("_"," ").replaceFirstChar { it.uppercaseChar() } }
-    }
-
-    if (enum != null) {
-        return enum.name.lowercase().replace("_"," ").replaceFirstChar { it.uppercaseChar() }
-    }
-
-    return null
-}
-
 
 @Composable
 private fun AlternatingImages(exercise: Exercise){
@@ -162,7 +162,9 @@ private fun AlternatingImages(exercise: Exercise){
 
 @Composable
 private fun MuscleContent(title : String, musclesList: List<Muscle>) {
-    Text(text = enumHeadlines(title, listEnum =  musclesList))
+    var list = ""
+    musclesList.forEach { list += stringResource(exerciseEnumToStringId(it)) }
+    Text(text = formatDetails(title, list) )
     LazyRow {
         items(musclesList){ muscle ->
             val vector = when(muscle){

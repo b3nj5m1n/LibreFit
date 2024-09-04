@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,7 +50,7 @@ import org.librefit.data.Exercise
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
-import org.librefit.ui.components.FiltersCard
+import org.librefit.util.exerciseEnumToStringId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,11 +245,15 @@ private fun AddExerciseScreenContent(
                         style = MaterialTheme.typography.labelLarge,
                     )
                     Text(
-                        text = exercise.category.name.lowercase().replaceFirstChar { it.uppercaseChar() },
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        text = stringResource(id = exerciseEnumToStringId(exercise.category)),
+                        style = MaterialTheme.typography.bodyMedium
                     )
+                    if (exercise.equipment != null){
+                        Text(
+                            text = stringResource(id = exerciseEnumToStringId(exercise.equipment)),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
                 IconButton(
                     onClick = {

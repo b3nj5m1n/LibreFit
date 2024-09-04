@@ -81,7 +81,58 @@
     <string name="label_primary_muscles">Primary muscles</string>
     <string name="label_secondary_muscles">Secondary muscles</string>
     <string name="label_instructions">Instructions</string>
+    
+    
+    <!--Exercise Enums-->
+    <string name="label_force_static">Static</string>
+    <string name="label_force_pull">Pull</string>
+    <string name="label_force_push">Push</string>
 
+    <string name="label_level_beginner">Beginner</string>
+    <string name="label_level_intermediate">Intermediate</string>
+    <string name="label_level_expert">Expert</string>
+
+    <string name="label_mechanic_isolation">Isolation</string>
+    <string name="label_mechanic_compound">Compound</string>
+
+    <string name="label_equipment_medicine_ball">Medicine ball</string>
+    <string name="label_equipment_body_only">Body only</string>
+    <string name="label_equipment_bands">Bands</string>
+    <string name="label_equipment_dumbbell">Dumbbell</string>
+    <string name="label_equipment_kettlebells">Kettlebells</string>
+    <string name="label_equipment_foam_roll">Foam roll</string>
+    <string name="label_equipment_cable">Cable</string>
+    <string name="label_equipment_machine">Machine</string>
+    <string name="label_equipment_barbell">Barbell</string>
+    <string name="label_equipment_exercise_ball">Exercise ball</string>
+    <string name="label_equipment_ez_curl_bar">EZ curl bar</string>
+    <string name="label_equipment_other">Other</string>
+
+    <string name="label_muscle_abdominals">Abdominals</string>
+    <string name="label_muscle_abductors">Abductors</string>
+    <string name="label_muscle_adductors">Adductors</string>
+    <string name="label_muscle_biceps">Biceps</string>
+    <string name="label_muscle_calves">Calves</string>
+    <string name="label_muscle_chest">Chest</string>
+    <string name="label_muscle_forearms">Forearms</string>
+    <string name="label_muscle_glutes">Glutes</string>
+    <string name="label_muscle_hamstrings">Hamstrings</string>
+    <string name="label_muscle_lats">Lats</string>
+    <string name="label_muscle_lower_back">Lower back</string>
+    <string name="label_muscle_middle_back">Middle back</string>
+    <string name="label_muscle_neck">Neck</string>
+    <string name="label_muscle_quadriceps">Quadriceps</string>
+    <string name="label_muscle_shoulders">Shoulders</string>
+    <string name="label_muscle_traps">Traps</string>
+    <string name="label_muscle_triceps">Triceps</string>
+
+    <string name="label_category_powerlifting">Powerlifting</string>
+    <string name="label_category_strength">Strength</string>
+    <string name="label_category_stretching">Stretching</string>
+    <string name="label_category_cardio">Cardio</string>
+    <string name="label_category_olympic_weightlifting">Weightlifting</string>
+    <string name="label_category_strongman">Strongman</string>
+    <string name="label_category_plyometrics">Plyometrics</string>
 
     <!--Dialog -->
     <string name="label_cancel_dialog">Cancel</string>
