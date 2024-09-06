@@ -113,7 +113,7 @@ fun AboutScreen(navController : NavHostController) {
             AboutItem(
                 ImageVector.vectorResource(R.drawable.ic_globe),
                 stringResource(R.string.label_website),
-                "https://iamdg.github.io/librefit.github.io/" //Hardcoded because it's temporary
+                "https://iamdg.github.io/LibreFit-website/" //Hardcoded because it's temporary
             )
 
 
