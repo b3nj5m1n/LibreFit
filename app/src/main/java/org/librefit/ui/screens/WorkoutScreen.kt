@@ -32,6 +32,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -122,6 +124,10 @@ fun WorkoutScreen(
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
+
+    var completedSets = remember { mutableIntStateOf(0) }
+    var totalSets = remember { mutableIntStateOf(0) }
+
     Scaffold (
         topBar = {
             TopAppBar(
@@ -150,6 +156,14 @@ fun WorkoutScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
+                    LinearProgressIndicator(
+                        progress = {
+                            if (totalSets.intValue > 0) {
+                                completedSets.intValue.toFloat() / totalSets.intValue.toFloat()
+                            } else 0f
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     Stopwatch()
                 }
             }
@@ -162,13 +176,19 @@ fun WorkoutScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ){
             workoutWithExercises?.let { workout ->
+                totalSets.intValue = workout.exercises.size
                 items(workout.exercises){ exercise ->
                     list.forEach { item ->
                         if(item.id == exercise.exerciseId)
-                            ExerciseCard(exercise = item) {
-                                selectedExercise = item
-                                isModalSheetOpen = true
-                            }
+                            ExerciseCard(
+                                exercise = item,
+                                onDetail = {
+                                    selectedExercise = item
+                                    isModalSheetOpen = true
+                                },
+                                totalSets = totalSets,
+                                completedSets = completedSets
+                            )
                     }
                 }
             }
@@ -184,7 +204,9 @@ fun WorkoutScreen(
 @Composable
 private fun ExerciseCard(
     exercise: ExerciseDC,
-    onDetail : () -> Unit
+    onDetail: () -> Unit,
+    totalSets: MutableIntState,
+    completedSets: MutableIntState,
 ){
     var sets by remember { mutableIntStateOf(1) }
 
@@ -258,7 +280,10 @@ private fun ExerciseCard(
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(text = "$i")
                     Spacer(modifier = Modifier.weight(1f))
-                    Checkbox(checked = checked, onCheckedChange = {checked = it})
+                    Checkbox(checked = checked, onCheckedChange = {
+                        checked = it
+                        if (it) completedSets.intValue++ else completedSets.intValue--
+                    })
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -266,7 +291,10 @@ private fun ExerciseCard(
             HorizontalDivider()
 
             TextButton(
-                onClick = { sets++ },
+                onClick = {
+                    sets++
+                    totalSets.intValue++
+                },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -316,7 +344,7 @@ private fun Stopwatch() {
                     imageVector = if (isRunning) {
                         ImageVector.vectorResource(id = R.drawable.ic_pause)
                     } else Icons.Default.PlayArrow ,
-                    contentDescription = stringResource(id = if (isRunning) R.string.label_pause else R.string.label_play)
+                    contentDescription = stringResource(id = if (isRunning) R.string.label_pause else R.string.label_play),
                     modifier = Modifier.size(40.dp)
                 )
             }
