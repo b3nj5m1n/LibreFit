@@ -119,7 +119,7 @@ fun FiltersCard(
                     .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                //TODO this is temporary, until filter works
+                //TODO: this is temporary until filter works
                 ItemFilter(stringResource(titles[0]), options[0] , viewModel )
                 ItemFilter(stringResource(titles[6]), options[6] , viewModel )
 

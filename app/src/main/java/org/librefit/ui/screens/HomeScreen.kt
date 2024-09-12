@@ -1,34 +1,52 @@
 package org.librefit.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
+import org.librefit.data.SharedViewModel
 import org.librefit.nav.Destination
+import org.librefit.util.DataStoreManager
 
 @Composable
 fun HomeScreen(
     innerPadding: PaddingValues,
-    navController : NavHostController
+    navController: NavHostController,
+    sharedViewModel: SharedViewModel
 ){
+    val workoutList by sharedViewModel.workoutList.observeAsState()
+
     Column (
         modifier = Modifier
             .padding(paddingValues = innerPadding)
@@ -63,6 +81,43 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.headlineSmall
         )
+        /**
+         * List of workout routines created by the user in [CreateRoutineScreen]
+         */
+
+        if(workoutList?.isNotEmpty() == true){
+            workoutList!!.forEach {
+                ElevatedCard {
+                    Column (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp)
+                    ) {
+                        Row (
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                text = it.title,
+                                style = MaterialTheme.typography.headlineSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(onClick = {
+                                navController.navigate(Destination.WorkoutScreen(workoutId = it.id))
+                            }) {
+                                Icon(Icons.Default.PlayArrow, Icons.Default.PlayArrow.name )
+                            }
+                            IconButton(onClick = { sharedViewModel.deleteWorkout(it) }) {
+                                Icon(Icons.Default.Delete, Icons.Default.Delete.name )
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         //"Create a workout routine" button
         TextButton(
@@ -86,5 +141,5 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview(){
     val navController = rememberNavController()
-    HomeScreen(innerPadding = PaddingValues(20.dp), navController)
+    HomeScreen(innerPadding = PaddingValues(20.dp), navController, viewModel())
 }

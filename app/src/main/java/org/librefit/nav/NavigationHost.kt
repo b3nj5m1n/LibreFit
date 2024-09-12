@@ -6,11 +6,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.librefit.data.Exercise
+import androidx.navigation.toRoute
+import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.screens.AboutScreen
 import org.librefit.ui.screens.AddExerciseScreen
@@ -21,9 +21,7 @@ import org.librefit.ui.screens.WorkoutScreen
 import org.librefit.util.DataStoreManager
 
 @Composable
-fun NavigationHost(list: List<Exercise>, userPreferences: DataStoreManager) {
-
-    val sharedViewModel : SharedViewModel = viewModel()
+fun NavigationHost(list: List<ExerciseDC>, userPreferences: DataStoreManager, sharedViewModel : SharedViewModel) {
 
     val navController = rememberNavController()
 
@@ -36,7 +34,7 @@ fun NavigationHost(list: List<Exercise>, userPreferences: DataStoreManager) {
         popExitTransition = { scaleOut(tween(450), 0.8f) + fadeOut(tween(400)) }
     ){
         composable<Destination.MainScreen> {
-            MainScreen(navController = navController)
+            MainScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable<Destination.CreateRoutineScreen> {
             CreateRoutineScreen(navController =  navController, viewModel = sharedViewModel)
@@ -51,7 +49,12 @@ fun NavigationHost(list: List<Exercise>, userPreferences: DataStoreManager) {
             AboutScreen(navController = navController)
         }
         composable<Destination.WorkoutScreen> {
-            WorkoutScreen(userPreferences = userPreferences)
+            WorkoutScreen(
+                userPreferences = userPreferences,
+                sharedViewModel = sharedViewModel,
+                workoutId = it.toRoute<Destination.WorkoutScreen>().workoutId,
+                navController = navController
+            )
         }
     }
 }

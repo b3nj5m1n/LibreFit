@@ -7,13 +7,13 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import java.util.Locale
 
-class ExerciseDeserializer : JsonDeserializer<Exercise> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Exercise {
+class ExerciseDeserializer : JsonDeserializer<ExerciseDC> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ExerciseDC {
         val jsonObject = json.asJsonObject
 
         val muscleListType = object : TypeToken<List<Muscle>>() {}.type
 
-        return Exercise(
+        return ExerciseDC(
             id = jsonObject["id"].asString,
             name = jsonObject["name"].asString,
             force = if (jsonObject["force"].isJsonNull) {

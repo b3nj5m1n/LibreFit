@@ -46,22 +46,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.Exercise
+import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
-import org.librefit.ui.components.FiltersCard
 import org.librefit.util.exerciseEnumToStringId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExerciseScreen(
-    list: List<Exercise>,
+    list: List<ExerciseDC>,
     navController: NavHostController,
     viewModel: SharedViewModel
 ){
-    val selectedExercisesList = remember { mutableStateListOf<Exercise>() }
+    val selectedExercisesList = remember { mutableStateListOf<ExerciseDC>() }
 
     var showExitDialog by remember { mutableStateOf(false) }
 
@@ -128,16 +127,19 @@ fun AddExerciseScreen(
 @Composable
 private fun AddExerciseScreenContent(
     innerPadding: PaddingValues,
-    exerciseList: List<Exercise>,
-    selectedExercisesList: MutableList<Exercise>,
+    exerciseList: List<ExerciseDC>,
+    selectedExercisesList: MutableList<ExerciseDC>,
     viewModel: SharedViewModel,
 ) {
-    var isModalSheetOpen by remember { mutableStateOf(false) }
 
     val isFilterExpanded = remember { mutableStateOf(false) }
 
-    //Used to display information about the selected exercise in the modal bottom sheet
-    var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
+    /**
+     * Used to display information about the selected exercise using [ExerciseDetailModalBottomSheet]
+     */
+    var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
+
+    var isModalSheetOpen by remember { mutableStateOf(false) }
 
     // Query used to search an exercises based on the name
     var query by remember { mutableStateOf("") }
@@ -196,8 +198,8 @@ private fun AddExerciseScreenContent(
         //This is temporary until FiltersCard is ready
         item { Spacer(modifier = Modifier.height(15.dp)) }
 
-        // Card to let the user filter the exercises list TODO doesn't work properly yet
-        item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
+        // Card to let the user filter the exercises list TODO: it doesn't work properly yet
+        // item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
 
         if(filteredExercisesList.isNotEmpty()) {
             item { HorizontalDivider() }

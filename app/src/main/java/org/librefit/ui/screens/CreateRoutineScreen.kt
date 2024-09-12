@@ -53,8 +53,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.Exercise
+import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
+import org.librefit.db.Exercise
+import org.librefit.db.Workout
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
@@ -65,6 +67,8 @@ fun CreateRoutineScreen(
     navController: NavHostController,
     viewModel : SharedViewModel
 ) {
+    var titleRoutine = rememberSaveable { mutableStateOf("") }
+
     var showExitDialog by remember { mutableStateOf(false) }
 
     BackHandler (enabled = !showExitDialog && viewModel.addedExercisesList.isNotEmpty() ){
@@ -110,10 +114,11 @@ fun CreateRoutineScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            //TODO Waiting for ROOM implementation
+                            viewModel.addWorkoutWithExercises(Workout(title = titleRoutine.value), viewModel.addedExercisesList)
+                            viewModel.resetList()
                             navController.popBackStack()
                         },
-                        enabled = ableToSave.value && viewModel.addedExercisesList.isEmpty()
+                        enabled = ableToSave.value && viewModel.addedExercisesList.isNotEmpty()
                     ) {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -124,7 +129,13 @@ fun CreateRoutineScreen(
             )
         }
     ){ innerPadding ->
-        RoutineScreen(innerPadding, navController, viewModel, ableToSave)
+        RoutineScreen(
+            innerPadding,
+            navController,
+            viewModel,
+            ableToSave,
+            titleRoutine
+        )
     }
 }
 
@@ -133,14 +144,13 @@ private fun RoutineScreen(
     innerPadding: PaddingValues,
     navController: NavHostController,
     viewModel: SharedViewModel,
-    ableToSave: MutableState<Boolean>
+    ableToSave: MutableState<Boolean>,
+    titleRoutine : MutableState<String>
 ) {
-    var titleRoutine by rememberSaveable { mutableStateOf("") }
-
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
     //Used to display information about the selected exercise in the modal bottom sheet
-    var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
+    var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
     LazyColumn(
         modifier = Modifier
@@ -152,22 +162,22 @@ private fun RoutineScreen(
     ) {
         item{
             OutlinedTextField(
-                value = titleRoutine,
+                value = titleRoutine.value,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 onValueChange = { newTitle ->
-                    titleRoutine = newTitle
-                    ableToSave.value = titleRoutine.isNotEmpty()
+                    titleRoutine.value = newTitle
+                    ableToSave.value = titleRoutine.value.isNotEmpty()
                 },
                 trailingIcon = {
-                    if(titleRoutine.isEmpty()) {
+                    if(titleRoutine.value.isEmpty()) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = Icons.Default.Warning.name
                         )
                     }
                 },
-                isError = titleRoutine.isEmpty(),
+                isError = titleRoutine.value.isEmpty(),
                 label = { Text(text = stringResource(id = R.string.label_text_field_title)) },
                 colors = OutlinedTextFieldDefaults.colors()
             )
@@ -235,7 +245,7 @@ private fun RoutineScreen(
 
 @Composable
 private fun ExerciseCard(
-    exercise: Exercise,
+    exercise: ExerciseDC,
     onDetail : () -> Unit,
     onDelete : () -> Unit
 ) {

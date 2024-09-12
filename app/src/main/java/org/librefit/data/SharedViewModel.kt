@@ -1,19 +1,32 @@
 package org.librefit.data
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.librefit.MainApplication
+import org.librefit.db.Exercise
+import org.librefit.db.Workout
+import org.librefit.db.WorkoutWithExercises
 
 class SharedViewModel : ViewModel() {
-    private val selectedExercisesList = mutableStateListOf<Exercise>()
+    /**
+     * A list used by CreateRoutineScreen and AddExerciseScreen
+     */
 
-    var addedExercisesList : List<Exercise> = selectedExercisesList
+    private val selectedExercisesList = mutableStateListOf<ExerciseDC>()
+
+    var addedExercisesList : List<ExerciseDC> = selectedExercisesList
 
 
-    fun addExerciseList (exerciseList: List<Exercise>){
+    fun addExerciseList (exerciseList: List<ExerciseDC>){
         selectedExercisesList += exerciseList
     }
 
-    fun removeExercise ( exercise: Exercise ){
+    fun removeExercise ( exercise: ExerciseDC ){
         selectedExercisesList.remove(exercise)
     }
 
@@ -21,6 +34,10 @@ class SharedViewModel : ViewModel() {
         selectedExercisesList.clear()
     }
 
+
+    /**
+     * A list used only by AddExerciseScreen based on FiltersCard
+     */
 
     private var filtersList = mutableStateListOf<Enum<*>>()
 
@@ -53,5 +70,54 @@ class SharedViewModel : ViewModel() {
     fun resetFilterList(){
         filtersList.clear()
         initializeFilterList()
+    }
+
+
+    /**
+     * Database is loaded by [MainApplication] at startup
+     */
+
+    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
+
+    val workoutList : LiveData<List<Workout>> = workoutDao.getWorkouts()
+
+    fun addWorkout(workout: Workout){
+        viewModelScope.launch(Dispatchers.IO){
+            workoutDao.addWorkout(workout)
+        }
+    }
+
+    fun deleteWorkout(workout: Workout){
+        viewModelScope.launch(Dispatchers.IO){
+            workoutDao.deleteWorkout(workout)
+        }
+    }
+
+    fun addExercise(exercise: Exercise) {
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.addExercise(exercise)
+        }
+    }
+
+    fun deleteExercise(exercise: Exercise) {
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.deleteExercise(exercise)
+        }
+    }
+
+    fun getWorkoutWithExercises(workoutId: Int): LiveData<WorkoutWithExercises> {
+        val workoutWithExercises = MutableLiveData<WorkoutWithExercises>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = workoutDao.getWorkoutWithExercises(workoutId)
+            workoutWithExercises.postValue(data)
+        }
+        return workoutWithExercises
+    }
+
+    fun addWorkoutWithExercises(workout: Workout, exercises: List<ExerciseDC>) {
+        val list = exercises.toList()
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.addWorkoutWithExercises(workout, list)
+        }
     }
 }

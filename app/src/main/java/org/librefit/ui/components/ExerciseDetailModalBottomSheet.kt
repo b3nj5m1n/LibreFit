@@ -41,7 +41,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.librefit.R
-import org.librefit.data.Exercise
+import org.librefit.data.ExerciseDC
 import org.librefit.data.Muscle
 import org.librefit.util.exerciseEnumToStringId
 import org.librefit.util.muscleToVectorId
@@ -49,7 +49,7 @@ import org.librefit.util.muscleToVectorId
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseDetailModalBottomSheet(
-    exercise: Exercise,
+    exercise: ExerciseDC,
     onDismiss : () -> Unit
 ){
     ModalBottomSheet(
@@ -138,7 +138,7 @@ private fun MuscleContent(title : String, musclesList: List<Muscle>) {
 }
 
 @Composable
-private fun AlternatingImages(exercise: Exercise){
+private fun AlternatingImages(exercise: ExerciseDC){
     val firstBitmap = BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[0]))
     val secondBitmap = BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[1]))
 

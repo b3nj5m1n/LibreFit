@@ -20,5 +20,7 @@ sealed class Destination {
     object AboutScreen
 
     @Serializable
-    object WorkoutScreen
+    data class WorkoutScreen(
+        val workoutId: Int
+    )
 }
