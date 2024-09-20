@@ -47,7 +47,7 @@ import androidx.core.os.LocaleListCompat
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.ui.components.HeadlineText
-import org.librefit.util.DataStoreManager
+import org.librefit.data.DataStoreManager
 import org.librefit.util.Language
 import org.librefit.util.ThemeMode
 

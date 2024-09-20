@@ -17,7 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import org.librefit.util.DataStoreManager
+import org.librefit.data.DataStoreManager
 import org.librefit.util.ThemeMode
 
 private val lightScheme = lightColorScheme(

@@ -14,7 +14,7 @@ import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.nav.NavigationHost
 import org.librefit.ui.theme.LibreFitTheme
-import org.librefit.util.DataStoreManager
+import org.librefit.data.DataStoreManager
 import java.io.BufferedReader
 import java.io.InputStream
 
@@ -33,14 +33,11 @@ class MainActivity : AppCompatActivity() {
             list = loadExercises(resources.openRawResource(R.raw.exercises))
         }
 
-        val sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-
         setContent {
             LibreFitTheme(userPreferences){
                 NavigationHost(
                     list = list,
-                    userPreferences = userPreferences,
-                    sharedViewModel = sharedViewModel
+                    userPreferences = userPreferences
                 )
             }
         }

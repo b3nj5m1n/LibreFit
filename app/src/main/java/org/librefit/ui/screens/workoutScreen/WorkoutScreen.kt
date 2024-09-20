@@ -1,13 +1,17 @@
-package org.librefit.ui.screens
+package org.librefit.ui.screens.workoutScreen
 
 import android.app.Activity
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,13 +46,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,14 +64,15 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import org.librefit.R
+import org.librefit.data.DataStoreManager
 import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
-import org.librefit.util.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +83,8 @@ fun WorkoutScreen(
     navController: NavHostController,
     list: List<ExerciseDC>
 ){
+    val viewModel : WorkoutScreenViewModel = viewModel()
+
     val keepWorkoutScreenOn = userPreferences.workoutScreenOn.collectAsState(initial = true).value
 
     val context = LocalContext.current
@@ -112,10 +119,22 @@ fun WorkoutScreen(
             onDismiss = { showExitDialog = false }
         )
     }
-    
-    
 
-    val workoutWithExercises by sharedViewModel.getWorkoutWithExercises(workoutId).observeAsState()
+    /**
+     * It retrieves saved routines from [SharedViewModel]
+     */
+    val workoutWithExercises = remember(workoutId) {
+        sharedViewModel.getWorkoutWithExercises(workoutId)
+    }.value
+
+    //It initializes the totalSet variable with the correct number of sets
+    LaunchedEffect(workoutWithExercises) {
+        if (workoutWithExercises != null) {
+            for (i in 1..workoutWithExercises.exercises.size){
+                viewModel.addTotalSet()
+            }
+        }
+    }
 
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
@@ -124,23 +143,18 @@ fun WorkoutScreen(
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
-
-    var completedSets = remember { mutableIntStateOf(0) }
-    var totalSets = remember { mutableIntStateOf(0) }
+    val animatedProgress = animateFloatAsState(
+        targetValue = viewModel.getProgress(),
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
+    ).value
 
     Scaffold (
         topBar = {
             TopAppBar(
-                title = {
-                    workoutWithExercises?.workout?.let {
-                        Text(stringResource(R.string.label_workout) + ": " + it.title)
-                    }
-                },
+                title = { Text(stringResource(R.string.label_workout)) },
                 navigationIcon = {
                     IconButton(
-                        onClick = {
-                            showExitDialog = true
-                        }
+                        onClick = { showExitDialog = true }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -151,44 +165,44 @@ fun WorkoutScreen(
             )
         },
         bottomBar = {
-            BottomAppBar {
+            BottomAppBar (
+                modifier = Modifier.height(120.dp)
+            ) {
                 Column (
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     LinearProgressIndicator(
-                        progress = {
-                            if (totalSets.intValue > 0) {
-                                completedSets.intValue.toFloat() / totalSets.intValue.toFloat()
-                            } else 0f
-                        },
+                        progress = { animatedProgress },
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Stopwatch()
                 }
             }
         }
-    ){
+    ){ paddingValues ->
         LazyColumn (
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
                 .padding(start = 15.dp, end = 15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ){
-            workoutWithExercises?.let { workout ->
-                totalSets.intValue = workout.exercises.size
-                items(workout.exercises){ exercise ->
-                    list.forEach { item ->
-                        if(item.id == exercise.exerciseId)
-                            ExerciseCard(
-                                exercise = item,
-                                onDetail = {
-                                    selectedExercise = item
-                                    isModalSheetOpen = true
-                                },
-                                totalSets = totalSets,
-                                completedSets = completedSets
-                            )
+            if (workoutWithExercises != null) {
+                items(workoutWithExercises.exercises) { exercise ->
+                    val item = list.associateBy { it.id }[exercise.exerciseId]
+                    if (item != null) {
+                        ExerciseCard(
+                            exercise = item,
+                            onDetail = {
+                                selectedExercise = item
+                                isModalSheetOpen = true
+                            },
+                            addCompletedSet = { b ->
+                                viewModel.addCompletedSet(b)
+                            },
+                            addTotalSet = {
+                                viewModel.addTotalSet()
+                            }
+                        )
                     }
                 }
             }
@@ -205,10 +219,9 @@ fun WorkoutScreen(
 private fun ExerciseCard(
     exercise: ExerciseDC,
     onDetail: () -> Unit,
-    totalSets: MutableIntState,
-    completedSets: MutableIntState,
+    addCompletedSet : (Boolean) -> Unit,
+    addTotalSet : () -> Unit,
 ){
-    var sets by remember { mutableIntStateOf(1) }
 
     ElevatedCard {
         Column (
@@ -259,9 +272,11 @@ private fun ExerciseCard(
                 )
             }
 
+            var sets by rememberSaveable { mutableIntStateOf(1) }
+
             //Sets
             for (i in 1..sets){
-                var checked by remember { mutableStateOf(false) }
+                var checked by rememberSaveable { mutableStateOf(false) }
                 Row(
                     modifier = Modifier
                         .clip(
@@ -282,7 +297,7 @@ private fun ExerciseCard(
                     Spacer(modifier = Modifier.weight(1f))
                     Checkbox(checked = checked, onCheckedChange = {
                         checked = it
-                        if (it) completedSets.intValue++ else completedSets.intValue--
+                        addCompletedSet(it)
                     })
                 }
             }
@@ -293,7 +308,7 @@ private fun ExerciseCard(
             TextButton(
                 onClick = {
                     sets++
-                    totalSets.intValue++
+                    addTotalSet()
                 },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -317,10 +332,15 @@ private fun ExerciseCard(
 private fun Stopwatch() {
     var elapsedTime by remember { mutableIntStateOf(0) }
     var isRunning by remember { mutableStateOf(true) }
+    var buttonSize by remember { mutableIntStateOf(70) }
+    val animatedExpansion = animateIntAsState(
+        targetValue = buttonSize,
+        label = ""
+    )
 
     LaunchedEffect(isRunning) {
         while (isRunning) {
-            delay(1000) // Update every second
+            delay(1000)
             elapsedTime++
         }
     }
@@ -332,24 +352,33 @@ private fun Stopwatch() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = formatTime(elapsedTime),
-            modifier = Modifier.width(100.dp)
-        )
-        Row {
+        Column(
+            modifier = Modifier.width(150.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text("Elapsed time:")
+            Text(
+                text = formatTime(elapsedTime),
+            )
+        }
+        Box (modifier = Modifier.height(70.dp), contentAlignment = Alignment.Center){
             FilledIconButton(
-                onClick = { isRunning = !isRunning },
+                onClick = {
+                    isRunning = !isRunning
+                    buttonSize = if (isRunning) 70 else 55
+                },
+                modifier = Modifier.size(animatedExpansion.value.dp)
             ) {
                 Icon(
                     imageVector = if (isRunning) {
                         ImageVector.vectorResource(id = R.drawable.ic_pause)
                     } else Icons.Default.PlayArrow ,
                     contentDescription = stringResource(id = if (isRunning) R.string.label_pause else R.string.label_play),
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(30.dp)
                 )
             }
         }
-        Spacer(modifier = Modifier.width(100.dp))
+        Spacer(modifier = Modifier.width(150.dp))
     }
 }
 
