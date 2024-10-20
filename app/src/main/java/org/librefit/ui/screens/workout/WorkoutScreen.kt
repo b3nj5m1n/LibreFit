@@ -1,6 +1,7 @@
-package org.librefit.ui.screens.workoutScreen
+package org.librefit.ui.screens.workout
 
 import android.app.Activity
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
@@ -38,6 +39,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,6 +63,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,15 +73,16 @@ import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.data.DataStoreManager
 import org.librefit.data.ExerciseDC
-import org.librefit.data.SharedViewModel
+import org.librefit.db.Set
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
+import org.librefit.ui.screens.createRoutine.ExerciseWithSets
+import org.librefit.ui.screens.createRoutine.SetMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutScreen(
     userPreferences: DataStoreManager,
-    sharedViewModel: SharedViewModel,
     workoutId: Int,
     navController: NavHostController,
     list: List<ExerciseDC>
@@ -120,21 +124,28 @@ fun WorkoutScreen(
         )
     }
 
-    /**
-     * It retrieves saved routines from [SharedViewModel]
-     */
-    val workoutWithExercises = remember(workoutId) {
-        sharedViewModel.getWorkoutWithExercises(workoutId)
-    }.value
 
-    //It initializes the totalSet variable with the correct number of sets
-    LaunchedEffect(workoutWithExercises) {
-        if (workoutWithExercises != null) {
-            for (i in 1..workoutWithExercises.exercises.size){
-                viewModel.addTotalSet()
+    viewModel.getExercisesFromWorkout(workoutId)
+
+
+    LaunchedEffect(viewModel.exercises) {
+        viewModel.exercises.value.forEach { exercise ->
+            val item = list.associateBy { it.id }[exercise.exerciseId]
+            if (item != null) {
+                viewModel.getSetsFromExercise(exercise.id)
+
+                viewModel.addExerciseWithSets(
+                    ExerciseWithSets(
+                        exercise = item,
+                        exerciseId = exercise.id,
+                        note = exercise.notes!!
+                    )
+                )
             }
         }
     }
+
+    val exercisesWithSets by viewModel.exercisesWithSets.collectAsState()
 
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
@@ -144,7 +155,7 @@ fun WorkoutScreen(
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
     val animatedProgress = animateFloatAsState(
-        targetValue = viewModel.getProgress(),
+        targetValue = viewModel.progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
     ).value
 
@@ -186,26 +197,39 @@ fun WorkoutScreen(
                 .padding(start = 15.dp, end = 15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ){
-            if (workoutWithExercises != null) {
-                items(workoutWithExercises.exercises) { exercise ->
-                    val item = list.associateBy { it.id }[exercise.exerciseId]
-                    if (item != null) {
-                        ExerciseCard(
-                            exercise = item,
-                            onDetail = {
-                                selectedExercise = item
-                                isModalSheetOpen = true
-                            },
-                            addCompletedSet = { b ->
-                                viewModel.addCompletedSet(b)
-                            },
-                            addTotalSet = {
-                                viewModel.addTotalSet()
-                            }
-                        )
+            items(exercisesWithSets, key = { it.id }) { exerciseWithSets ->
+                ExerciseCard(
+                    exerciseWithSets = exerciseWithSets,
+                    onDetail = {
+                        selectedExercise = exerciseWithSets.exercise
+                        isModalSheetOpen = true
+                    },
+                    addCompletedSet = { completed ->
+                        viewModel.addCompletedSet(completed)
+                    },
+                    addSet = {
+                            viewModel.addSetToExercise(exerciseWithSets.id)
+                    },
+                    updateSet = { set, value, mode ->
+                        if(SetMode.WEIGHT == mode) {
+                            viewModel.updateSet(
+                                exerciseId = exerciseWithSets.id,
+                                set = set,
+                                weight = value
+                            )
+                        } else if (SetMode.REPS == mode) {
+                            viewModel.updateSet(
+                                exerciseId = exerciseWithSets.id,
+                                set = set,
+                                reps = value ,
+                            )
+                        } else if(SetMode.TIME == mode){
+                            /* TODO */
+                        }
                     }
-                }
+                )
             }
+
             item { Spacer(modifier = Modifier.height(5.dp)) }
         }
     }
@@ -217,11 +241,16 @@ fun WorkoutScreen(
 
 @Composable
 private fun ExerciseCard(
-    exercise: ExerciseDC,
+    exerciseWithSets: ExerciseWithSets,
     onDetail: () -> Unit,
     addCompletedSet : (Boolean) -> Unit,
-    addTotalSet : () -> Unit,
+    addSet : () -> Unit,
+    updateSet : (Set, Int, SetMode) -> Unit
 ){
+
+
+    Log.d("ExerciseCard", "Recomposing ExerciseCard for exercise ID: ${exerciseWithSets.id}")
+
 
     ElevatedCard {
         Column (
@@ -236,7 +265,7 @@ private fun ExerciseCard(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = exercise.name,
+                    text = exerciseWithSets.exercise.name,
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -247,6 +276,16 @@ private fun ExerciseCard(
                 }
             }
 
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = stringResource(id = R.string.label_notes))},
+                value = exerciseWithSets.note,
+                onValueChange = {
+                    //exerciseWithSets?.note = it
+                },
+                readOnly = true
+            )
+
             Spacer(modifier = Modifier.height(10.dp))
 
             HorizontalDivider()
@@ -255,10 +294,10 @@ private fun ExerciseCard(
             Row(
                 modifier = Modifier
                     .height(40.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.width(12.dp))
                 Text(text = stringResource(id = R.string.label_exercise_card_set), color = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.weight(1.2f))
                 Text(text = stringResource(id = R.string.label_exercise_card_reps), color = MaterialTheme.colorScheme.secondary)
@@ -272,43 +311,95 @@ private fun ExerciseCard(
                 )
             }
 
-            var sets by rememberSaveable { mutableIntStateOf(1) }
-
             //Sets
-            for (i in 1..sets){
+            exerciseWithSets.sets.forEachIndexed { i, set ->
                 var checked by rememberSaveable { mutableStateOf(false) }
+
+                var repValue by remember { mutableStateOf(if(set.reps != null) set.reps.toString() else "0") }
+                var weightValue by remember { mutableStateOf(if(set.weight != null) set.weight.toString() else "0") }
+                var repError by remember { mutableStateOf(false) }
+                var weightError by remember { mutableStateOf(false) }
+
                 Row(
                     modifier = Modifier
                         .clip(
                             RoundedCornerShape(
-                                topEndPercent = if (i == 1) 50 else 0,
-                                topStartPercent = if (i == 1) 50 else 0,
-                                bottomEndPercent = if (i == sets) 50 else 0,
-                                bottomStartPercent = if (i == sets) 50 else 0
+                                topEndPercent = if (i == 0) 20 else 0,
+                                topStartPercent = if (i == 0) 20 else 0,
+                                bottomEndPercent = if (i == exerciseWithSets.sets.size - 1) 20 else 0,
+                                bottomStartPercent = if (i == exerciseWithSets.sets.size - 1) 20 else 0
                             )
                         )
                         .background(if (checked) MaterialTheme.colorScheme.inversePrimary.copy(0.3f) else Color.Transparent)
-                        .height(40.dp)
-                        .fillMaxWidth(),
+                        .height(80.dp)
+                        .fillMaxWidth()
+                        .padding(start = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Text(text = "$i")
+                    Text("${i + 1}", color = MaterialTheme.colorScheme.onSurface)
+
+                    Spacer(modifier = Modifier.weight(2.5f))
+                    //Reps
+                    OutlinedTextField(
+                        modifier = Modifier.width(80.dp),
+                        value = repValue,
+                        onValueChange = { string ->
+                            if(string.all { it.isDigit() } ) {
+                                if( string.length > 4 ){
+                                    repError = true
+                                } else {
+                                    repError = false
+                                    repValue = string
+                                    updateSet(set, repValue.ifEmpty{"0"}.toInt(), SetMode.WEIGHT)
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        isError = repError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    )
+
                     Spacer(modifier = Modifier.weight(1f))
-                    Checkbox(checked = checked, onCheckedChange = {
-                        checked = it
-                        addCompletedSet(it)
-                    })
+
+
+                    //Weight
+                    OutlinedTextField(
+                        modifier = Modifier.width(100.dp),
+                        value = weightValue,
+                        suffix = { Text("kg")},
+                        onValueChange = { string ->
+                            if(string.all { it.isDigit() } ) {
+                                if( string.length > 4){
+                                    weightError = true
+                                } else {
+                                    weightValue = string
+                                    weightError = false
+                                    updateSet(set, weightValue.ifEmpty{"0"}.toInt(), SetMode.WEIGHT)
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        isError = weightError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Checkbox(
+                        checked = checked,
+                        onCheckedChange = {
+                            checked = it
+                            addCompletedSet(it)
+                        }
+                    )
+
                 }
             }
+
             Spacer(modifier = Modifier.height(10.dp))
 
             HorizontalDivider()
 
             TextButton(
                 onClick = {
-                    sets++
-                    addTotalSet()
+                    addSet()
                 },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -332,7 +423,7 @@ private fun ExerciseCard(
 private fun Stopwatch() {
     var elapsedTime by remember { mutableIntStateOf(0) }
     var isRunning by remember { mutableStateOf(true) }
-    var buttonSize by remember { mutableIntStateOf(70) }
+    var buttonSize by remember { mutableIntStateOf(80) }
     val animatedExpansion = animateIntAsState(
         targetValue = buttonSize,
         label = ""
@@ -353,19 +444,19 @@ private fun Stopwatch() {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
-            modifier = Modifier.width(150.dp),
+            modifier = Modifier.width(80.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Elapsed time:")
+            Text("Elapsed time:", style = MaterialTheme.typography.bodySmall)
             Text(
                 text = formatTime(elapsedTime),
             )
         }
-        Box (modifier = Modifier.height(70.dp), contentAlignment = Alignment.Center){
+        Box (modifier = Modifier.height(70.dp).width(100.dp), contentAlignment = Alignment.Center){
             FilledIconButton(
                 onClick = {
                     isRunning = !isRunning
-                    buttonSize = if (isRunning) 70 else 55
+                    buttonSize = if (isRunning) 80 else 55
                 },
                 modifier = Modifier.size(animatedExpansion.value.dp)
             ) {
@@ -378,7 +469,7 @@ private fun Stopwatch() {
                 )
             }
         }
-        Spacer(modifier = Modifier.width(150.dp))
+        Spacer(modifier = Modifier.width(80.dp))
     }
 }
 

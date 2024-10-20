@@ -1,4 +1,4 @@
-package org.librefit.ui.screens
+package org.librefit.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,16 +32,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.SharedViewModel
 import org.librefit.nav.Destination
 
 @Composable
 fun HomeScreen(
     innerPadding: PaddingValues,
     navController: NavHostController,
-    sharedViewModel: SharedViewModel
 ){
-    val workoutList by sharedViewModel.workoutList.observeAsState()
+    val viewModel : HomeScreenViewModel = viewModel()
+
+    val workoutList by viewModel.workoutList
 
     Column (
         modifier = Modifier
@@ -79,14 +78,12 @@ fun HomeScreen(
             style = MaterialTheme.typography.headlineSmall
         )
 
-        /**
-         * List of workout routines created by the user in [CreateRoutineScreen]
-         */
-        if(workoutList?.isNotEmpty() == true){
+
+        if(workoutList.isNotEmpty()){
             Column (
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ){
-                workoutList!!.forEach {
+                workoutList.forEach {
                     ElevatedCard {
                         Column (
                             modifier = Modifier
@@ -110,7 +107,7 @@ fun HomeScreen(
                                 }) {
                                     Icon(Icons.Default.PlayArrow, Icons.Default.PlayArrow.name )
                                 }
-                                IconButton(onClick = { sharedViewModel.deleteWorkout(it) }) {
+                                IconButton(onClick = { viewModel.deleteWorkout(it) }) {
                                     Icon(Icons.Default.Delete, Icons.Default.Delete.name )
                                 }
                             }
@@ -144,5 +141,5 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview(){
     val navController = rememberNavController()
-    HomeScreen(innerPadding = PaddingValues(20.dp), navController, viewModel())
+    HomeScreen(innerPadding = PaddingValues(20.dp), navController)
 }

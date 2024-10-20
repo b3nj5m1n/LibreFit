@@ -108,4 +108,6 @@
     <string name="label_exit_workout">Sei sicuro di voler uscire? Il tuo allenamento non sarà salvato</string>
     <string name="label_play">Riprendi</string>
     <string name="label_pause">Pausa</string>
+    <string name="error_title_length_exceeded">"Il titolo "</string>
+    <string name="error_title_empty">Il titolo non può essere vuoto</string>
 </resources>

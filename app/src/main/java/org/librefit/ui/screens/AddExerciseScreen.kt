@@ -43,8 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
@@ -107,7 +105,7 @@ fun AddExerciseScreen(
                     IconButton(
                         enabled = selectedExercisesList.isNotEmpty(),
                         onClick = {
-                            viewModel.addExerciseList(selectedExercisesList)
+                            viewModel.addSelectedExerciseToList(selectedExercisesList)
                             navigateBack()
                         }
                     ) {

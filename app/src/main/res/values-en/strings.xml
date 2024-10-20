@@ -128,5 +128,7 @@
     <string name="label_exit_workout">Are you sure you want to exit? Your workout won\'t be added</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
+    <string name="error_title_length_exceeded">Title cannot exceed 30 characters</string>
+    <string name="error_title_empty">Title cannot be empty</string>
 
 </resources>

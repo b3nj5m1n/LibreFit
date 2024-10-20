@@ -44,6 +44,8 @@
     <string name="label_exercise_card_weight">Weight</string>
     <string name="label_exercise_card_add">Add set</string>
     <string name="label_notes">Notes</string>
+    <string name="error_title_empty">Title cannot be empty</string>
+    <string name="error_title_length_exceeded">Title cannot exceed 30 characters</string>
 
 
     <!--Add exercise screen-->
@@ -148,5 +150,6 @@
     <!--Dialog -->
     <string name="label_cancel_dialog">Cancel</string>
     <string name="label_exit_dialog">Exit</string>
+
 
 </resources>

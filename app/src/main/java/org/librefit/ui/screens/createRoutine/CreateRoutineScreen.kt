@@ -1,5 +1,6 @@
-package org.librefit.ui.screens
+package org.librefit.ui.screens.createRoutine
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
@@ -34,9 +36,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,32 +48,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
+import org.librefit.db.Set
 import org.librefit.db.Workout
-import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateRoutineScreen(
-    viewModel: SharedViewModel,
+    sharedViewModel: SharedViewModel,
     navigateBack: () -> Unit,
     navigateAddExercise: () -> Unit
 ) {
-    var titleRoutine = rememberSaveable { mutableStateOf("") }
+    val viewModel : CreateRoutineScreenViewModel = viewModel()
+
+    LaunchedEffect(sharedViewModel.getSelectedExercisesList()) {
+        sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->
+            viewModel.addExerciseWithSets(
+                ExerciseWithSets(
+                    exercise = exerciseDC,
+                    sets = emptyList()
+                )
+            )
+        }
+    }
 
     var showExitDialog by remember { mutableStateOf(false) }
 
-    BackHandler (enabled = !showExitDialog && viewModel.addedExercisesList.isNotEmpty() ){
+    BackHandler (enabled = !showExitDialog && !viewModel.isEmpty() ){
         showExitDialog = true
     }
 
@@ -81,13 +94,11 @@ fun CreateRoutineScreen(
             onExit = {
                 navigateBack()
                 showExitDialog = false
-                viewModel.resetList()
+                sharedViewModel.resetSelectedExercisesList()
             },
             onDismiss = { showExitDialog = false }
         )
     }
-
-    val ableToSave = remember { mutableStateOf(false) }
 
     Scaffold (
         topBar = {
@@ -98,10 +109,10 @@ fun CreateRoutineScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (viewModel.addedExercisesList.isNotEmpty()) {
-                                showExitDialog = true
-                            } else {
+                            if (viewModel.isEmpty()) {
                                 navigateBack()
+                            } else {
+                                showExitDialog = true
                             }
                         }
                     ) {
@@ -114,11 +125,13 @@ fun CreateRoutineScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.addWorkoutWithExercises(Workout(title = titleRoutine.value), viewModel.addedExercisesList)
-                            viewModel.resetList()
+                            viewModel.saveExercisesWithWorkout(
+                                Workout(title = viewModel.getTitle()), viewModel.exercisesWithSets.value
+                            )
+                            sharedViewModel.resetSelectedExercisesList()
                             navigateBack()
                         },
-                        enabled = ableToSave.value && viewModel.addedExercisesList.isNotEmpty()
+                        enabled = !viewModel.isTitleEmpty() && !viewModel.isEmpty()
                     ) {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -132,9 +145,7 @@ fun CreateRoutineScreen(
         RoutineScreen(
             innerPadding,
             navigateAddExercise,
-            viewModel,
-            ableToSave,
-            titleRoutine
+            viewModel
         )
     }
 }
@@ -143,16 +154,16 @@ fun CreateRoutineScreen(
 private fun RoutineScreen(
     innerPadding: PaddingValues,
     navigateAddExercise: () -> Unit,
-    viewModel: SharedViewModel,
-    ableToSave: MutableState<Boolean>,
-    titleRoutine : MutableState<String>
+    viewModel: CreateRoutineScreenViewModel
 ) {
-    var isModalSheetOpen by remember { mutableStateOf(false) }
 
     /**
      * Used to display information about the selected exercise in [ExerciseDetailModalBottomSheet]
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
+    var isModalSheetOpen by remember { mutableStateOf(false) }
+
+    val exercisesWithSets by viewModel.exercisesWithSets.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -164,27 +175,36 @@ private fun RoutineScreen(
     ) {
         item{
             OutlinedTextField(
-                value = titleRoutine.value,
+                value = viewModel.getTitle(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 onValueChange = { newTitle ->
-                    titleRoutine.value = newTitle
-                    ableToSave.value = titleRoutine.value.isNotEmpty()
+                    viewModel.updateTitle(newTitle)
                 },
                 trailingIcon = {
-                    if(titleRoutine.value.isEmpty()) {
+                    if(viewModel.isTitleEmpty() || viewModel.isTitleTooLong()) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = Icons.Default.Warning.name
                         )
                     }
                 },
-                isError = titleRoutine.value.isEmpty(),
+                isError = viewModel.isTitleEmpty() || viewModel.isTitleTooLong(),
                 label = { Text(text = stringResource(id = R.string.label_text_field_title)) },
-                colors = OutlinedTextFieldDefaults.colors()
+                colors = OutlinedTextFieldDefaults.colors(),
+                supportingText = {
+                    when{
+                        viewModel.isTitleTooLong() -> {
+                            Text(stringResource(R.string.error_title_length_exceeded))
+                        }
+                        viewModel.isTitleEmpty() -> {
+                            Text(stringResource(R.string.error_title_empty))
+                        }
+                    }
+                }
             )
         }
-        if(viewModel.addedExercisesList.isEmpty()){
+        if(viewModel.isEmpty()){
             item {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_monochrome),
@@ -195,19 +215,43 @@ private fun RoutineScreen(
                 Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
                     Text(
                         text = stringResource(id = R.string.label_start_creating_routine),
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
         } else {
-            items(viewModel.addedExercisesList){ exercise ->
+            items(exercisesWithSets, key = {it.id}){ exerciseWithSets ->
                 ExerciseCard(
-                    exercise = exercise,
+                    exerciseWithSets = exerciseWithSets,
                     onDetail = {
-                        selectedExercise = exercise
+                        selectedExercise = exerciseWithSets.exercise
                         isModalSheetOpen = true
                     },
-                    onDelete = { viewModel.removeExercise(exercise) }
+                    onDelete = { viewModel.deleteExercise(exerciseWithSets.id) },
+                    addSet = {
+                        viewModel.addSetToExercise(exerciseWithSets.id)
+                    },
+                    updateSet = { set, value, mode ->
+                        if(SetMode.WEIGHT == mode) {
+                            viewModel.updateSet(
+                                exerciseId = exerciseWithSets.id,
+                                set = set,
+                                weight = value,
+                            )
+                        } else if (SetMode.REPS == mode) {
+                            viewModel.updateSet(
+                                exerciseId = exerciseWithSets.id,
+                                set = set,
+                                reps = value ,
+                            )
+                        } else if(SetMode.TIME == mode){
+                            /* TODO */
+                        }
+                    },
+                    updateNote = {
+                        //exerciseWithSets.note = it
+                    }
                 )
             }
         }
@@ -240,12 +284,14 @@ private fun RoutineScreen(
 
 @Composable
 private fun ExerciseCard(
-    exercise: ExerciseDC,
+    exerciseWithSets: ExerciseWithSets,
     onDetail : () -> Unit,
-    onDelete : () -> Unit
+    onDelete : () -> Unit,
+    addSet : () -> Unit,
+    updateSet : (Set, Int, SetMode) -> Unit,
+    updateNote : (String) -> Unit
 ) {
-    var sets by remember {mutableIntStateOf(1)}
-
+    Log.d("ExerciseItem", "Recomposing for exercise ID: ${exerciseWithSets.id}")
     var note by remember { mutableStateOf("") }
 
     ElevatedCard  (
@@ -263,7 +309,7 @@ private fun ExerciseCard(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = exercise.name,
+                    text = exerciseWithSets.exercise.name,
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -277,11 +323,15 @@ private fun ExerciseCard(
                 }
             }
 
+            //Notes
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.label_notes))},
                 value = note,
-                onValueChange = {note = it}
+                onValueChange = {
+                    note = it
+                    updateNote(it)
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -292,35 +342,87 @@ private fun ExerciseCard(
             Row(
                 modifier = Modifier
                     .height(40.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Spacer(modifier = Modifier.width(12.dp))
                 Text(text = stringResource(id = R.string.label_exercise_card_set), color = MaterialTheme.colorScheme.secondary)
-                Spacer(modifier = Modifier.weight(1f))
                 Text(text = stringResource(id = R.string.label_exercise_card_reps), color = MaterialTheme.colorScheme.secondary)
-                Spacer(modifier = Modifier.weight(1f))
                 Text(text = stringResource(id = R.string.label_exercise_card_weight), color = MaterialTheme.colorScheme.secondary)
-                Spacer(modifier = Modifier.width(12.dp))
             }
-
             //Sets
-            for (i in 1..sets){
+            exerciseWithSets.sets.forEachIndexed { index, set ->
+
+                var repValue by rememberSaveable { mutableStateOf("0") }
+                var weightValue by rememberSaveable { mutableStateOf("0") }
+                var repError by rememberSaveable { mutableStateOf(false) }
+                var weightError by rememberSaveable { mutableStateOf(false) }
+
+                val i = index + 1
                 Row(
                     modifier = Modifier
-                        .height(40.dp)
-                        .fillMaxWidth(),
+                        .height(80.dp)
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Text(text = "$i")
+                    Text("$i", color = MaterialTheme.colorScheme.onSurface)
+
+                    Spacer(modifier = Modifier.weight(2.5f))
+
+                    //Reps
+                    OutlinedTextField(
+                        modifier = Modifier.width(80.dp),
+                        value = repValue,
+                        onValueChange = { string ->
+                            if(string.all { it.isDigit() } ) {
+                                if( string.length > 4 ){
+                                    repError = true
+                                } else {
+                                    repError = false
+                                    repValue = string
+                                    updateSet(set, repValue.ifEmpty{"0"}.toInt(), SetMode.REPS)
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        isError = repError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    //Weight
+                    OutlinedTextField(
+                        modifier = Modifier.width(100.dp),
+                        value = weightValue,
+                        suffix = { Text("kg")},
+                        onValueChange = { string ->
+                            if(string.all { it.isDigit() } ) {
+                                if( string.length > 4){
+                                    weightError = true
+                                } else {
+                                    weightValue = string
+                                    weightError = false
+                                    updateSet(set, weightValue.ifEmpty{"0"}.toInt(), SetMode.WEIGHT)
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        isError = weightError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
                 }
             }
+
+            Spacer(Modifier.height(10.dp))
 
             HorizontalDivider()
 
             TextButton(
-                onClick = { sets++ },
+                onClick = addSet,
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer

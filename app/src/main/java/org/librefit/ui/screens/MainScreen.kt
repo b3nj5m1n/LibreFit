@@ -32,17 +32,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.SharedViewModel
 import org.librefit.nav.Destination
+import org.librefit.ui.screens.home.HomeScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
+fun MainScreen(navController: NavHostController) {
 
 
 
@@ -143,7 +142,7 @@ fun MainScreen(navController: NavHostController, sharedViewModel: SharedViewMode
             }
         }
     ) { innerPadding ->
-        if(homeScreenSelected) HomeScreen( innerPadding, navController, sharedViewModel) else ProfileScreen(
+        if(homeScreenSelected) HomeScreen( innerPadding, navController) else ProfileScreen(
             innerPadding
         )
     }
@@ -153,6 +152,6 @@ fun MainScreen(navController: NavHostController, sharedViewModel: SharedViewMode
 @Composable
 fun MainScreenPreview()
 {
-    MainScreen(rememberNavController(), viewModel())
+    MainScreen(rememberNavController())
 }
 
