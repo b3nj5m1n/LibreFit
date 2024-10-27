@@ -23,6 +23,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -44,16 +45,17 @@ class MainActivity : AppCompatActivity() {
 
         userPreferences = DataStoreManager(this)
 
-        var list = emptyList<ExerciseDC>()
+        val list = mutableStateOf(emptyList<ExerciseDC>())
 
         lifecycleScope.launch {
-            list = loadExercises(resources.openRawResource(R.raw.exercises))
+            val loadedList = loadExercises(resources.openRawResource(R.raw.exercises))
+            list.value = loadedList
         }
 
         setContent {
             LibreFitTheme(userPreferences){
                 NavigationHost(
-                    list = list,
+                    list = list.value,
                     userPreferences = userPreferences
                 )
             }

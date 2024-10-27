@@ -294,8 +294,8 @@ private fun themeModeToId(themeMode: ThemeMode) : Int {
 
 private fun languageCodeToId( code : String ) : Int {
     val result = when(code){
-        "en" -> R.string.label_language_english
-        "it" -> R.string.label_language_italian
+        "en" -> R.string.label_language_english_nt
+        "it" -> R.string.label_language_italian_nt
         else -> R.string.label_follow_system
     }
 

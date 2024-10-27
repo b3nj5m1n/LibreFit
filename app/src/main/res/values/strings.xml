@@ -20,21 +20,29 @@
 
 
     <!--About screen-->
+    <string name="label_open">Open</string>
+    <string name="label_copy">Copy</string>
     <string name="label_support_project">Support the project</string>
     <string name="label_donate">Donate</string>
+    <string name="label_donate_desc">LibreFit is crafted by dedicated volunteers who invest their free time to enhance your user experience. Support the developers to help make LibreFit even better!</string>
     <string name="label_contribute">Contribute</string>
+    <string name="label_contribute_desc">Contributions to the source code are welcome from anyone interested in enhancing LibreFit.</string>
     <string name="label_translate">Translate</string>
+    <string name="label_translate_desc">Translators ensure LibreFit is accessible to everyone, regardless of their language.</string>
     <string name="label_info">Info</string>
+    <string name="label_privacy_policy">Privacy policy</string>
+    <string name="label_privacy_policy_desc">LibreFit operates completely offline. This means no user data is collected or shared at any time.</string>
     <string name="label_website">Website</string>
     <string name="label_source_code">Source code</string>
-    <string name="label_privacy_policy">Privacy policy</string>
     <string name="label_license">License</string>
     <string name="url_source_code" translatable="false">https://github.com/IamDg/LibreFit</string>
     <string name="url_privacy" translatable="false">https://github.com/IamDg/LibreFit/blob/main/PRIVACY.md</string>
     <string name="url_website" translatable="false">https://iamdg.github.io/LibreFit-website/</string>
     <string name="label_contributors">Contributors</string>
     <string name="url_IamDg" translatable="false">https://github.com/IamDg</string>
+    <string name="label_project_owner">Project owner</string>
     <string name="label_translators">Translators</string>
+    <string name="label_contributed_to">Contributed to: </string>
 
 
     <!--Create routine screen-->
@@ -70,8 +78,10 @@
     <string name="label_screen_off_desc">Screen does not stay on during workout</string>
     <string name="label_settings_general">General</string>
     <string name="label_language">Language</string>
-    <string name="label_language_english" translatable="false">English</string>
-    <string name="label_language_italian" translatable="false">Italiano</string>
+    <string name="label_language_english_nt" translatable="false">English</string>
+    <string name="label_language_english" >English</string>
+    <string name="label_language_italian_nt" translatable="false">Italiano</string>
+    <string name="label_language_italian" >Italian</string>
 
 
     <!--Profile screen-->

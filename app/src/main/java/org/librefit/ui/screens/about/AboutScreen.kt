@@ -19,7 +19,11 @@
 
 package org.librefit.ui.screens.about
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -27,13 +31,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,17 +50,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
@@ -70,6 +79,43 @@ import org.librefit.ui.components.HeadlineText
 fun AboutScreen(navController : NavHostController) {
 
     val context = LocalContext.current
+
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    var url by remember { mutableStateOf("") }
+
+    if(showDialog){
+        AlertDialog(
+            onDismissRequest = { showDialog = false } ,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(url)
+                        }
+                        context.startActivity(intent)
+                        showDialog = false
+                    }
+                ){
+                    Text(stringResource(R.string.label_open))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        val clip = ClipData.newPlainText("Copied Url", url)
+                        clipboardManager.setPrimaryClip(clip)
+                        showDialog = false
+                    }
+                ){
+                    Text(stringResource(R.string.label_copy))
+                }
+            },
+            text = { Text(text = url ) }
+        )
+    }
 
     Scaffold (
         topBar = {
@@ -113,46 +159,66 @@ fun AboutScreen(navController : NavHostController) {
                     )
             )
 
+            Text(
+                buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)){
+                        append(stringResource(id = R.string.app_name).removeRange(5,8))
+                    }
+                    append(stringResource(id = R.string.app_name).removeRange(0,5))
+                },
+                style = MaterialTheme.typography.displayMedium
+            )
+
+            var version = ""
+
+            try {
+                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                if(pInfo != null){
+                    version = pInfo.versionName.toString()
+                }
+            } catch (e : PackageManager.NameNotFoundException) {
+                e.printStackTrace()
+            }
+
+            Text(version)
+
 
             HeadlineText(text =  stringResource(R.string.label_support_project))
 
             AboutItem(
                 Icons.Default.Favorite,
                 text = stringResource(R.string.label_donate),
-                onClick = {
-//                    val intent = Intent(Intent.ACTION_VIEW).apply {
-//                        data = Uri.parse(context.getString( ))
-//                    }
-//                    context.startActivity(intent)
-                },
+                description = stringResource(R.string.label_donate_desc),
+                onClick = {},
                 enabled = false
             )
 
             AboutItem(
                 ImageVector.vectorResource(R.drawable.ic_handshake),
                 text = stringResource(R.string.label_contribute),
+                description = stringResource(R.string.label_contribute_desc),
                 onClick = {},
-                false
+                enabled = false
             )
 
             AboutItem(
                 ImageVector.vectorResource(R.drawable.ic_translate),
                 stringResource(R.string.label_translate),
+                description = stringResource(R.string.label_translate_desc),
                 onClick = {},
-                false
+                enabled = false
             )
 
 
-            HeadlineText(text = stringResource(R.string.label_info))
+            HeadlineText(stringResource(R.string.label_info))
 
             AboutItem(
                 ImageVector.vectorResource(R.drawable.ic_policy),
                 stringResource(R.string.label_privacy_policy),
+                description = stringResource(R.string.label_privacy_policy_desc),
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(context.getString(R.string.url_privacy))
-                    }
-                    context.startActivity(intent)
+                    url = context.getString(R.string.url_privacy)
+                    showDialog = true
                 }
 
             )
@@ -161,10 +227,8 @@ fun AboutScreen(navController : NavHostController) {
                 ImageVector.vectorResource(R.drawable.ic_globe),
                 stringResource(R.string.label_website),
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(context.getString(R.string.url_website))
-                    }
-                    context.startActivity(intent)
+                    url = context.getString(R.string.url_website)
+                    showDialog = true
                 }
             )
 
@@ -172,10 +236,8 @@ fun AboutScreen(navController : NavHostController) {
                 ImageVector.vectorResource(R.drawable.ic_source_code),
                 stringResource(R.string.label_source_code),
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(context.getString(R.string.url_source_code))
-                    }
-                    context.startActivity(intent)
+                    url = context.getString(R.string.url_source_code)
+                    showDialog = true
                 }
             )
 
@@ -192,12 +254,23 @@ fun AboutScreen(navController : NavHostController) {
 
             AboutItem(
                 Icons.Default.Person,
-                "IamDg",
+                stringResource(R.string.url_IamDg).split("/").last(),
+                stringResource(R.string.label_project_owner),
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(context.getString(R.string.url_IamDg))
-                    }
-                    context.startActivity(intent)
+                    url = context.getString(R.string.url_IamDg)
+                    showDialog = true
+                }
+            )
+
+            HeadlineText(stringResource(R.string.label_translators))
+
+            AboutItem(
+                Icons.Default.Person,
+                stringResource(R.string.url_IamDg).split("/").last(),
+                stringResource(R.string.label_contributed_to) + stringResource(R.string.label_language_italian),
+                onClick = {
+                    url = context.getString(R.string.url_IamDg)
+                    showDialog = true
                 }
             )
         }
@@ -208,6 +281,7 @@ fun AboutScreen(navController : NavHostController) {
 private fun AboutItem(
     imageVector: ImageVector,
     text: String,
+    description : String = "",
     onClick : () -> Unit,
     enabled : Boolean = true
 ){
@@ -220,18 +294,26 @@ private fun AboutItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .padding(20.dp)
         ){
-            Spacer(modifier = Modifier.width(20.dp))
             Icon(
                 imageVector = imageVector,
-                contentDescription = "$text icon"
+                contentDescription = "$text icon",
+                modifier = Modifier.padding(end = 20.dp)
             )
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                text = text,
-                fontSize = 20.sp
-            )
+
+            Column {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                if(description.isNotEmpty()){
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         }
     }
 }

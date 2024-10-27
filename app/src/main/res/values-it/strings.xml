@@ -11,17 +11,24 @@
     <string name="label_routine">Routine</string>
     <string name="label_start_empty_workout">Inizia un allenamento vuoto</string>
     <string name="label_create_routine">Crea una routine</string>
+    <string name="label_copy">Copia</string>
     <string name="label_support_project">Supporta il progetto</string>
     <string name="label_donate">Dona</string>
+    <string name="label_donate_desc">LibreFit è realizzato da volontari dedicati che investono il loro tempo libero per migliorare la tua esperienza utente. Sostieni gli sviluppatori per aiutare a rendere LibreFit ancora migliore!</string>
     <string name="label_contribute">Contribuisci</string>
+    <string name="label_contribute_desc">I contributi al codice sorgente sono benvenuti da chiunque sia interessato a migliorare LibreFit.</string>
     <string name="label_translate">Traduci</string>
+    <string name="label_translate_desc">I traduttori assicurano che LibreFit sia accessibile a tutti, indipendentemente dalla loro lingua.</string>
     <string name="label_info">Info</string>
+    <string name="label_privacy_policy_desc">LibreFit funziona completamente offline. Ciò significa che nessun dato dell\'utente viene raccolto o condiviso in alcun momento.</string>
     <string name="label_website">Sito web</string>
     <string name="label_source_code">Codice sorgente</string>
     <string name="label_privacy_policy">Informativa sulla privacy</string>
     <string name="label_license">Licenza</string>
     <string name="label_contributors">Contributori</string>
+    <string name="label_project_owner">Proprietario del progetto</string>
     <string name="label_translators">Traduttori</string>
+    <string name="label_contributed_to">"Contribuito a: "</string>
     <string name="label_start_creating_routine">Inizia aggiungendo un esercizio alla tua routine</string>
     <string name="label_exit_create_routine">Sei sicuro di voler uscire? La tua routine non sarà salvata</string>
     <string name="label_text_field_title">Titolo</string>
@@ -44,6 +51,7 @@
     <string name="label_keep_screen_on">Mantieni schermo acceso</string>
     <string name="label_screen_on_desc">Lo schermo rimane accesso durante l\'allenamento</string>
     <string name="label_screen_off_desc">Lo schermo non rimane accesso durante l\'allenamento</string>
+    <string name="label_language_italian">Italiano</string>
     <string name="label_coming_soon">Prossimamente</string>
     <string name="label_details">Dettagli</string>
     <string name="label_force">Forza</string>
@@ -110,4 +118,6 @@
     <string name="label_pause">Pausa</string>
     <string name="error_title_length_exceeded">"Il titolo "</string>
     <string name="error_title_empty">Il titolo non può essere vuoto</string>
+    <string name="label_language_english">Inglese</string>
+    <string name="label_open">Apri</string>
 </resources>

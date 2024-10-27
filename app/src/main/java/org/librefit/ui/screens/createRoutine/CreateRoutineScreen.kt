@@ -73,11 +73,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.db.Set
 import org.librefit.db.Workout
+import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 
@@ -85,8 +88,7 @@ import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 @Composable
 fun CreateRoutineScreen(
     sharedViewModel: SharedViewModel,
-    navigateBack: () -> Unit,
-    navigateAddExercise: () -> Unit
+    navController : NavHostController
 ) {
     val viewModel : CreateRoutineScreenViewModel = viewModel()
 
@@ -111,7 +113,7 @@ fun CreateRoutineScreen(
         ConfirmExitDialog(
             text = stringResource(id = R.string.label_exit_create_routine),
             onExit = {
-                navigateBack()
+                navController.popBackStack()
                 showExitDialog = false
                 sharedViewModel.resetSelectedExercisesList()
             },
@@ -129,7 +131,7 @@ fun CreateRoutineScreen(
                     IconButton(
                         onClick = {
                             if (viewModel.isEmpty()) {
-                                navigateBack()
+                                navController.popBackStack()
                             } else {
                                 showExitDialog = true
                             }
@@ -148,7 +150,7 @@ fun CreateRoutineScreen(
                                 Workout(title = viewModel.getTitle()), viewModel.exercisesWithSets.value
                             )
                             sharedViewModel.resetSelectedExercisesList()
-                            navigateBack()
+                            navController.popBackStack()
                         },
                         enabled = !viewModel.isTitleEmpty() && !viewModel.isEmpty()
                     ) {
@@ -161,16 +163,16 @@ fun CreateRoutineScreen(
             )
         }
     ){ innerPadding ->
-        RoutineScreen(
+        CreateRoutineScreen(
             innerPadding,
-            navigateAddExercise,
+            { navController.navigate(Destination.AddExerciseScreen) },
             viewModel
         )
     }
 }
 
 @Composable
-private fun RoutineScreen(
+private fun CreateRoutineScreen(
     innerPadding: PaddingValues,
     navigateAddExercise: () -> Unit,
     viewModel: CreateRoutineScreenViewModel
@@ -462,5 +464,5 @@ private fun ExerciseCard(
 @Preview
 @Composable
 private fun CreateRoutineScreenPreview(){
-    CreateRoutineScreen( viewModel(), {  }, {  } )
+    CreateRoutineScreen( viewModel(), rememberNavController())
 }

@@ -62,8 +62,7 @@ fun NavigationHost(list: List<ExerciseDC>, userPreferences: DataStoreManager) {
         composable<Destination.CreateRoutineScreen> {
             CreateRoutineScreen(
                 sharedViewModel = sharedViewModel,
-                navigateBack = { navController.popBackStack() },
-                navigateAddExercise = { navController.navigate(Destination.AddExerciseScreen )}
+                navController = navController
             )
         }
         composable<Destination.AddExerciseScreen> {
