@@ -62,6 +62,7 @@
     <string name="label_exit_add_exercise">Are you sure you want to exit? Your selected exercises won\'t be added</string>
     <string name="label_search_exercise_field">Search for an exercise</string>
     <string name="label_no_exercise_found">No exercise found</string>
+    <string name="label_filters">Filters</string>
 
 
     <!--Settings screen-->
@@ -79,9 +80,9 @@
     <string name="label_settings_general">General</string>
     <string name="label_language">Language</string>
     <string name="label_language_english_nt" translatable="false">English</string>
-    <string name="label_language_english" >English</string>
+    <string name="label_language_english">English</string>
     <string name="label_language_italian_nt" translatable="false">Italiano</string>
-    <string name="label_language_italian" >Italian</string>
+    <string name="label_language_italian">Italian</string>
 
 
     <!--Profile screen-->
@@ -106,8 +107,8 @@
     <string name="label_primary_muscles">Primary muscles</string>
     <string name="label_secondary_muscles">Secondary muscles</string>
     <string name="label_instructions">Instructions</string>
-    
-    
+
+
     <!--Exercise Enums-->
     <string name="label_force_static">Static</string>
     <string name="label_force_pull">Pull</string>

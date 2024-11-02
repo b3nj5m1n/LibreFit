@@ -25,7 +25,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -44,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,26 +74,32 @@ fun FiltersCard(
     isFilterExpanded: MutableState<Boolean>,
     viewModel: SharedViewModel
 ) {
-    var iconRotation by remember { mutableFloatStateOf(0f) }
+    var iconRotation by rememberSaveable { mutableFloatStateOf(0f) }
 
-    OutlinedCard (
+    OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp),
-    ){
-        Row (
+    ) {
+        Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(15.dp)
-        ){
-            Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)){
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_filter),
-                    contentDescription = ""
+                    contentDescription = null
                 )
-                Text(text = "Filters", style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = stringResource(R.string.label_filters),
+                    style = MaterialTheme.typography.headlineSmall
+                )
             }
             IconButton(
                 onClick = {
@@ -112,8 +121,7 @@ fun FiltersCard(
             R.string.label_level,
             R.string.label_mechanic,
             R.string.label_equipment,
-            R.string.label_primary_muscles,
-            R.string.label_secondary_muscles,
+            R.string.label_muscles,
             R.string.label_category
         )
 
@@ -123,27 +131,24 @@ fun FiltersCard(
             Mechanic.entries,
             Equipment.entries,
             Muscle.entries,
-            Muscle.entries,
             Category.entries
         )
 
 
         //Animation to display the filters
         AnimatedVisibility(visible = isFilterExpanded.value) {
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(15.dp),
+                    .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                //TODO: this is temporary until filter works
-                ItemFilter(stringResource(titles[0]), options[0] , viewModel )
-                ItemFilter(stringResource(titles[6]), options[6] , viewModel )
-
-//                for (i in titles.indices){
-//                    ItemFilter(title = stringResource(titles[i]), options = options[i], viewModel = viewModel)
-//                    Spacer(modifier = Modifier.height(10.dp))
-//                }
+                ItemFilter(stringResource(titles[0]), options[0], viewModel)
+                ItemFilter(stringResource(titles[1]), options[1], viewModel)
+                ItemFilter(stringResource(titles[2]), options[2], viewModel)
+                ItemFilter(stringResource(titles[3]), options[3], viewModel)
+                ItemFilter(stringResource(titles[4]), options[4], viewModel)
+                ItemFilter(stringResource(titles[5]), options[5], viewModel)
             }
         }
     }
@@ -151,11 +156,12 @@ fun FiltersCard(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ItemFilter(
+private fun ItemFilter(
     title: String,
     options: EnumEntries<out Enum<*>>,
     viewModel: SharedViewModel
 ) {
+    Spacer(Modifier.height(10.dp))
 
     Text(title)
 
@@ -166,16 +172,22 @@ fun ItemFilter(
         options.forEach { enum ->
 
             FilterChip(
-                selected = viewModel.isEnumInList(enum),
+                selected = viewModel.isEnumInFilter(enum),
                 onClick = {
-                    if (viewModel.isEnumInList(enum)){
-                        viewModel.removeEnum(enum)
+                    if (viewModel.isEnumInFilter(enum)) {
+                        viewModel.removeEnumFromFilter(enum)
                     } else {
-                        viewModel.addEnum(enum)
+                        viewModel.addEnumToFilter(enum)
                     }
                 },
-                label = { Text(stringResource(exerciseEnumToStringId(enum)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                leadingIcon = if (viewModel.isEnumInList(enum)) {
+                label = {
+                    Text(
+                        stringResource(exerciseEnumToStringId(enum)),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                leadingIcon = if (viewModel.isEnumInFilter(enum)) {
                     {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -193,6 +205,6 @@ fun ItemFilter(
 
 @Preview
 @Composable
-fun FiltersCardPreview(){
+fun FiltersCardPreview() {
     FiltersCard(remember { mutableStateOf(true) }, viewModel())
 }

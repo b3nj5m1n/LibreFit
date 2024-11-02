@@ -86,14 +86,14 @@ fun WorkoutScreen(
     workoutId: Int,
     navController: NavHostController,
     list: List<ExerciseDC>
-){
-    val viewModel : WorkoutScreenViewModel = viewModel()
+) {
+    val viewModel: WorkoutScreenViewModel = viewModel()
 
     val keepWorkoutScreenOn = userPreferences.workoutScreenOn.collectAsState(initial = true).value
 
     val context = LocalContext.current
 
-    if(keepWorkoutScreenOn){
+    if (keepWorkoutScreenOn) {
         DisposableEffect(key1 = Unit) {
             val window = (context as Activity).window
 
@@ -105,15 +105,14 @@ fun WorkoutScreen(
         }
     }
 
-    
 
     var showExitDialog by remember { mutableStateOf(false) }
-    
-    BackHandler (enabled = !showExitDialog){
+
+    BackHandler(enabled = !showExitDialog) {
         showExitDialog = true
     }
 
-    if(showExitDialog){
+    if (showExitDialog) {
         ConfirmExitDialog(
             text = stringResource(id = R.string.label_exit_workout),
             onExit = {
@@ -159,7 +158,7 @@ fun WorkoutScreen(
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
     ).value
 
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.label_workout)) },
@@ -176,12 +175,12 @@ fun WorkoutScreen(
             )
         },
         bottomBar = {
-            BottomAppBar (
+            BottomAppBar(
                 modifier = Modifier.height(120.dp)
             ) {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                ){
+                ) {
                     LinearProgressIndicator(
                         progress = { animatedProgress },
                         modifier = Modifier.fillMaxWidth(),
@@ -190,13 +189,13 @@ fun WorkoutScreen(
                 }
             }
         }
-    ){ paddingValues ->
-        LazyColumn (
+    ) { paddingValues ->
+        LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(start = 15.dp, end = 15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
-        ){
+        ) {
             items(exercisesWithSets, key = { it.id }) { exerciseWithSets ->
                 ExerciseCard(
                     exerciseWithSets = exerciseWithSets,
@@ -208,10 +207,10 @@ fun WorkoutScreen(
                         viewModel.addCompletedSet(completed)
                     },
                     addSet = {
-                            viewModel.addSetToExercise(exerciseWithSets.id)
+                        viewModel.addSetToExercise(exerciseWithSets.id)
                     },
                     updateSet = { set, value, mode ->
-                        if(SetMode.WEIGHT == mode) {
+                        if (SetMode.WEIGHT == mode) {
                             viewModel.updateSet(
                                 exerciseId = exerciseWithSets.id,
                                 set = set,
@@ -221,9 +220,9 @@ fun WorkoutScreen(
                             viewModel.updateSet(
                                 exerciseId = exerciseWithSets.id,
                                 set = set,
-                                reps = value ,
+                                reps = value,
                             )
-                        } else if(SetMode.TIME == mode){
+                        } else if (SetMode.TIME == mode) {
                             /* TODO */
                         }
                     }
@@ -234,7 +233,7 @@ fun WorkoutScreen(
         }
     }
 
-    if(isModalSheetOpen){
+    if (isModalSheetOpen) {
         ExerciseDetailModalBottomSheet(exercise = selectedExercise!!) { isModalSheetOpen = false }
     }
 }
@@ -243,27 +242,27 @@ fun WorkoutScreen(
 private fun ExerciseCard(
     exerciseWithSets: ExerciseWithSets,
     onDetail: () -> Unit,
-    addCompletedSet : (Boolean) -> Unit,
-    addSet : () -> Unit,
-    updateSet : (Set, Int, SetMode) -> Unit
-){
+    addCompletedSet: (Boolean) -> Unit,
+    addSet: () -> Unit,
+    updateSet: (Set, Int, SetMode) -> Unit
+) {
 
 
     Log.d("ExerciseCard", "Recomposing ExerciseCard for exercise ID: ${exerciseWithSets.id}")
 
 
     ElevatedCard {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Row (
+        ) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = exerciseWithSets.exercise.name,
                     style = MaterialTheme.typography.headlineSmall,
@@ -272,16 +271,19 @@ private fun ExerciseCard(
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = { onDetail() }) {
-                    Icon(imageVector = Icons.Default.Info, contentDescription = Icons.Default.Info.name)
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = Icons.Default.Info.name
+                    )
                 }
             }
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(text = stringResource(id = R.string.label_notes))},
+                label = { Text(text = stringResource(id = R.string.label_notes)) },
                 value = exerciseWithSets.note,
                 onValueChange = {
-                    //exerciseWithSets?.note = it
+                    exerciseWithSets.note = it
                 },
                 readOnly = true
             )
@@ -298,11 +300,20 @@ private fun ExerciseCard(
                     .padding(start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = stringResource(id = R.string.label_exercise_card_set), color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = stringResource(id = R.string.label_exercise_card_set),
+                    color = MaterialTheme.colorScheme.secondary
+                )
                 Spacer(modifier = Modifier.weight(1.2f))
-                Text(text = stringResource(id = R.string.label_exercise_card_reps), color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = stringResource(id = R.string.label_exercise_card_reps),
+                    color = MaterialTheme.colorScheme.secondary
+                )
                 Spacer(modifier = Modifier.weight(1.3f))
-                Text(text = stringResource(id = R.string.label_exercise_card_weight), color = MaterialTheme.colorScheme.secondary)
+                Text(
+                    text = stringResource(id = R.string.label_exercise_card_weight),
+                    color = MaterialTheme.colorScheme.secondary
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Default.Done,
@@ -315,8 +326,8 @@ private fun ExerciseCard(
             exerciseWithSets.sets.forEachIndexed { i, set ->
                 var checked by rememberSaveable { mutableStateOf(false) }
 
-                var repValue by remember { mutableStateOf(if(set.reps != null) set.reps.toString() else "0") }
-                var weightValue by remember { mutableStateOf(if(set.weight != null) set.weight.toString() else "0") }
+                var repValue by remember { mutableStateOf(if (set.reps != null) set.reps.toString() else "0") }
+                var weightValue by remember { mutableStateOf(if (set.weight != null) set.weight.toString() else "0") }
                 var repError by remember { mutableStateOf(false) }
                 var weightError by remember { mutableStateOf(false) }
 
@@ -335,7 +346,7 @@ private fun ExerciseCard(
                         .fillMaxWidth()
                         .padding(start = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text("${i + 1}", color = MaterialTheme.colorScheme.onSurface)
 
                     Spacer(modifier = Modifier.weight(2.5f))
@@ -344,13 +355,13 @@ private fun ExerciseCard(
                         modifier = Modifier.width(80.dp),
                         value = repValue,
                         onValueChange = { string ->
-                            if(string.all { it.isDigit() } ) {
-                                if( string.length > 4 ){
+                            if (string.all { it.isDigit() }) {
+                                if (string.length > 4) {
                                     repError = true
                                 } else {
                                     repError = false
                                     repValue = string
-                                    updateSet(set, repValue.ifEmpty{"0"}.toInt(), SetMode.WEIGHT)
+                                    updateSet(set, repValue.ifEmpty { "0" }.toInt(), SetMode.WEIGHT)
                                 }
                             }
                         },
@@ -366,15 +377,19 @@ private fun ExerciseCard(
                     OutlinedTextField(
                         modifier = Modifier.width(100.dp),
                         value = weightValue,
-                        suffix = { Text("kg")},
+                        suffix = { Text("kg") },
                         onValueChange = { string ->
-                            if(string.all { it.isDigit() } ) {
-                                if( string.length > 4){
+                            if (string.all { it.isDigit() }) {
+                                if (string.length > 4) {
                                     weightError = true
                                 } else {
                                     weightValue = string
                                     weightError = false
-                                    updateSet(set, weightValue.ifEmpty{"0"}.toInt(), SetMode.WEIGHT)
+                                    updateSet(
+                                        set,
+                                        weightValue.ifEmpty { "0" }.toInt(),
+                                        SetMode.WEIGHT
+                                    )
                                 }
                             }
                         },
@@ -410,9 +425,9 @@ private fun ExerciseCard(
                     imageVector = Icons.Default.AddCircle,
                     contentDescription = null
                 )
-                Spacer( modifier = Modifier.weight(1f) )
-                Text( text = stringResource(id = R.string.label_exercise_card_add) )
-                Spacer( modifier = Modifier.weight(1.3f) )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = stringResource(id = R.string.label_exercise_card_add))
+                Spacer(modifier = Modifier.weight(1.3f))
             }
 
         }
@@ -452,7 +467,9 @@ private fun Stopwatch() {
                 text = formatTime(elapsedTime),
             )
         }
-        Box (modifier = Modifier.height(70.dp).width(100.dp), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier
+            .height(70.dp)
+            .width(100.dp), contentAlignment = Alignment.Center) {
             FilledIconButton(
                 onClick = {
                     isRunning = !isRunning
@@ -463,7 +480,7 @@ private fun Stopwatch() {
                 Icon(
                     imageVector = if (isRunning) {
                         ImageVector.vectorResource(id = R.drawable.ic_pause)
-                    } else Icons.Default.PlayArrow ,
+                    } else Icons.Default.PlayArrow,
                     contentDescription = stringResource(id = if (isRunning) R.string.label_pause else R.string.label_play),
                     modifier = Modifier.size(30.dp)
                 )
@@ -477,5 +494,5 @@ private fun formatTime(seconds: Int): String {
     val hours = seconds / 3600
     val minutes = (seconds % 3600) / 60
     val secs = seconds % 60
-    return String.format(Locale.current.platformLocale,"%02d:%02d:%02d", hours, minutes, secs)
+    return String.format(Locale.current.platformLocale, "%02d:%02d:%02d", hours, minutes, secs)
 }

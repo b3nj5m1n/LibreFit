@@ -60,6 +60,7 @@
 
 
     <!--Settings screen-->
+    <string name="label_filters">Filters</string>
     <string name="label_appearance">Appearance</string>
     <string name="label_theme">Theme</string>
     <string name="label_follow_system">System</string>
@@ -73,8 +74,8 @@
     <string name="label_screen_off_desc">Screen does not stay on during workout</string>
     <string name="label_settings_general">General</string>
     <string name="label_language">Language</string>
-    <string name="label_language_english" >English</string>
-    <string name="label_language_italian" >Italian</string>
+    <string name="label_language_english">English</string>
+    <string name="label_language_italian">Italian</string>
 
 
     <!--Profile screen-->

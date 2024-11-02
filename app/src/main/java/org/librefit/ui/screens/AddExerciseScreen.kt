@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,10 +49,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +68,7 @@ import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
+import org.librefit.ui.components.FiltersCard
 import org.librefit.util.exerciseEnumToStringId
 
 
@@ -74,31 +76,30 @@ import org.librefit.util.exerciseEnumToStringId
 @Composable
 fun AddExerciseScreen(
     list: List<ExerciseDC>,
-    navigateBack : () -> Unit,
+    navigateBack: () -> Unit,
     viewModel: SharedViewModel
-){
+) {
     val selectedExercisesList = remember { mutableStateListOf<ExerciseDC>() }
 
     var showExitDialog by remember { mutableStateOf(false) }
 
-    BackHandler (enabled = !showExitDialog && selectedExercisesList.isNotEmpty()){
+    BackHandler(enabled = !showExitDialog && selectedExercisesList.isNotEmpty()) {
         showExitDialog = true
     }
 
-    if(showExitDialog){
+    if (showExitDialog) {
         ConfirmExitDialog(
             text = stringResource(id = R.string.label_exit_add_exercise),
             onExit = {
                 navigateBack()
                 showExitDialog = false
-                viewModel.resetFilterList()
             },
             onDismiss = { showExitDialog = false }
         )
     }
 
 
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -107,7 +108,7 @@ fun AddExerciseScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if(selectedExercisesList.isNotEmpty()){
+                            if (selectedExercisesList.isNotEmpty()) {
                                 showExitDialog = true
                             } else {
                                 navigateBack()
@@ -136,7 +137,7 @@ fun AddExerciseScreen(
                 }
             )
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         AddExerciseScreenContent(innerPadding, list, selectedExercisesList, viewModel)
     }
 }
@@ -148,8 +149,11 @@ private fun AddExerciseScreenContent(
     selectedExercisesList: MutableList<ExerciseDC>,
     viewModel: SharedViewModel,
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.resetFilterList()
+    }
 
-    val isFilterExpanded = remember { mutableStateOf(false) }
+    var isFilterExpanded = rememberSaveable { mutableStateOf(false) }
 
     /**
      * Used to display information about the selected exercise using [ExerciseDetailModalBottomSheet]
@@ -161,23 +165,16 @@ private fun AddExerciseScreenContent(
     // Query used to search an exercises based on the name
     var query by remember { mutableStateOf("") }
 
-
-
     val filteredExercisesList = exerciseList.filter { exercise ->
-        exercise.name.contains(query, ignoreCase = true) &&
-        viewModel.isEnumInList(exercise.level) &&
-        viewModel.isEnumInList(exercise.category)
-//        viewModel.isEnumInList(exercise.force!!) &&
-//        viewModel.isEnumInList(exercise.equipment!!) &&
-//        viewModel.isEnumInList(exercise.mechanic!!)
+        exercise.name.contains(query, ignoreCase = true) && viewModel.filter(exercise)
     }
 
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier.padding(innerPadding)
-    ){
+    ) {
         // Search bar
         item {
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -194,39 +191,40 @@ private fun AddExerciseScreenContent(
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                     },
                     trailingIcon = {
-                        if(query.isNotEmpty()){
+                        if (query.isNotEmpty()) {
                             IconButton(onClick = { query = "" }) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = Icons.Default.Close.name)
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = Icons.Default.Close.name
+                                )
                             }
                         }
                     },
                     label = { Text(text = stringResource(id = R.string.label_search_exercise_field)) },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor =  Color.Transparent,
-                        unfocusedIndicatorColor =  Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
                     )
                 )
             }
         }
 
+        // Card to let the user filter the exercises list
+        item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
 
-        //This is temporary until FiltersCard is ready
-        item { Spacer(modifier = Modifier.height(15.dp)) }
-
-        // Card to let the user filter the exercises list TODO: it doesn't work properly yet
-        // item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
-
-        if(filteredExercisesList.isNotEmpty()) {
+        if (filteredExercisesList.isNotEmpty()) {
             item { HorizontalDivider() }
         } else {
-            item{
-                Column (
-                    modifier = Modifier.fillMaxSize(),
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(100.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
-                ){
+                ) {
                     Text(
                         text = stringResource(id = R.string.label_no_exercise_found),
                         color = MaterialTheme.colorScheme.onBackground
@@ -256,10 +254,10 @@ private fun AddExerciseScreenContent(
                         }
                     }
                 )
-                Column (
+                Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center
-                ){
+                ) {
                     Text(
                         text = exercise.name,
                         style = MaterialTheme.typography.labelLarge,
@@ -268,7 +266,7 @@ private fun AddExerciseScreenContent(
                         text = stringResource(id = exerciseEnumToStringId(exercise.category)),
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    if (exercise.equipment != null){
+                    if (exercise.equipment != null) {
                         Text(
                             text = stringResource(id = exerciseEnumToStringId(exercise.equipment)),
                             style = MaterialTheme.typography.bodyMedium
@@ -281,7 +279,10 @@ private fun AddExerciseScreenContent(
                         isModalSheetOpen = true
                     }
                 ) {
-                    Icon(imageVector = Icons.Default.Info, contentDescription = Icons.Default.Info.name)
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = Icons.Default.Info.name
+                    )
                 }
             }
             HorizontalDivider()
@@ -289,7 +290,7 @@ private fun AddExerciseScreenContent(
     }
 
     // Opened by info icon (in the filtered list), it shows the details of an exercise
-    if(isModalSheetOpen){
+    if (isModalSheetOpen) {
         ExerciseDetailModalBottomSheet(exercise = selectedExercise!!) { isModalSheetOpen = false }
     }
 }
@@ -297,6 +298,6 @@ private fun AddExerciseScreenContent(
 
 @Preview
 @Composable
-private fun AddExerciseScreenPreview(){
+private fun AddExerciseScreenPreview() {
     AddExerciseScreen(emptyList(), {}, viewModel())
 }

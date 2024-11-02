@@ -40,6 +40,7 @@
     <string name="label_exit_add_exercise">Sei sicuro di voler uscire? I tuoi esercizi selezionati non saranno salvati</string>
     <string name="label_search_exercise_field">Cerca un esercizio</string>
     <string name="label_no_exercise_found">Nessun esercizio trovato</string>
+    <string name="label_filters">Filtri</string>
     <string name="label_appearance">Aspetto</string>
     <string name="label_theme">Tema</string>
     <string name="label_follow_system">Sistema</string>

@@ -51,7 +51,7 @@ class CreateRoutineScreenViewModel : ViewModel() {
         _exercisesWithSets.value += newExerciseWithSets
     }
 
-    fun addSetToExercise(index : Int) {
+    fun addSetToExercise(index: Int) {
         _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
             if (exerciseWithSets.id == index) {
                 exerciseWithSets.copy(sets = exerciseWithSets.sets + Set(exerciseId = currentId++))
@@ -61,7 +61,7 @@ class CreateRoutineScreenViewModel : ViewModel() {
         }
     }
 
-    fun deleteExercise(index : Int) {
+    fun deleteExercise(index: Int) {
         _exercisesWithSets.value = _exercisesWithSets.value.filter { it.id != index }
     }
 
@@ -73,7 +73,8 @@ class CreateRoutineScreenViewModel : ViewModel() {
         val exerciseWithSets = _exercisesWithSets.value.find { it.id == exerciseId }
 
         if (exerciseWithSets != null) {
-            val setToUpdateIndex = exerciseWithSets.sets.indexOfFirst { it.exerciseId == set.exerciseId }
+            val setToUpdateIndex =
+                exerciseWithSets.sets.indexOfFirst { it.exerciseId == set.exerciseId }
 
             if (setToUpdateIndex != -1) {
                 val updatedSets = exerciseWithSets.sets.toMutableList().apply {
@@ -93,19 +94,19 @@ class CreateRoutineScreenViewModel : ViewModel() {
 
     private var titleRoutine by mutableStateOf("")
 
-    fun updateTitle(string: String){
+    fun updateTitle(string: String) {
         titleRoutine = string
     }
 
-    fun getTitle() : String {
+    fun getTitle(): String {
         return titleRoutine
     }
 
-    fun isTitleEmpty() : Boolean{
+    fun isTitleEmpty(): Boolean {
         return titleRoutine.isEmpty()
     }
 
-    fun isTitleTooLong() : Boolean {
+    fun isTitleTooLong(): Boolean {
         return titleRoutine.length >= 30
     }
 
@@ -121,11 +122,11 @@ class CreateRoutineScreenViewModel : ViewModel() {
 }
 
 data class ExerciseWithSets(
-    val id : Int = 0 ,
-    val exerciseId : Int = 0,
+    val id: Int = 0,
+    val exerciseId: Int = 0,
     val exercise: ExerciseDC,
     var sets: List<Set> = emptyList(),
-    val note : String = ""
+    var note: String = ""
 )
 
 enum class SetMode {

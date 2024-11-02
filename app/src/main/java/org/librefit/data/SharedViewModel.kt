@@ -29,20 +29,18 @@ class SharedViewModel : ViewModel() {
 
     private val selectedExercisesList = mutableStateListOf<ExerciseDC>()
 
-    fun getSelectedExercisesList() : List<ExerciseDC> {
-        return selectedExercisesList.toList()
+    fun getSelectedExercisesList(): List<ExerciseDC> {
+        val list = selectedExercisesList.toList()
+        selectedExercisesList.clear()
+        return list
     }
 
-    fun addSelectedExerciseToList (exerciseList: List<ExerciseDC>){
+    fun addSelectedExerciseToList(exerciseList: List<ExerciseDC>) {
         resetSelectedExercisesList()
         selectedExercisesList += exerciseList
     }
 
-    fun removeExerciseFromList (exercise: ExerciseDC ){
-        selectedExercisesList.remove(exercise)
-    }
-
-    fun resetSelectedExercisesList () {
+    fun resetSelectedExercisesList() {
         selectedExercisesList.clear()
     }
 
@@ -57,30 +55,51 @@ class SharedViewModel : ViewModel() {
         initializeFilterList()
     }
 
-    private fun initializeFilterList(){
-        Level.entries.forEach { filtersList.add(it) }
-        Force.entries.forEach { filtersList.add(it) }
-        Level.entries.forEach { filtersList.add(it) }
-        Mechanic.entries.forEach { filtersList.add(it) }
-        Equipment.entries.forEach { filtersList.add(it) }
-        Muscle.entries.forEach { filtersList.add(it) }
-        Category.entries.forEach { filtersList.add(it) }
+    private fun initializeFilterList() {
+        filtersList.addAll(Level.entries)
+        filtersList.addAll(Force.entries)
+        filtersList.addAll(Mechanic.entries)
+        filtersList.addAll(Equipment.entries)
+        filtersList.addAll(Muscle.entries)
+        filtersList.addAll(Category.entries)
     }
 
-    fun addEnum( enum : Enum<*> ){
+    fun addEnumToFilter(enum: Enum<*>) {
         filtersList.add(enum)
     }
 
-    fun removeEnum( enum : Enum<*> ){
+    fun removeEnumFromFilter(enum: Enum<*>) {
         filtersList.remove(enum)
     }
 
-    fun isEnumInList ( enum : Enum<*> ) : Boolean{
+    fun isEnumInFilter(enum: Enum<*>): Boolean {
         return filtersList.contains(enum)
     }
 
-    fun resetFilterList(){
+    fun resetFilterList() {
         filtersList.clear()
         initializeFilterList()
+    }
+
+    fun filter(exercise: ExerciseDC): Boolean {
+        if (!filtersList.contains(exercise.level)) {
+            return false
+        }
+        if (exercise.force != null && !filtersList.contains(exercise.force)) {
+            return false
+        }
+        if (exercise.mechanic != null && !filtersList.contains(exercise.mechanic)) {
+            return false
+        }
+        if (exercise.equipment != null && !filtersList.contains(exercise.equipment)) {
+            return false
+        }
+        if (!filtersList.containsAll(exercise.primaryMuscles) || !filtersList.containsAll(exercise.secondaryMuscles)) {
+            return false
+        }
+        if (!filtersList.contains(exercise.category)) {
+            return false
+        }
+        return true
     }
 }
