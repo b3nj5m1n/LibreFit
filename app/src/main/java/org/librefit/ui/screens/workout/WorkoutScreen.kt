@@ -33,26 +33,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -71,6 +70,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -80,6 +80,7 @@ import org.librefit.data.ExerciseDC
 import org.librefit.data.ExerciseWithSets
 import org.librefit.data.SetMode
 import org.librefit.data.SharedViewModel
+import org.librefit.db.Workout
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseCard
@@ -90,6 +91,7 @@ import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 fun WorkoutScreen(
     userPreferences: DataStoreManager,
     workoutId: Int = 0,
+    workoutTitle: String,
     navController: NavHostController,
     list: List<ExerciseDC>,
     sharedViewModel: SharedViewModel
@@ -179,7 +181,13 @@ fun WorkoutScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.label_workout)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.label_workout) + ": " + workoutTitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() }
@@ -193,13 +201,14 @@ fun WorkoutScreen(
                 actions = {
                     IconButton(
                         onClick = {
-//                            viewModel.saveExercisesWithWorkout(
-//                                workout = Workout(title = viewModel.getTitle()),
-//                                exercises = viewModel.exercisesWithSets.value
-//                            )
+                            viewModel.saveExercisesWithWorkout(
+                                workout = Workout(title = workoutTitle),
+                                exercises = exercisesWithSets
+                            )
                             navController.popBackStack()
                         },
-                        enabled = exercisesWithSets.isNotEmpty()
+                        enabled = exercisesWithSets.isNotEmpty(),
+                        colors = IconButtonDefaults.filledIconButtonColors()
                     ) {
                         Icon(
                             imageVector = Icons.Default.Done,
@@ -222,6 +231,18 @@ fun WorkoutScreen(
                     )
                     Stopwatch(viewModel)
                 }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(Destination.AddExerciseScreen)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null
+                )
             }
         }
     ) { paddingValues ->
@@ -282,7 +303,7 @@ fun WorkoutScreen(
                                     reps = value,
                                 )
                             } else if (SetMode.TIME == mode) {
-                                /* TODO */
+                                /* TODO: save set elapsed time */
                             }
                         },
                         workout = true
@@ -290,27 +311,7 @@ fun WorkoutScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(5.dp)) }
-
-            item {
-                TextButton(
-                    onClick = { navController.navigate(Destination.AddExerciseScreen) },
-                    colors = ButtonDefaults.buttonColors(),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddCircle,
-                            contentDescription = Icons.Default.AddCircle.name
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(text = stringResource(id = R.string.label_add_exercise))
-                    }
-                }
-            }
+            item { Spacer(Modifier.height(100.dp)) }
         }
     }
 

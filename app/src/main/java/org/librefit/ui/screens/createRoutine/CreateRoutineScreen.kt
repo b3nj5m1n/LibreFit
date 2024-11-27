@@ -23,29 +23,21 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,6 +64,7 @@ import org.librefit.data.SharedViewModel
 import org.librefit.db.Workout
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
+import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 
@@ -110,52 +103,33 @@ fun CreateRoutineScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.label_routine))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            if (viewModel.isListEmpty()) {
-                                navController.popBackStack()
-                            } else {
-                                showExitDialog = true
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.label_navigate_back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            viewModel.saveExercisesWithWorkout(
-                                workout = Workout(title = viewModel.getTitle()),
-                                exercises = viewModel.exercisesWithSets.value
-                            )
-                            navController.popBackStack()
-                        },
-                        enabled = !viewModel.isTitleEmpty() && !viewModel.isListEmpty()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = Icons.Default.Done.name
-                        )
-                    }
-                }
+    CustomScaffold(
+        title = stringResource(id = R.string.label_routine),
+        navigateBack = {
+            if (viewModel.isListEmpty()) {
+                navController.popBackStack()
+            } else {
+                showExitDialog = true
+            }
+        },
+        action = {
+            viewModel.saveExercisesWithRoutine(
+                workout = Workout(title = viewModel.getTitle()),
+                exercises = viewModel.exercisesWithSets.value
             )
+            navController.popBackStack()
+        },
+        actionIcon = Icons.Default.Done,
+        actionEnabled = !viewModel.isTitleEmpty() && !viewModel.isListEmpty(),
+        elevatedActionIcon = true,
+        fabIcon = Icons.Default.Add,
+        fabAction = {
+            navController.navigate(Destination.AddExerciseScreen)
         }
     ) { innerPadding ->
         CreateRoutineScreen(
-            innerPadding,
-            { navController.navigate(Destination.AddExerciseScreen) },
-            viewModel
+            innerPadding = innerPadding,
+            viewModel = viewModel
         )
     }
 }
@@ -163,7 +137,6 @@ fun CreateRoutineScreen(
 @Composable
 private fun CreateRoutineScreen(
     innerPadding: PaddingValues,
-    navigateAddExercise: () -> Unit,
     viewModel: CreateRoutineScreenViewModel
 ) {
 
@@ -271,26 +244,6 @@ private fun CreateRoutineScreen(
                     },
                     completedSet = {}
                 )
-            }
-        }
-
-        item {
-            TextButton(
-                onClick = navigateAddExercise ,
-                colors = ButtonDefaults.buttonColors(),
-            ) {
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Icon(
-                        imageVector = Icons.Default.AddCircle,
-                        contentDescription = Icons.Default.AddCircle.name
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(text = stringResource(id = R.string.label_add_exercise))
-                }
             }
         }
     }

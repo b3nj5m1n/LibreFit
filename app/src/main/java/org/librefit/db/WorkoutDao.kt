@@ -29,7 +29,10 @@ import org.librefit.data.ExerciseWithSets
 
 @Dao
 interface WorkoutDao {
-    @Query("SELECT * FROM workouts ORDER BY title" )
+    @Query("SELECT * FROM workouts WHERE 1 = routine ORDER BY title" )
+    fun getRoutines() : Flow<List<Workout>>
+
+    @Query("SELECT * FROM workouts WHERE 0 = routine ORDER BY title" )
     fun getWorkouts() : Flow<List<Workout>>
 
     @Insert
@@ -62,7 +65,7 @@ interface WorkoutDao {
         exercises.forEach {
             val exerciseId = addExercise(Exercise(exerciseId = it.exercise.id, notes = it.note, workoutId = workoutId))
             it.sets.forEach { set ->
-                addSet(set.copy(exerciseId = exerciseId.toInt()))
+                addSet(set.copy(id = 0 , exerciseId = exerciseId.toInt()))
             }
         }
     }

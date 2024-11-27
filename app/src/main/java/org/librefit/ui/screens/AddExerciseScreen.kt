@@ -24,18 +24,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,17 +44,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,10 +63,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
+import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 import org.librefit.ui.components.FiltersCard
 import org.librefit.util.exerciseEnumToStringId
@@ -98,47 +100,34 @@ fun AddExerciseScreen(
         )
     }
 
+    val lazyListState = rememberLazyListState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.label_add_exercise))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            if (selectedExercisesList.isNotEmpty()) {
-                                showExitDialog = true
-                            } else {
-                                navigateBack()
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.label_navigate_back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        enabled = selectedExercisesList.isNotEmpty(),
-                        onClick = {
-                            viewModel.addSelectedExerciseToList(selectedExercisesList)
-                            navigateBack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = Icons.Default.Add.name
-                        )
-                    }
-                }
-            )
-        }
+    val coroutineScope = rememberCoroutineScope()
+
+    CustomScaffold(
+        title = stringResource(id = R.string.label_add_exercise),
+        navigateBack = navigateBack,
+        action = {
+            viewModel.addSelectedExerciseToList(selectedExercisesList)
+            navigateBack()
+        },
+        actionIcon = Icons.Default.Add,
+        actionEnabled = selectedExercisesList.isNotEmpty(),
+        elevatedActionIcon = true,
+        fabAction = {
+            coroutineScope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        },
+        fabIcon = Icons.Default.KeyboardArrowUp,
     ) { innerPadding ->
-        AddExerciseScreenContent(innerPadding, exerciseList, selectedExercisesList, viewModel)
+        AddExerciseScreenContent(
+            innerPadding = innerPadding,
+            exerciseList = exerciseList,
+            selectedExercisesList = selectedExercisesList,
+            viewModel = viewModel,
+            listState = lazyListState
+        )
     }
 }
 
@@ -148,7 +137,9 @@ private fun AddExerciseScreenContent(
     exerciseList: List<ExerciseDC>,
     selectedExercisesList: MutableList<ExerciseDC>,
     viewModel: SharedViewModel,
+    listState: LazyListState
 ) {
+    // It deletes previous filters applied each time screen recomposes
     LaunchedEffect(Unit) {
         viewModel.cleanFilter()
     }
@@ -156,16 +147,19 @@ private fun AddExerciseScreenContent(
     var isFilterExpanded = rememberSaveable { mutableStateOf(false) }
 
     /**
-     * Used to display information about the selected exercise using [ExerciseDetailModalBottomSheet]
+     * Holds the information to show in [ExerciseDetailModalBottomSheet]
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
-    // Query used to search an exercises based on the name
+    /**
+     * Query used to filter exercises based on the name
+     */
     var query by remember { mutableStateOf("") }
 
     LazyColumn(
+        state = listState,
         modifier = Modifier.padding(innerPadding)
     ) {
         // Search bar
@@ -220,8 +214,7 @@ private fun AddExerciseScreenContent(
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .height(100.dp),
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -236,7 +229,9 @@ private fun AddExerciseScreenContent(
         //Filtered list of exercises
         items(
             items = exerciseList.filter { exercise ->
-                exercise.name.contains(query, ignoreCase = true) && viewModel.filterExercise(exercise)
+                exercise.name.contains(query, ignoreCase = true) && viewModel.filterExercise(
+                    exercise
+                )
             },
             key = { exercise -> exercise.id }
         ) { exercise ->

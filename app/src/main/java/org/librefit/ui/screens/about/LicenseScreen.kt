@@ -10,23 +10,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +32,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.librefit.R
+import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.CustomTextButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,47 +84,26 @@ fun LicenseScreen(navigateBack: () -> Unit) {
         )
     }
 
-
-    Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(text = stringResource(id = R.string.label_license))
-            }, navigationIcon = {
-                IconButton(
-                    onClick = navigateBack
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = stringResource(id = R.string.label_navigate_back)
-                    )
-                }
-            })
-        },
+    CustomScaffold(
+        title = stringResource(id = R.string.label_license),
+        navigateBack = navigateBack,
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    showDialog = true
-                }
-            ) {
-                Text(stringResource(R.string.label_view_gpl3_online))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.ExitToApp,
-                    contentDescription = null
-                )
-            }
+            CustomTextButton(
+                text = stringResource(R.string.label_view_gpl3_online),
+                icon = Icons.AutoMirrored.Default.ExitToApp,
+                onClick = { showDialog = true }
+            )
             HorizontalDivider()
             Box(
                 modifier = Modifier
                     .padding(start = 15.dp, end = 15.dp)
                     .verticalScroll(rememberScrollState())
                     .horizontalScroll(rememberScrollState())
-                    .fillMaxSize()
-                    .weight(1f),
+                    .fillMaxSize(),
             ) {
                 Text(licenseText.value)
             }

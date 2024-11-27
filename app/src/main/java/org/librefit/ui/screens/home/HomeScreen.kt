@@ -19,6 +19,7 @@
 
 package org.librefit.ui.screens.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,18 +29,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,6 +54,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.nav.Destination
+import org.librefit.ui.components.CustomTextButton
 
 @Composable
 fun HomeScreen(
@@ -61,82 +63,94 @@ fun HomeScreen(
 ) {
     val viewModel: HomeScreenViewModel = viewModel()
 
-    val workoutList by viewModel.workoutList
+    val routineList by viewModel.routineList
 
-    Column(
+    LazyColumn (
         modifier = Modifier
             .padding(paddingValues = innerPadding)
             .padding(start = 15.dp, end = 15.dp)
             .fillMaxSize()
     ) {
-        Text(
-            text = stringResource(id = R.string.label_quick_start),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        //"Start empty workout" button
-        TextButton(
-            onClick = {
-                navController.navigate(Destination.WorkoutScreen())
-            },
-            colors = ButtonDefaults.buttonColors()
-        ) {
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = Icons.Default.PlayArrow.name
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(text = stringResource(id = R.string.label_start_empty_workout))
-            }
+        item{
+            Text(
+                text = stringResource(id = R.string.label_quick_start),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.headlineSmall
+            )
         }
-        Spacer(modifier = Modifier.height(15.dp))
-        Text(
-            text = stringResource(id = R.string.label_routine),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineSmall
-        )
+
+        item{
+            //"Start empty workout" button
+            CustomTextButton(
+                text = stringResource(id = R.string.label_start_empty_workout),
+                icon = Icons.Default.PlayArrow,
+                onClick = { navController.navigate(Destination.WorkoutScreen()) },
+            )
+        }
+        item{
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
+        item{
+            Text(
+                text = stringResource(id = R.string.label_routine),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
 
 
-        if (workoutList.isNotEmpty()) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                workoutList.forEach {
-                    ElevatedCard {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = it.title,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f)
+
+        /*TODO: improve card clarity*/
+        if (routineList.isNotEmpty()) {
+            items(routineList) { routine ->
+                ElevatedCard(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .clickable{
+                            navController.navigate(
+                                Destination.WorkoutScreen(
+                                    workoutId = routine.id,
+                                    workoutTitle = routine.title
                                 )
-                                IconButton(onClick = {
-                                    navController.navigate(Destination.WorkoutScreen(workoutId = it.id))
-                                }) {
-                                    Icon(Icons.Default.PlayArrow, Icons.Default.PlayArrow.name)
-                                }
-                                IconButton(onClick = { viewModel.deleteWorkout(it) }) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        stringResource(R.string.label_delete)
+                            )
+                        }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = routine.title,
+                                style = MaterialTheme.typography.headlineSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Destination.WorkoutScreen(
+                                            workoutId = routine.id,
+                                            workoutTitle = routine.title
+                                        )
                                     )
-                                }
+                                },
+                                colors =  IconButtonDefaults.filledIconButtonColors()
+                            ) {
+                                Icon(Icons.Default.PlayArrow, Icons.Default.PlayArrow.name)
+                            }
+                            IconButton(onClick = { viewModel.deleteRoutine(routine) }) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    stringResource(R.string.label_delete)
+                                )
                             }
                         }
                     }
@@ -144,27 +158,17 @@ fun HomeScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        item{
+            Spacer(modifier = Modifier.height(10.dp))
+        }
 
-        //"Create a workout routine" button
-        TextButton(
-            onClick = {
-                navController.navigate(Destination.CreateRoutineScreen)
-            },
-            colors = ButtonDefaults.buttonColors()
-        ) {
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    contentDescription = Icons.Default.AddCircle.name
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(text = stringResource(id = R.string.label_create_routine))
-            }
+        item{
+            //"Create a workout routine" button
+            CustomTextButton(
+                text = stringResource(id = R.string.label_create_routine),
+                icon = Icons.Default.AddCircle,
+                onClick = { navController.navigate(Destination.CreateRoutineScreen) },
+            )
         }
     }
 }

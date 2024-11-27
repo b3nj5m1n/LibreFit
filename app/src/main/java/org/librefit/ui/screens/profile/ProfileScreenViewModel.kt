@@ -17,36 +17,29 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.home
+package org.librefit.ui.screens.profile
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
 import org.librefit.db.Workout
 
-class HomeScreenViewModel : ViewModel() {
+class ProfileScreenViewModel : ViewModel() {
     private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
-    var routineList: MutableState<List<Workout>> = mutableStateOf(emptyList())
+    var workoutList: MutableState<List<Workout>> = mutableStateOf(emptyList())
 
     init {
-        getRoutinesList()
+        getWorkoutList()
     }
 
-    private fun getRoutinesList() {
+    private fun getWorkoutList() {
         viewModelScope.launch {
-            workoutDao.getRoutines().collect { workouts ->
-                routineList.value = workouts
+            workoutDao.getWorkouts().collect { workouts ->
+                workoutList.value = workouts
             }
-        }
-    }
-
-    fun deleteRoutine(workout: Workout){
-        viewModelScope.launch(Dispatchers.IO){
-            workoutDao.deleteWorkout(workout)
         }
     }
 }

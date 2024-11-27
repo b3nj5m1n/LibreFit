@@ -25,5 +25,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "workouts")
 data class Workout(
     @PrimaryKey(true) val id : Int = 0,
-    val title : String
+    val title : String,
+    val routine : Boolean = false
+    /*TODO: implement creation date (for routines) and completed date (for workouts)*/
 )

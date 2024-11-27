@@ -43,6 +43,7 @@ sealed class Destination {
 
     @Serializable
     data class WorkoutScreen(
-        val workoutId: Int = 0
+        val workoutId : Int = 0,
+        val workoutTitle : String = ""
     )
 }

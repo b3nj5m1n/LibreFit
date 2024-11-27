@@ -56,24 +56,16 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.nav.Destination
 import org.librefit.ui.screens.home.HomeScreen
+import org.librefit.ui.screens.profile.ProfileScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
 
-
-
     var expended by remember { mutableStateOf(false) }
 
-    var homeScreenSelected by remember { mutableStateOf(true) }
-
-    val titleTopBar = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)){
-            append(stringResource(id = R.string.app_name).removeRange(5,8))
-        }
-        append(stringResource(id = R.string.app_name).removeRange(0,5))
-    }
+    var homeSelected by remember { mutableStateOf(true) }
 
 
     Scaffold(
@@ -81,7 +73,13 @@ fun MainScreen(navController: NavHostController) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(text = titleTopBar)
+                    Text(text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(stringResource(id = R.string.app_name).removeRange(5, 8))
+                            }
+                            append(stringResource(id = R.string.app_name).removeRange(0, 5))
+                        }
+                    )
                 },
                 actions = {
                     IconButton(
@@ -129,11 +127,11 @@ fun MainScreen(navController: NavHostController) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = homeScreenSelected,
-                    onClick = { homeScreenSelected = true },
+                    selected = homeSelected,
+                    onClick = { homeSelected = true },
                     icon = {
                         Icon(
-                            imageVector = if(homeScreenSelected) Icons.Default.Home else Icons.Outlined.Home,
+                            imageVector = if (homeSelected) Icons.Default.Home else Icons.Outlined.Home,
                             contentDescription = stringResource(R.string.label_home)
                         )
                     },
@@ -144,11 +142,11 @@ fun MainScreen(navController: NavHostController) {
                     }
                 )
                 NavigationBarItem(
-                    selected = !homeScreenSelected,
-                    onClick = { homeScreenSelected = false },
+                    selected = !homeSelected,
+                    onClick = { homeSelected = false },
                     icon = {
                         Icon(
-                            imageVector = if(!homeScreenSelected) Icons.Default.Person else Icons.Outlined.Person,
+                            imageVector = if (!homeSelected) Icons.Default.Person else Icons.Outlined.Person,
                             contentDescription = stringResource(R.string.label_profile)
                         )
                     },
@@ -161,7 +159,7 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        if(homeScreenSelected) HomeScreen( innerPadding, navController) else ProfileScreen(
+        if (homeSelected) HomeScreen(innerPadding, navController) else ProfileScreen(
             innerPadding
         )
     }
@@ -169,8 +167,7 @@ fun MainScreen(navController: NavHostController) {
 
 @Preview
 @Composable
-fun MainScreenPreview()
-{
+fun MainScreenPreview() {
     MainScreen(rememberNavController())
 }
 

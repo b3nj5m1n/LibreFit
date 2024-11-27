@@ -36,6 +36,7 @@ import org.librefit.MainApplication
 import org.librefit.data.ExerciseWithSets
 import org.librefit.db.Exercise
 import org.librefit.db.Set
+import org.librefit.db.Workout
 
 class WorkoutScreenViewModel : ViewModel() {
     private val totalSets: Int
@@ -61,8 +62,7 @@ class WorkoutScreenViewModel : ViewModel() {
 
     fun addExerciseWithSets(exerciseWithSets: ExerciseWithSets) {
         val newExerciseWithSets = exerciseWithSets.copy(
-            id = currentId++,
-            sets = listOf(Set(exerciseId = currentId++))
+            id = currentId++
         )
         _exercisesWithSets.value += newExerciseWithSets
     }
@@ -125,6 +125,13 @@ class WorkoutScreenViewModel : ViewModel() {
                 }
             }
             _exercisesWithSets.value = updatedExercisesWithSets
+        }
+    }
+
+    fun saveExercisesWithWorkout(workout : Workout, exercises: List<ExerciseWithSets>) {
+        val list = exercises.toList()
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.addWorkoutWithExercises(workout, list)
         }
     }
 

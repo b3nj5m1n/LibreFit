@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens
+package org.librefit.ui.screens.settings
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
@@ -31,27 +31,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,10 +56,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.os.LocaleListCompat
-import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.librefit.R
 import org.librefit.data.DataStoreManager
+import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.util.Language
 import org.librefit.util.ThemeMode
@@ -73,24 +67,31 @@ import org.librefit.util.ThemeMode
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    userPreferences: DataStoreManager,
     navigateBack: () -> Unit
 ) {
-    val selectedTheme = userPreferences.themeMode.collectAsState(initial = ThemeMode.SYSTEM).value
+    val context = LocalContext.current
 
-    val keepWorkoutScreenOn = userPreferences.workoutScreenOn.collectAsState(initial = true).value
+    val userPreferences = DataStoreManager(context)
 
-    val materialModeOn = userPreferences.materialMode.collectAsState(initial = true).value
+    val viewModel: SettingsScreenViewModel = viewModel()
+
+    viewModel.initPreferences(userPreferences)
 
     var selectedLanguage by remember {
         mutableStateOf(
-            AppCompatDelegate.getApplicationLocales().toLanguageTags()
+            AppCompatDelegate.getApplicationLocales().toLanguageTags().split("-").first().toString()
         )
     }
 
+    val selectedTheme by userPreferences.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
+
+    val keepWorkoutScreenOn by userPreferences.workoutScreenOn.collectAsState(initial = true)
+
+    val materialModeOn by userPreferences.materialMode.collectAsState(initial = true)
+
+
     var openPreferenceDialog by remember { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
 
 
     if (openPreferenceDialog) {
@@ -105,13 +106,12 @@ fun SettingsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            /*TODO: when language follows system, its radio button isn't selected, */
                             RadioButton(
                                 selected = language.code == selectedLanguage,
                                 onClick = {
                                     selectedLanguage = language.code
-                                    val appLocale: LocaleListCompat =
-                                        LocaleListCompat.forLanguageTags(language.code)
-                                    AppCompatDelegate.setApplicationLocales(appLocale)
+                                    viewModel.changeLanguage(language)
                                 }
                             )
                             Text(text = stringResource(id = languageCodeToId(language.code)))
@@ -122,25 +122,9 @@ fun SettingsScreen(
         )
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.label_settings))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navigateBack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.label_navigate_back)
-                        )
-                    }
-                }
-            )
-        },
+    CustomScaffold(
+        title = stringResource(id = R.string.label_settings),
+        navigateBack = navigateBack
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -173,12 +157,10 @@ fun SettingsScreen(
                                 SegmentedButton(
                                     selected = selectedTheme == mode,
                                     onClick = {
-                                        coroutineScope.launch {
-                                            userPreferences.savePreference(
-                                                key = userPreferences.themeModeKey,
-                                                value = index
-                                            )
-                                        }
+                                        viewModel.savePreference(
+                                            key = userPreferences.themeModeKey,
+                                            value = index
+                                        )
                                     },
                                     shape = SegmentedButtonDefaults.itemShape(
                                         index = index,
@@ -223,12 +205,10 @@ fun SettingsScreen(
                         Switch(
                             checked = materialModeOn,
                             onCheckedChange = {
-                                coroutineScope.launch {
-                                    userPreferences.savePreference(
-                                        key = userPreferences.materialModeKey,
-                                        value = it
-                                    )
-                                }
+                                viewModel.savePreference(
+                                    key = userPreferences.materialModeKey,
+                                    value = it
+                                )
                             }
                         )
                     }
@@ -268,12 +248,10 @@ fun SettingsScreen(
                     Switch(
                         checked = keepWorkoutScreenOn,
                         onCheckedChange = {
-                            coroutineScope.launch {
-                                userPreferences.savePreference(
-                                    key = userPreferences.keepOnWorkoutScreenKey,
-                                    value = it
-                                )
-                            }
+                            viewModel.savePreference(
+                                key = userPreferences.keepOnWorkoutScreenKey,
+                                value = it
+                            )
                         }
                     )
                 }
@@ -337,5 +315,5 @@ private fun languageCodeToId(code: String): Int {
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen(DataStoreManager(LocalContext.current)) { }
+    SettingsScreen { }
 }

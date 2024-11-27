@@ -38,19 +38,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,11 +67,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.nav.Destination
+import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(navController : NavHostController) {
+fun AboutScreen(navController: NavHostController) {
 
     val context = LocalContext.current
 
@@ -85,9 +82,9 @@ fun AboutScreen(navController : NavHostController) {
 
     var url by remember { mutableStateOf("") }
 
-    if(showDialog){
+    if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false } ,
+            onDismissRequest = { showDialog = false },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -97,7 +94,7 @@ fun AboutScreen(navController : NavHostController) {
                         context.startActivity(intent)
                         showDialog = false
                     }
-                ){
+                ) {
                     Text(stringResource(R.string.label_open))
                 }
             },
@@ -108,45 +105,29 @@ fun AboutScreen(navController : NavHostController) {
                         clipboardManager.setPrimaryClip(clip)
                         showDialog = false
                     }
-                ){
+                ) {
                     Text(stringResource(R.string.label_copy))
                 }
             },
-            text = { Text(text = url ) }
+            text = { Text(text = url) }
         )
     }
 
-    Scaffold (
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.label_about))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.label_navigate_back)
-                        )
-                    }
-                }
-            )
-        },
+    CustomScaffold(
+        title = stringResource(id = R.string.label_about),
+        navigateBack = { navController.popBackStack() },
     ) { innerPadding ->
-
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues = innerPadding)
                 .padding(start = 15.dp, end = 15.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
 
             val logoSize = 170.dp
-            item{
+            item {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_logo),
                     contentDescription = null,
@@ -174,25 +155,25 @@ fun AboutScreen(navController : NavHostController) {
 
             try {
                 val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                if(pInfo != null){
+                if (pInfo != null) {
                     version = pInfo.versionName.toString()
                 }
-            } catch (e : PackageManager.NameNotFoundException) {
+            } catch (e: PackageManager.NameNotFoundException) {
                 e.printStackTrace()
             }
 
-            item{
-                if(version != "") {
+            item {
+                if (version != "") {
                     Text(version)
                 }
             }
 
-            item{
-                HeadlineText(text =  stringResource(R.string.label_support_project))
+            item {
+                HeadlineText(text = stringResource(R.string.label_support_project))
             }
 
 
-            item{
+            item {
                 AboutItem(
                     Icons.Default.Favorite,
                     text = stringResource(R.string.label_donate),
@@ -202,7 +183,7 @@ fun AboutScreen(navController : NavHostController) {
                 )
             }
 
-            item{
+            item {
                 AboutItem(
                     ImageVector.vectorResource(R.drawable.ic_handshake),
                     text = stringResource(R.string.label_contribute),
@@ -212,7 +193,7 @@ fun AboutScreen(navController : NavHostController) {
                 )
             }
 
-            item{
+            item {
                 AboutItem(
                     ImageVector.vectorResource(R.drawable.ic_translate),
                     stringResource(R.string.label_translate),
@@ -222,7 +203,7 @@ fun AboutScreen(navController : NavHostController) {
                 )
             }
 
-            item{
+            item {
                 HeadlineText(stringResource(R.string.label_info))
             }
 
@@ -311,21 +292,21 @@ fun AboutScreen(navController : NavHostController) {
 private fun AboutItem(
     imageVector: ImageVector,
     text: String,
-    description : String = "",
-    onClick : () -> Unit,
-    enabled : Boolean = true
-){
+    description: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true
+) {
 
     OutlinedCard(
         enabled = enabled,
         onClick = onClick
     ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp)
-        ){
+        ) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = "$text icon",
@@ -337,7 +318,7 @@ private fun AboutItem(
                     text = text,
                     style = MaterialTheme.typography.titleMedium
                 )
-                if(description.isNotEmpty()){
+                if (description.isNotEmpty()) {
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodyMedium
@@ -349,9 +330,8 @@ private fun AboutItem(
 }
 
 
-
 @Preview
 @Composable
-private fun AboutScreenPreview(){
-    AboutScreen (rememberNavController())
+private fun AboutScreenPreview() {
+    AboutScreen(rememberNavController())
 }

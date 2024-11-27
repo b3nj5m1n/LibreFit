@@ -114,10 +114,10 @@ class CreateRoutineScreenViewModel : ViewModel() {
 
     private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
-    fun saveExercisesWithWorkout(workout: Workout, exercises: List<ExerciseWithSets>) {
+    fun saveExercisesWithRoutine(workout: Workout, exercises: List<ExerciseWithSets>) {
         val list = exercises.toList()
         viewModelScope.launch(Dispatchers.IO) {
-            workoutDao.addWorkoutWithExercises(workout, list)
+            workoutDao.addWorkoutWithExercises(workout.copy(routine = true), list)
         }
     }
 }

@@ -19,13 +19,24 @@
 
 package org.librefit
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.lifecycleScope
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
+import org.librefit.data.ExerciseDC
+import org.librefit.data.ExerciseDeserializer
 import org.librefit.nav.NavigationHost
 import org.librefit.ui.theme.LibreFitTheme
+import org.librefit.util.ThemeMode
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager
@@ -36,9 +47,27 @@ class MainActivity : AppCompatActivity() {
 
         userPreferences = DataStoreManager(this)
 
+        val list = mutableStateOf(emptyList<ExerciseDC>())
+
+        lifecycleScope.launch {
+            val loadedList = loadExercises(this@MainActivity)
+            list.value = loadedList
+        }
+
         setContent {
-            LibreFitTheme(userPreferences) {
+            val theme = userPreferences.themeMode.collectAsState(ThemeMode.SYSTEM)
+            val dynamicColor = userPreferences.materialMode.collectAsState(false)
+
+            LibreFitTheme(
+                dynamicColor = dynamicColor.value,
+                darkTheme = when (theme.value) {
+                    ThemeMode.DARK -> true
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                }
+            ) {
                 NavigationHost(
+                    exerciseList = list.value,
                     userPreferences = userPreferences
                 )
             }
@@ -46,3 +75,15 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+private fun loadExercises(context: Context): List<ExerciseDC> {
+    val inputStream = context.resources.openRawResource(R.raw.exercises)
+
+    return inputStream.bufferedReader().use { reader ->
+        val gson = GsonBuilder()
+            .registerTypeAdapter(ExerciseDC::class.java, ExerciseDeserializer())
+            .create()
+        val listType = object : TypeToken<List<ExerciseDC>>() {}.type
+
+        gson.fromJson(reader, listType)
+    }
+}

@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -47,7 +46,6 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -176,6 +174,7 @@ fun ExerciseCard(
                                 count = SetMode.entries.size
                             )
                         ) {
+                            /*TODO: insert text in string.xml*/
                             Text(
                                 text = mode.name.lowercase().replaceFirstChar { it.uppercase() },
                                 maxLines = 1,
@@ -205,6 +204,7 @@ fun ExerciseCard(
                     color = MaterialTheme.colorScheme.secondary
                 )
                 if (setMode == SetMode.TIME) {
+                    /*TODO: insert text in string.xml*/
                     Text(
                         text = "Time",
                         color = MaterialTheme.colorScheme.secondary
@@ -271,6 +271,7 @@ fun ExerciseCard(
 
                     if (setMode == SetMode.TIME) {
                         //Time
+                        /*TODO: input not working*/
                         OutlinedTextField(
                             modifier = Modifier.width(80.dp),
                             value = String.format(Locale.getDefault(),"%s:%s", timeValue.padStart(4,'0').substring(0,2), timeValue.padStart(4,'0').substring(2,4)),
@@ -300,8 +301,12 @@ fun ExerciseCard(
                                         repError = true
                                     } else {
                                         repError = false
-                                        repValue = string.ifEmpty { "0" }
-                                        updateSet(set, repValue.toInt(), SetMode.WEIGHT)
+                                        repValue = string
+                                        updateSet(
+                                            set,
+                                            repValue.ifEmpty { "0" }.toInt(),
+                                            SetMode.REPS
+                                        )
                                     }
                                 }
                             },
@@ -311,6 +316,7 @@ fun ExerciseCard(
                         )
                         if (setMode == SetMode.WEIGHT) {
                             //Weight
+                            /*TODO: insert suffix text in string.xml*/
                             OutlinedTextField(
                                 modifier = Modifier.width(100.dp),
                                 value = weightValue,
@@ -358,21 +364,12 @@ fun ExerciseCard(
 
             HorizontalDivider()
 
-            TextButton(
+            CustomTextButton(
+                text = stringResource(id = R.string.label_exercise_card_add),
+                icon = Icons.Default.AddCircle,
                 onClick = addSet,
-                colors = ButtonDefaults.textButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = stringResource(id = R.string.label_exercise_card_add))
-                Spacer(modifier = Modifier.weight(1.3f))
-            }
+                elevated = false
+            )
         }
     }
 }
