@@ -66,7 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.util.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.CustomScaffold

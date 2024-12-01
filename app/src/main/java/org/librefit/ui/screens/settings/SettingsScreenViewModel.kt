@@ -26,7 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
-import org.librefit.util.Language
+import org.librefit.enums.Language
 
 class SettingsScreenViewModel : ViewModel() {
     private lateinit var userPreferences: DataStoreManager

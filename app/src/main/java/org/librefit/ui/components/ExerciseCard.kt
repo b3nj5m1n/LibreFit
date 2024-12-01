@@ -62,11 +62,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
-import org.librefit.data.Category
-import org.librefit.data.ExerciseDC
-import org.librefit.data.ExerciseWithSets
-import org.librefit.data.Level
-import org.librefit.data.SetMode
+import org.librefit.enums.Category
+import org.librefit.util.ExerciseDC
+import org.librefit.util.ExerciseWithSets
+import org.librefit.enums.Level
+import org.librefit.enums.SetMode
 import org.librefit.db.Set
 import java.util.Locale
 import kotlin.text.ifEmpty

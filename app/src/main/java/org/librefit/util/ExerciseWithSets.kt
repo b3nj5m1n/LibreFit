@@ -1,6 +1,7 @@
-package org.librefit.data
+package org.librefit.util
 
 import org.librefit.db.Set
+import org.librefit.enums.SetMode
 
 data class ExerciseWithSets(
     val id: Int = 0,

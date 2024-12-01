@@ -1,4 +1,4 @@
-package org.librefit.data
+package org.librefit.enums
 
 enum class SetMode {
     WEIGHT,

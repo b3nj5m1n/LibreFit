@@ -22,6 +22,13 @@ package org.librefit.data
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import org.librefit.enums.Category
+import org.librefit.enums.Equipment
+import org.librefit.enums.Force
+import org.librefit.enums.Level
+import org.librefit.enums.Mechanic
+import org.librefit.enums.Muscle
+import org.librefit.util.ExerciseDC
 
 class SharedViewModel : ViewModel() {
     private val selectedExercisesList = mutableStateListOf<ExerciseDC>()

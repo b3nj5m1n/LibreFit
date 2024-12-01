@@ -57,9 +57,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.ExerciseDC
-import org.librefit.data.ExerciseWithSets
-import org.librefit.data.SetMode
+import org.librefit.util.ExerciseDC
+import org.librefit.util.ExerciseWithSets
+import org.librefit.enums.SetMode
 import org.librefit.data.SharedViewModel
 import org.librefit.db.Workout
 import org.librefit.nav.Destination

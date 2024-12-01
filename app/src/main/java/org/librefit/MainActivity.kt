@@ -32,11 +32,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
-import org.librefit.data.ExerciseDC
+import org.librefit.util.ExerciseDC
 import org.librefit.data.ExerciseDeserializer
 import org.librefit.nav.NavigationHost
 import org.librefit.ui.theme.LibreFitTheme
-import org.librefit.util.ThemeMode
+import org.librefit.enums.ThemeMode
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager

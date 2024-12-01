@@ -31,7 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.librefit.data.DataStoreManager
-import org.librefit.data.ExerciseDC
+import org.librefit.util.ExerciseDC
 import org.librefit.data.SharedViewModel
 import org.librefit.ui.screens.AddExerciseScreen
 import org.librefit.ui.screens.MainScreen

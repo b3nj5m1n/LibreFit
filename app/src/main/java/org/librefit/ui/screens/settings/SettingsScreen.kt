@@ -62,8 +62,8 @@ import org.librefit.R
 import org.librefit.data.DataStoreManager
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
-import org.librefit.util.Language
-import org.librefit.util.ThemeMode
+import org.librefit.enums.Language
+import org.librefit.enums.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

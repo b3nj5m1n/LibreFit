@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
-import org.librefit.data.ExerciseWithSets
+import org.librefit.util.ExerciseWithSets
 import org.librefit.db.Set
 import org.librefit.db.Workout
 

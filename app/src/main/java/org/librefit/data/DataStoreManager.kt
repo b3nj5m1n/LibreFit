@@ -27,7 +27,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.librefit.util.ThemeMode
+import org.librefit.enums.ThemeMode
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
 

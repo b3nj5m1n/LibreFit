@@ -60,8 +60,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.librefit.R
-import org.librefit.data.ExerciseDC
-import org.librefit.data.Muscle
+import org.librefit.util.ExerciseDC
+import org.librefit.enums.Muscle
 import org.librefit.util.exerciseEnumToStringId
 import org.librefit.util.muscleToVectorId
 

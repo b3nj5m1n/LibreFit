@@ -17,7 +17,14 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.data
+package org.librefit.util
+
+import org.librefit.enums.Category
+import org.librefit.enums.Equipment
+import org.librefit.enums.Force
+import org.librefit.enums.Level
+import org.librefit.enums.Mechanic
+import org.librefit.enums.Muscle
 
 data class ExerciseDC(
     val id: String,
@@ -33,64 +40,3 @@ data class ExerciseDC(
     val images: List<String>
 )
 
-enum class Force {
-    STATIC,
-    PULL,
-    PUSH
-}
-
-enum class Level {
-    BEGINNER,
-    INTERMEDIATE,
-    EXPERT
-}
-
-enum class Mechanic {
-    ISOLATION,
-    COMPOUND
-}
-
-enum class Equipment {
-    MEDICINE_BALL,
-    DUMBBELL,
-    BODY_ONLY,
-    BANDS,
-    KETTLEBELLS,
-    FOAM_ROLL,
-    CABLE,
-    MACHINE,
-    BARBELL,
-    EXERCISE_BALL,
-    E_Z_CURL_BAR,
-    OTHER
-}
-
-enum class Muscle {
-    ABDOMINALS,
-    ABDUCTORS,
-    ADDUCTORS,
-    BICEPS,
-    CALVES,
-    CHEST,
-    FOREARMS,
-    GLUTES,
-    HAMSTRINGS,
-    LATS,
-    LOWER_BACK,
-    MIDDLE_BACK,
-    NECK,
-    QUADRICEPS,
-    SHOULDERS,
-    TRAPS,
-    TRICEPS
-}
-
-enum class Category {
-    POWERLIFTING,
-    STRENGTH,
-    STRETCHING,
-    CARDIO,
-    OLYMPIC_WEIGHTLIFTING,
-    STRONGMAN,
-    PLYOMETRICS
-}

@@ -22,6 +22,13 @@ package org.librefit.data
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import org.librefit.enums.Category
+import org.librefit.enums.Equipment
+import org.librefit.enums.Force
+import org.librefit.enums.Level
+import org.librefit.enums.Mechanic
+import org.librefit.enums.Muscle
+import org.librefit.util.ExerciseDC
 import java.lang.reflect.Type
 import java.util.Locale
 

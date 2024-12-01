@@ -1,4 +1,4 @@
-package org.librefit.util
+package org.librefit.enums
 
 enum class ThemeMode(val value: Int) {
     SYSTEM(0),

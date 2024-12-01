@@ -1,12 +1,12 @@
 package org.librefit.util
 
 import org.librefit.R
-import org.librefit.data.Category
-import org.librefit.data.Equipment
-import org.librefit.data.Force
-import org.librefit.data.Level
-import org.librefit.data.Mechanic
-import org.librefit.data.Muscle
+import org.librefit.enums.Category
+import org.librefit.enums.Equipment
+import org.librefit.enums.Force
+import org.librefit.enums.Level
+import org.librefit.enums.Mechanic
+import org.librefit.enums.Muscle
 
 fun exerciseEnumToStringId(enum: Enum<*>?) : Int {
     return when (enum) {
