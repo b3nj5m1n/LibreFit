@@ -57,9 +57,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.util.ExerciseDC
-import org.librefit.util.ExerciseWithSets
-import org.librefit.enums.SetMode
 import org.librefit.data.SharedViewModel
 import org.librefit.db.Workout
 import org.librefit.nav.Destination
@@ -67,6 +64,8 @@ import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
+import org.librefit.util.ExerciseDC
+import org.librefit.util.ExerciseWithSets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,7 +124,8 @@ fun CreateRoutineScreen(
         fabIcon = Icons.Default.Add,
         fabAction = {
             navController.navigate(Destination.AddExerciseScreen)
-        }
+        },
+        fabDescription = stringResource(R.string.label_add_exercise)
     ) { innerPadding ->
         CreateRoutineScreen(
             innerPadding = innerPadding,
@@ -222,27 +222,20 @@ private fun CreateRoutineScreen(
                         viewModel.addSetToExercise(exerciseWithSets.id)
                     },
                     updateSet = { set, value, mode ->
-                        if (SetMode.WEIGHT == mode) {
-                            viewModel.updateSet(
-                                exerciseId = exerciseWithSets.id,
-                                set = set,
-                                weight = value,
-                            )
-                        } else if (SetMode.REPS == mode) {
-                            viewModel.updateSet(
-                                exerciseId = exerciseWithSets.id,
-                                set = set,
-                                reps = value,
-                            )
-                        } else if (SetMode.TIME == mode) {
-                            viewModel.updateSet(
-                                exerciseId = exerciseWithSets.id,
-                                set = set,
-                                time = value,
-                            )
-                        }
+                        viewModel.updateSet(
+                            exerciseId = exerciseWithSets.id,
+                            set = set,
+                            value = value,
+                            mode = mode
+                        )
                     },
-                    completedSet = {}
+                    updateExercise = { value, mode ->
+                        viewModel.updateExercise(
+                            exerciseId = exerciseWithSets.id,
+                            value = value,
+                            mode = mode
+                        )
+                    },
                 )
             }
         }

@@ -20,7 +20,6 @@
 package org.librefit.ui.screens.workout
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,28 +32,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
-import org.librefit.util.ExerciseWithSets
 import org.librefit.db.Exercise
 import org.librefit.db.Set
 import org.librefit.db.Workout
+import org.librefit.enums.SetMode
+import org.librefit.util.ExerciseWithSets
 
 class WorkoutScreenViewModel : ViewModel() {
-    private val totalSets: Int
-        get() = exercisesWithSets.value.sumOf { it.sets.size }
 
-    private var completedSets by mutableFloatStateOf(0F)
-
-    fun addCompletedSet(completed: Boolean) {
-        if (completed) {
-            completedSets++
-        } else {
-            completedSets--
-        }
+    fun getProgress(): Float {
+        return exercisesWithSets.value.sumOf { it.sets.filter { it.completed == true }.size }
+            .toFloat() / exercisesWithSets.value.sumOf { it.sets.size }
     }
-
-    val progress: Float
-        get() = completedSets / totalSets
-
 
     private val _exercisesWithSets = MutableStateFlow<List<ExerciseWithSets>>(emptyList())
     val exercisesWithSets = _exercisesWithSets.asStateFlow()
@@ -62,7 +51,10 @@ class WorkoutScreenViewModel : ViewModel() {
 
     fun addExerciseWithSets(exerciseWithSets: ExerciseWithSets) {
         val newExerciseWithSets = exerciseWithSets.copy(
-            id = currentId++
+            id = currentId++,
+            sets = if (exerciseWithSets.sets.isEmpty()) {
+                listOf(Set(exerciseId = currentId++))
+            } else exerciseWithSets.sets
         )
         _exercisesWithSets.value += newExerciseWithSets
     }
@@ -77,20 +69,66 @@ class WorkoutScreenViewModel : ViewModel() {
         }
     }
 
-    fun updateSet(exerciseId: Int, set: Set, weight: Int = -1, reps: Int = -1) {
+    /**
+     * It updates [Set] by assigning a [value] to one attribute based on [mode].
+     * @param exerciseId ID of the exercise [Exercise.exerciseId]
+     * @param set [Set] to change
+     * @param value The new value to assign to one attribute of [Set]
+     * @param mode Defines which attribute should the value be assigned.
+     * Based on which attribute you want to change, you have to pass the corresponding value:
+     *  [Set.weight]        -> 0;
+     *  [Set.reps]          -> 1;
+     *  [Set.elapsedTime]   -> 2;
+     *  [Set.completed]     -> 3
+     */
+    fun updateSet(exerciseId: Int, set: Set, value: Int, mode: Int) {
         _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
             if (exerciseWithSets.id == exerciseId) {
                 val updatedSets = exerciseWithSets.sets.map { currentSet ->
                     if (currentSet == set) {
-                        currentSet.copy(
-                            weight = if (currentSet.weight != weight && weight != -1) weight else currentSet.weight,
-                            reps = if (currentSet.reps != reps && reps != -1) reps else currentSet.reps
-                        )
+                        when (mode) {
+                            0 -> currentSet.copy(weight = value)
+                            1 -> currentSet.copy(reps = value)
+                            2 -> currentSet.copy(elapsedTime = value)
+                            3 -> currentSet.copy(completed = value == 1)
+                            else -> currentSet
+                        }
                     } else {
                         currentSet
                     }
                 }
                 exerciseWithSets.copy(sets = updatedSets)
+            } else {
+                exerciseWithSets
+            }
+        }
+    }
+
+    /**
+     * It updates [ExerciseWithSets] by assigning a [value] to one attribute based on [mode].
+     * @param exerciseId ID of the exercise [Exercise.exerciseId]
+     * @param value The new value to assign to one attribute of [ExerciseWithSets]
+     * @param mode Defines which attribute should the value be assigned.
+     * Based on which attribute you want to change, you have to pass the corresponding value:
+     *  [ExerciseWithSets.note]    -> 0;
+     *  [ExerciseWithSets.setMode] -> 1;
+     */
+    fun updateExercise(exerciseId: Int, value: String, mode: Int) {
+        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
+            if (exerciseWithSets.id == exerciseId) {
+                when (mode) {
+                    0 -> exerciseWithSets.copy(note = value.toString())
+                    1 -> exerciseWithSets.copy(
+                        setMode = when (value) {
+                            SetMode.WEIGHT.name -> SetMode.WEIGHT
+                            SetMode.TIME.name -> SetMode.TIME
+                            SetMode.REPS.name -> SetMode.REPS
+                            else -> SetMode.WEIGHT
+                        }
+                    )
+
+                    else -> exerciseWithSets
+                }
             } else {
                 exerciseWithSets
             }
@@ -111,7 +149,6 @@ class WorkoutScreenViewModel : ViewModel() {
             val data = workoutDao.getExercisesFromWorkout(workoutId)
             _exercises.value = data
         }
-
     }
 
     fun getSetsFromExercise(exerciseId: Int) {
@@ -128,7 +165,7 @@ class WorkoutScreenViewModel : ViewModel() {
         }
     }
 
-    fun saveExercisesWithWorkout(workout : Workout, exercises: List<ExerciseWithSets>) {
+    fun saveExercisesWithWorkout(workout: Workout, exercises: List<ExerciseWithSets>) {
         val list = exercises.toList()
         viewModelScope.launch(Dispatchers.IO) {
             workoutDao.addWorkoutWithExercises(workout, list)
@@ -155,7 +192,7 @@ class WorkoutScreenViewModel : ViewModel() {
             while (isTimerRunning) {
                 val currentTime = System.currentTimeMillis()
 
-                timeElapsed = (currentTime - startTime).toInt()/1000 + pastTimeElapsed
+                timeElapsed = (currentTime - startTime).toInt() / 1000 + pastTimeElapsed
                 delay(1000)
             }
         }

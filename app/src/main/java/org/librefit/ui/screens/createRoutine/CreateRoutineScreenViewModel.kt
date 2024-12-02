@@ -29,9 +29,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
-import org.librefit.util.ExerciseWithSets
+import org.librefit.db.Exercise
 import org.librefit.db.Set
 import org.librefit.db.Workout
+import org.librefit.enums.SetMode
+import org.librefit.util.ExerciseWithSets
 
 class CreateRoutineScreenViewModel : ViewModel() {
     private val _exercisesWithSets = MutableStateFlow<List<ExerciseWithSets>>(emptyList())
@@ -69,25 +71,66 @@ class CreateRoutineScreenViewModel : ViewModel() {
         return exercisesWithSets.value.isEmpty()
     }
 
-    fun updateSet(exerciseId: Int, set: Set, weight: Int? = null, reps: Int? = null, time : Int? = null) {
-        val exerciseWithSets = _exercisesWithSets.value.find { it.id == exerciseId }
+    /**
+     * It updates [Set] by assigning a [value] to one attribute based on [mode].
+     * @param exerciseId ID of the exercise [Exercise.exerciseId]
+     * @param set [Set] to change
+     * @param value The new value to assign to one attribute of [Set]
+     * @param mode Defines which attribute should the value be assigned.
+     * Based on which attribute you want to change, you have to pass the corresponding value:
+     *  [Set.weight]        -> 0;
+     *  [Set.reps]          -> 1;
+     *  [Set.elapsedTime]   -> 2;
+     */
+    fun updateSet(exerciseId: Int, set: Set, value: Int, mode: Int) {
+        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
+            if (exerciseWithSets.id == exerciseId) {
+                val updatedSets = exerciseWithSets.sets.map { currentSet ->
+                    if (currentSet == set) {
+                        when (mode) {
+                            0 -> currentSet.copy(weight = value)
+                            1 -> currentSet.copy(reps = value)
+                            2 -> currentSet.copy(elapsedTime = value)
+                            else -> currentSet
+                        }
+                    } else {
+                        currentSet
+                    }
+                }
+                exerciseWithSets.copy(sets = updatedSets)
+            } else {
+                exerciseWithSets
+            }
+        }
+    }
 
-        if (exerciseWithSets != null) {
-            val setToUpdateIndex =
-                exerciseWithSets.sets.indexOfFirst { it.exerciseId == set.exerciseId }
-
-            if (setToUpdateIndex != -1) {
-                val updatedSets = exerciseWithSets.sets.toMutableList().apply {
-                    this[setToUpdateIndex] = this[setToUpdateIndex].copy(
-                        weight = weight ?: this[setToUpdateIndex].weight,
-                        reps = reps ?: this[setToUpdateIndex].reps,
-                        elapsedTime = time?: this[setToUpdateIndex].elapsedTime
+    /**
+     * It updates [ExerciseWithSets] by assigning a [value] to one attribute based on [mode].
+     * @param exerciseId ID of the exercise [Exercise.exerciseId]
+     * @param value The new value to assign to one attribute of [ExerciseWithSets]
+     * @param mode Defines which attribute should the value be assigned.
+     * Based on which attribute you want to change, you have to pass the corresponding value:
+     *  [ExerciseWithSets.note]    -> 0;
+     *  [ExerciseWithSets.setMode] -> 1;
+     */
+    fun updateExercise(exerciseId: Int, value: String, mode: Int) {
+        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
+            if (exerciseWithSets.id == exerciseId) {
+                when (mode) {
+                    0 -> exerciseWithSets.copy(note = value.toString())
+                    1 -> exerciseWithSets.copy(
+                        setMode = when (value) {
+                            SetMode.WEIGHT.name -> SetMode.WEIGHT
+                            SetMode.TIME.name -> SetMode.TIME
+                            SetMode.REPS.name -> SetMode.REPS
+                            else -> SetMode.WEIGHT
+                        }
                     )
-                }
 
-                _exercisesWithSets.value = _exercisesWithSets.value.map {
-                    if (it == exerciseWithSets) it.copy(sets = updatedSets) else it
+                    else -> exerciseWithSets
                 }
+            } else {
+                exerciseWithSets
             }
         }
     }

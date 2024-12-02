@@ -76,15 +76,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.data.DataStoreManager
-import org.librefit.util.ExerciseDC
-import org.librefit.util.ExerciseWithSets
-import org.librefit.enums.SetMode
 import org.librefit.data.SharedViewModel
 import org.librefit.db.Workout
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmExitDialog
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
+import org.librefit.util.ExerciseDC
+import org.librefit.util.ExerciseWithSets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,10 +128,11 @@ fun WorkoutScreen(
     }
 
 
+
     viewModel.getExercisesFromWorkout(workoutId)
 
 
-    LaunchedEffect(workoutId) {
+    LaunchedEffect(Unit) {
         viewModel.exercises.value.forEach { exercise ->
             val item = list.associateBy { it.id }[exercise.exerciseId]
             if (item != null) {
@@ -147,9 +147,6 @@ fun WorkoutScreen(
                 )
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->
             viewModel.addExerciseWithSets(
                 ExerciseWithSets(
@@ -173,7 +170,7 @@ fun WorkoutScreen(
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
     val animatedProgress = animateFloatAsState(
-        targetValue = viewModel.progress,
+        targetValue = viewModel.getProgress(),
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = ""
     ).value
@@ -190,7 +187,13 @@ fun WorkoutScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = {
+                            if (exercisesWithSets.isEmpty()) {
+                                navController.popBackStack()
+                            } else {
+                                showExitDialog = true
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -241,7 +244,7 @@ fun WorkoutScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.label_add_exercise)
                 )
             }
         }
@@ -283,28 +286,23 @@ fun WorkoutScreen(
                         onDelete = {
                             viewModel.deleteExercise(exerciseWithSets.id)
                         },
-                        completedSet = { completed ->
-                            viewModel.addCompletedSet(completed)
-                        },
                         addSet = {
                             viewModel.addSetToExercise(exerciseWithSets.id)
                         },
                         updateSet = { set, value, mode ->
-                            if (SetMode.WEIGHT == mode) {
-                                viewModel.updateSet(
-                                    exerciseId = exerciseWithSets.id,
-                                    set = set,
-                                    weight = value
-                                )
-                            } else if (SetMode.REPS == mode) {
-                                viewModel.updateSet(
-                                    exerciseId = exerciseWithSets.id,
-                                    set = set,
-                                    reps = value,
-                                )
-                            } else if (SetMode.TIME == mode) {
-                                /* TODO: save set elapsed time */
-                            }
+                            viewModel.updateSet(
+                                exerciseId = exerciseWithSets.id,
+                                set = set,
+                                value = value,
+                                mode = mode
+                            )
+                        },
+                        updateExercise = { value, mode ->
+                            viewModel.updateExercise(
+                                exerciseId = exerciseWithSets.id,
+                                value = value,
+                                mode = mode
+                            )
                         },
                         workout = true
                     )

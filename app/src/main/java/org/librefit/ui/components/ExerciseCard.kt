@@ -50,7 +50,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,12 +61,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
+import org.librefit.db.Set
 import org.librefit.enums.Category
-import org.librefit.util.ExerciseDC
-import org.librefit.util.ExerciseWithSets
 import org.librefit.enums.Level
 import org.librefit.enums.SetMode
-import org.librefit.db.Set
+import org.librefit.util.ExerciseDC
+import org.librefit.util.ExerciseWithSets
 import java.util.Locale
 import kotlin.text.ifEmpty
 import kotlin.text.toInt
@@ -75,16 +74,13 @@ import kotlin.text.toInt
 @Composable
 fun ExerciseCard(
     exerciseWithSets: ExerciseWithSets,
-    completedSet: (Boolean) -> Unit,
     addSet: () -> Unit,
     onDetail: () -> Unit,
     onDelete: () -> Unit,
-    updateSet: (Set, Int, SetMode) -> Unit,
+    updateSet: (Set, Int, Int) -> Unit,
+    updateExercise: (String, Int) -> Unit = { value, mode -> },
     workout: Boolean = false
 ) {
-    var note by remember { mutableStateOf(exerciseWithSets.note) }
-
-    var setMode by remember { mutableStateOf(exerciseWithSets.setMode) }
 
     ElevatedCard {
         Column(
@@ -122,10 +118,9 @@ fun ExerciseCard(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.label_notes)) },
-                value = note,
+                value = exerciseWithSets.note,
                 onValueChange = {
-                    note = it
-                    exerciseWithSets.note = it
+                    updateExercise(it, 0)
                 }
             )
 
@@ -144,11 +139,10 @@ fun ExerciseCard(
                 SingleChoiceSegmentedButtonRow {
                     SetMode.entries.forEachIndexed { index, mode ->
                         SegmentedButton(
-                            selected = setMode == mode,
+                            selected = exerciseWithSets.setMode == mode,
                             enabled = mode != SetMode.TIME, //TODO: remove this condition when time text field works
                             onClick = {
-                                setMode = mode
-                                exerciseWithSets.setMode = mode
+                                updateExercise(mode.name, 1)
                             },
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = index,
@@ -183,7 +177,7 @@ fun ExerciseCard(
                     text = stringResource(id = R.string.label_set),
                     color = MaterialTheme.colorScheme.secondary
                 )
-                if (setMode == SetMode.TIME) {
+                if (exerciseWithSets.setMode == SetMode.TIME) {
                     Text(
                         text = stringResource(R.string.label_time),
                         color = MaterialTheme.colorScheme.secondary
@@ -193,7 +187,7 @@ fun ExerciseCard(
                         text = stringResource(id = R.string.label_reps),
                         color = MaterialTheme.colorScheme.secondary
                     )
-                    if (setMode == SetMode.WEIGHT) {
+                    if (exerciseWithSets.setMode == SetMode.WEIGHT) {
                         Text(
                             text = stringResource(id = R.string.label_weight),
                             color = MaterialTheme.colorScheme.secondary
@@ -210,7 +204,6 @@ fun ExerciseCard(
 
             //Sets
             exerciseWithSets.sets.forEachIndexed { i, set ->
-                var checked by rememberSaveable { mutableStateOf(false) }
 
                 var time = if (set.elapsedTime != null) {
                     set.elapsedTime.toString()
@@ -224,6 +217,7 @@ fun ExerciseCard(
                 var timeError by remember { mutableStateOf(false) }
                 var repError by remember { mutableStateOf(false) }
                 var weightError by remember { mutableStateOf(false) }
+                var completed by remember { mutableStateOf(set.completed) }
 
                 Row(
                     modifier = Modifier
@@ -235,7 +229,11 @@ fun ExerciseCard(
                                 bottomStartPercent = if (i == exerciseWithSets.sets.size - 1) 20 else 0
                             )
                         )
-                        .background(if (checked) MaterialTheme.colorScheme.inversePrimary.copy(0.3f) else Color.Transparent)
+                        .background(
+                            if (completed) MaterialTheme.colorScheme.inversePrimary.copy(
+                                0.3f
+                            ) else Color.Transparent
+                        )
                         .height(80.dp)
                         .fillMaxWidth()
                         .padding(start = 15.dp),
@@ -248,12 +246,17 @@ fun ExerciseCard(
                         modifier = Modifier.padding(end = 20.dp)
                     )
 
-                    if (setMode == SetMode.TIME) {
+                    if (exerciseWithSets.setMode == SetMode.TIME) {
                         //Time
                         /*TODO: input not working*/
                         OutlinedTextField(
                             modifier = Modifier.width(80.dp),
-                            value = String.format(Locale.getDefault(),"%s:%s", timeValue.padStart(4,'0').substring(0,2), timeValue.padStart(4,'0').substring(2,4)),
+                            value = String.format(
+                                Locale.getDefault(),
+                                "%s:%s",
+                                timeValue.padStart(4, '0').substring(0, 2),
+                                timeValue.padStart(4, '0').substring(2, 4)
+                            ),
                             onValueChange = { string ->
                                 if (string.all { it.isDigit() }) {
                                     if (string.length > 4) {
@@ -261,7 +264,11 @@ fun ExerciseCard(
                                     } else {
                                         timeError = false
                                         timeValue = string.ifEmpty { "0" }
-                                        updateSet(set, timeValue.toInt(), SetMode.TIME)
+                                        updateSet(
+                                            set,
+                                            timeValue.toInt(),
+                                            2
+                                        )
                                     }
                                 }
                             },
@@ -284,7 +291,7 @@ fun ExerciseCard(
                                         updateSet(
                                             set,
                                             repValue.ifEmpty { "0" }.toInt(),
-                                            SetMode.REPS
+                                            1
                                         )
                                     }
                                 }
@@ -293,7 +300,7 @@ fun ExerciseCard(
                             isError = repError,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         )
-                        if (setMode == SetMode.WEIGHT) {
+                        if (exerciseWithSets.setMode == SetMode.WEIGHT) {
                             //Weight
                             /*TODO: insert suffix text in string.xml*/
                             OutlinedTextField(
@@ -310,7 +317,7 @@ fun ExerciseCard(
                                             updateSet(
                                                 set,
                                                 weightValue.ifEmpty { "0" }.toInt(),
-                                                SetMode.WEIGHT
+                                                0
                                             )
                                         }
                                     }
@@ -328,10 +335,14 @@ fun ExerciseCard(
 
                     if (workout) {
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = {
-                                checked = it
-                                completedSet(it)
+                            checked = completed,
+                            onCheckedChange = { checked ->
+                                completed = checked
+                                updateSet(
+                                    set,
+                                    if (checked) 1 else 0,
+                                    3
+                                )
                             }
                         )
                     }
@@ -353,8 +364,8 @@ fun ExerciseCard(
     }
 }
 
-private fun setModeToStringId(setMode: SetMode) : Int {
-    return when(setMode){
+private fun setModeToStringId(setMode: SetMode): Int {
+    return when (setMode) {
         SetMode.WEIGHT -> R.string.label_weight
         SetMode.REPS -> R.string.label_reps
         SetMode.TIME -> R.string.label_time
@@ -382,8 +393,8 @@ private fun ExerciseCardPreview() {
         {},
         {},
         {},
-        {},
-        { i, s, j -> },
+        { i, j, k -> },
+        { i, j -> },
         false
     )
 }
