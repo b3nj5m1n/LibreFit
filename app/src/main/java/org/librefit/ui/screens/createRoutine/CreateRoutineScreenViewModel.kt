@@ -20,16 +20,14 @@
 package org.librefit.ui.screens.createRoutine
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
-import org.librefit.db.Exercise
 import org.librefit.db.Set
 import org.librefit.db.Workout
 import org.librefit.enums.SetMode
@@ -37,100 +35,88 @@ import org.librefit.util.ExerciseWithSets
 import kotlin.random.Random
 
 class CreateRoutineScreenViewModel : ViewModel() {
-    private val _exercisesWithSets = MutableStateFlow<List<ExerciseWithSets>>(emptyList())
-    val exercisesWithSets = _exercisesWithSets.asStateFlow()
+    val exercises = mutableStateListOf<ExerciseWithSets>()
 
+    fun getExercises(): List<ExerciseWithSets> {
+        return exercises.toList()
+    }
 
     fun addExerciseWithSets(exerciseWithSets: ExerciseWithSets) {
         val newExerciseWithSets = exerciseWithSets.copy(
             id = Random.nextInt(),
-            sets = listOf(Set(exerciseId = Random.nextInt()))
+            sets = if (exerciseWithSets.sets.isEmpty()) {
+                listOf(Set(id = Random.nextInt()))
+            } else exerciseWithSets.sets
         )
-        _exercisesWithSets.value += newExerciseWithSets
+        exercises.add(newExerciseWithSets)
     }
 
-    fun addSetToExercise(id: Int) {
-        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
-            if (exerciseWithSets.id == id) {
-                exerciseWithSets.copy(
-                    sets = exerciseWithSets.sets + Set(id = Random.nextInt())
-                )
-            } else {
-                exerciseWithSets
-            }
-        }
-    }
-
-    fun deleteExercise(index: Int) {
-        _exercisesWithSets.value = _exercisesWithSets.value.filter { it.id != index }
-    }
-
-    fun isListEmpty(): Boolean {
-        return exercisesWithSets.value.isEmpty()
+    fun addSetToExercise(exercise: ExerciseWithSets) {
+        val index = exercises.indexOf(exercise)
+        exercises[index] = exercise.copy(sets = exercise.sets + listOf(Set(id = Random.nextInt())))
     }
 
     /**
      * It updates [Set] by assigning a [value] to one attribute based on [mode].
-     * @param exerciseId ID of the exercise [Exercise.exerciseId]
-     * @param set [Set] to change
+     * @param exercise The [ExerciseWithSets] that has the set to update
+     * @param set [Set] to update
      * @param value The new value to assign to one attribute of [Set]
      * @param mode Defines which attribute should the value be assigned.
      * Based on which attribute you want to change, you have to pass the corresponding value:
      *  [Set.weight]        -> 0;
      *  [Set.reps]          -> 1;
      *  [Set.elapsedTime]   -> 2;
+     *  [Set.completed]     -> 3
      */
-    fun updateSet(exerciseId: Int, set: Set, value: Int, mode: Int) {
-        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
-            if (exerciseWithSets.id == exerciseId) {
-                val updatedSets = exerciseWithSets.sets.map { currentSet ->
-                    if (currentSet.id == set.id) {
-                        when (mode) {
-                            0 -> currentSet.copy(weight = value)
-                            1 -> currentSet.copy(reps = value)
-                            2 -> currentSet.copy(elapsedTime = value)
-                            else -> currentSet
-                        }
-                    } else {
-                        currentSet
+    fun updateSet(exercise: ExerciseWithSets, set: Set, value: Int, mode: Int) {
+        val index = exercises.indexOf(exercise)
+        exercises[index] = exercise.copy(
+            sets = exercise.sets.map {
+                if (it.id == set.id) {
+                    when (mode) {
+                        0 -> set.copy(weight = value)
+                        1 -> set.copy(reps = value)
+                        2 -> set.copy(elapsedTime = value)
+                        3 -> set.copy(completed = value == 1)
+                        else -> set
                     }
-                }
-                exerciseWithSets.copy(sets = updatedSets)
-            } else {
-                exerciseWithSets
+                } else it
             }
-        }
+        )
     }
 
     /**
      * It updates [ExerciseWithSets] by assigning a [value] to one attribute based on [mode].
-     * @param exerciseId ID of the exercise [Exercise.exerciseId]
+     * @param exercise The [ExerciseWithSets] to update
      * @param value The new value to assign to one attribute of [ExerciseWithSets]
-     * @param mode Defines which attribute should the value be assigned.
+     * @param mode Defines which attribute should the [value] be assigned.
      * Based on which attribute you want to change, you have to pass the corresponding value:
      *  [ExerciseWithSets.note]    -> 0;
      *  [ExerciseWithSets.setMode] -> 1;
      */
-    fun updateExercise(exerciseId: Int, value: String, mode: Int) {
-        _exercisesWithSets.value = _exercisesWithSets.value.map { exerciseWithSets ->
-            if (exerciseWithSets.id == exerciseId) {
-                when (mode) {
-                    0 -> exerciseWithSets.copy(note = value.toString())
-                    1 -> exerciseWithSets.copy(
-                        setMode = when (value) {
-                            SetMode.WEIGHT.name -> SetMode.WEIGHT
-                            SetMode.TIME.name -> SetMode.TIME
-                            SetMode.REPS.name -> SetMode.REPS
-                            else -> SetMode.WEIGHT
-                        }
-                    )
-
-                    else -> exerciseWithSets
+    fun updateExercise(exercise: ExerciseWithSets, value: String, mode: Int) {
+        val index = exercises.indexOf(exercise)
+        exercises[index] = when (mode) {
+            0 -> exercise.copy(note = value.toString())
+            1 -> exercise.copy(
+                setMode = when (value) {
+                    SetMode.WEIGHT.name -> SetMode.WEIGHT
+                    SetMode.TIME.name -> SetMode.TIME
+                    SetMode.REPS.name -> SetMode.REPS
+                    else -> SetMode.WEIGHT
                 }
-            } else {
-                exerciseWithSets
-            }
+            )
+
+            else -> exercise
         }
+    }
+
+    fun deleteExercise(exerciseWithSets: ExerciseWithSets) {
+        exercises.remove(exerciseWithSets)
+    }
+
+    fun isListEmpty(): Boolean {
+        return exercises.isEmpty()
     }
 
 

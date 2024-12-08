@@ -56,6 +56,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,6 +89,7 @@ import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Stable
 @Composable
 fun WorkoutScreen(
     userPreferences: DataStoreManager,
@@ -113,7 +115,6 @@ fun WorkoutScreen(
         }
     )
 
-    val exercisesWithSets by viewModel.exercisesWithSets.collectAsState()
 
     //It adds the selected exercises from AddExerciseScreen
     LaunchedEffect(Unit) {
@@ -159,7 +160,7 @@ fun WorkoutScreen(
     }
 
 
-    BackHandler(enabled = !showExitDialog && exercisesWithSets.isNotEmpty()) {
+    BackHandler(enabled = !showExitDialog && !viewModel.isListEmpty()) {
         showExitDialog = true
     }
 
@@ -189,7 +190,7 @@ fun WorkoutScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (exercisesWithSets.isEmpty()) {
+                            if (viewModel.isListEmpty()) {
                                 navController.popBackStack()
                             } else {
                                 showExitDialog = true
@@ -207,11 +208,11 @@ fun WorkoutScreen(
                         onClick = {
                             viewModel.saveExercisesWithWorkout(
                                 workout = Workout(title = workoutTitle),
-                                exercises = exercisesWithSets
+                                exercises = viewModel.getExercises()
                             )
                             navController.popBackStack()
                         },
-                        enabled = exercisesWithSets.isNotEmpty(),
+                        enabled = !viewModel.isListEmpty(),
                         colors = IconButtonDefaults.filledIconButtonColors()
                     ) {
                         Icon(
@@ -257,7 +258,7 @@ fun WorkoutScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (exercisesWithSets.isEmpty()) {
+            if (viewModel.isListEmpty()) {
                 item {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_launcher_monochrome),
@@ -277,22 +278,22 @@ fun WorkoutScreen(
                     }
                 }
             } else {
-                items(exercisesWithSets, key = { it.id }) { exerciseWithSets ->
+                items(viewModel.exercises, key = { it.id }) { exerciseWithSets ->
                     ExerciseCard(
                         exerciseWithSets = exerciseWithSets,
                         addSet = {
-                            viewModel.addSetToExercise(exerciseWithSets.id)
+                            viewModel.addSetToExercise(exerciseWithSets)
                         },
                         onDetail = {
                             selectedExercise = exerciseWithSets.exerciseDC
                             isModalSheetOpen = true
                         },
                         onDelete = {
-                            viewModel.deleteExercise(exerciseWithSets.id)
+                            viewModel.deleteExercise(exerciseWithSets)
                         },
                         updateSet = { set, value, mode ->
                             viewModel.updateSet(
-                                exerciseId = exerciseWithSets.id,
+                                exercise = exerciseWithSets,
                                 set = set,
                                 value = value,
                                 mode = mode
@@ -300,7 +301,7 @@ fun WorkoutScreen(
                         },
                         updateExercise = { value, mode ->
                             viewModel.updateExercise(
-                                exerciseId = exerciseWithSets.id,
+                                exercise = exerciseWithSets,
                                 value = value,
                                 mode = mode
                             )

@@ -229,7 +229,6 @@ fun ExerciseCard(
                 var timeError by remember { mutableStateOf(false) }
                 var repError by remember { mutableStateOf(false) }
                 var weightError by remember { mutableStateOf(false) }
-                var completed by remember { mutableStateOf(set.completed) }
 
                 Row(
                     modifier = Modifier
@@ -242,7 +241,7 @@ fun ExerciseCard(
                             )
                         )
                         .background(
-                            if (completed) MaterialTheme.colorScheme.inversePrimary.copy(
+                            if (set.completed) MaterialTheme.colorScheme.inversePrimary.copy(
                                 0.3f
                             ) else Color.Transparent
                         )
@@ -346,9 +345,8 @@ fun ExerciseCard(
 
                     if (workout) {
                         Checkbox(
-                            checked = completed,
+                            checked = set.completed,
                             onCheckedChange = { checked ->
-                                completed = checked
                                 updateSet(
                                     set,
                                     if (checked) 1 else 0,

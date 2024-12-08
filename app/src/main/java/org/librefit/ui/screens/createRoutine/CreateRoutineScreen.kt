@@ -23,8 +23,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,7 +42,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -114,7 +115,7 @@ fun CreateRoutineScreen(
         action = {
             viewModel.saveExercisesWithRoutine(
                 workout = Workout(title = viewModel.getTitle()),
-                exercises = viewModel.exercisesWithSets.value
+                exercises = viewModel.exercises
             )
             navController.popBackStack()
         },
@@ -145,8 +146,6 @@ private fun CreateRoutineScreen(
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
     var isModalSheetOpen by remember { mutableStateOf(false) }
-
-    val exercisesWithSets by viewModel.exercisesWithSets.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -208,7 +207,7 @@ private fun CreateRoutineScreen(
                 }
             }
         } else {
-            items(exercisesWithSets, key = { it.id }) { exerciseWithSets ->
+            items(viewModel.exercises, key = { it.id }) { exerciseWithSets ->
                 ExerciseCard(
                     exerciseWithSets = exerciseWithSets,
                     onDetail = {
@@ -216,14 +215,14 @@ private fun CreateRoutineScreen(
                         isModalSheetOpen = true
                     },
                     onDelete = {
-                        viewModel.deleteExercise(exerciseWithSets.id)
+                        viewModel.deleteExercise(exerciseWithSets)
                     },
                     addSet = {
-                        viewModel.addSetToExercise(exerciseWithSets.id)
+                        viewModel.addSetToExercise(exerciseWithSets)
                     },
                     updateSet = { set, value, mode ->
                         viewModel.updateSet(
-                            exerciseId = exerciseWithSets.id,
+                            exercise = exerciseWithSets,
                             set = set,
                             value = value,
                             mode = mode
@@ -231,7 +230,7 @@ private fun CreateRoutineScreen(
                     },
                     updateExercise = { value, mode ->
                         viewModel.updateExercise(
-                            exerciseId = exerciseWithSets.id,
+                            exercise = exerciseWithSets,
                             value = value,
                             mode = mode
                         )
@@ -239,6 +238,7 @@ private fun CreateRoutineScreen(
                 )
             }
         }
+        item { Spacer(Modifier.height(100.dp)) }
     }
 
     /**
