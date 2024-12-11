@@ -9,5 +9,6 @@ data class ExerciseWithSets(
     val exerciseDC: ExerciseDC,
     val sets: List<Set> = emptyList<Set>(),
     val note: String = "",
+    val restTime: Int = 0,
     val setMode: SetMode = SetMode.WEIGHT
 )

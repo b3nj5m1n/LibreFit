@@ -42,5 +42,6 @@ data class Exercise(
     val exerciseId: String,
     val notes: String = "",
     val setMode: SetMode = SetMode.WEIGHT,
+    val restTime: Int = 0,
     val workoutId: Int // Foreign key reference to Workout
 )

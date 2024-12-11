@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +43,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
@@ -172,11 +175,7 @@ fun WorkoutScreen(
      */
     var selectedExercise by remember { mutableStateOf<ExerciseDC?>(null) }
 
-    val animatedProgress = animateFloatAsState(
-        targetValue = viewModel.getProgress(),
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = ""
-    ).value
+
 
     Scaffold(
         topBar = {
@@ -234,15 +233,7 @@ fun WorkoutScreen(
             BottomAppBar(
                 modifier = Modifier.height(120.dp)
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    LinearProgressIndicator(
-                        progress = { animatedProgress },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Stopwatch(viewModel)
-                }
+                BottomAppBarContent(viewModel)
             }
         },
         floatingActionButton = {
@@ -328,55 +319,123 @@ fun WorkoutScreen(
 }
 
 @Composable
-private fun Stopwatch(viewModel: WorkoutScreenViewModel) {
-
-    val animatedExpansion = animateIntAsState(
-        targetValue = if (viewModel.isTimerRunning) 80 else 55,
-        label = ""
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column(
-            modifier = Modifier.weight(0.4f),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.label_elapsed_time),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = formatTime(viewModel.timeElapsed),
-                color = if (viewModel.pulsingTimer()) Color.Transparent else Color.Unspecified
-            )
-        }
-        Box(
+private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        val animatedProgress = animateFloatAsState(
+            targetValue = viewModel.getProgress(),
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+            label = ""
+        )
+        LinearProgressIndicator(
+            progress = { animatedProgress.value },
             modifier = Modifier
-                .height(70.dp)
-                .weight(0.2f),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .weight(0.1f),
+        )
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .weight(0.9f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            FilledIconButton(
-                onClick = {
-                    if (viewModel.isTimerRunning) viewModel.stopTimer() else viewModel.startTimer()
-                },
-                modifier = Modifier.size(animatedExpansion.value.dp)
+            val animatedPlayButton = animateIntAsState(
+                targetValue = if (viewModel.isChronometerRunning) 110 else 60,
+                label = "playButtonAnimation"
+            )
+            Box(
+                modifier = Modifier
+                    .weight(0.2f),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = if (viewModel.isTimerRunning) ImageVector.vectorResource(id = R.drawable.ic_pause)
-                    else Icons.Default.PlayArrow,
-                    contentDescription = stringResource(if (viewModel.isTimerRunning) R.string.label_pause else R.string.label_play),
-                    modifier = Modifier.size(30.dp)
+                //Play button
+                FilledIconButton(
+                    onClick = {
+                        if (viewModel.isChronometerRunning) viewModel.stopChronometer()
+                        else viewModel.startChronometer()
+                    },
+                    modifier = Modifier.size(animatedPlayButton.value.dp)
+                ) {
+                    Icon(
+                        imageVector = if (viewModel.isChronometerRunning)
+                            ImageVector.vectorResource(id = R.drawable.ic_pause)
+                        else Icons.Default.PlayArrow,
+                        contentDescription = stringResource(if (viewModel.isChronometerRunning) R.string.label_pause else R.string.label_play),
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.35f)
+                    .padding(start = 15.dp),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.label_elapsed_time),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = formatTime(viewModel.timeElapsed),
+                    color = if (viewModel.pulsingTimer()) Color.Transparent else Color.Unspecified
                 )
             }
+
+
+            val timerProgress = animateFloatAsState(
+                targetValue = viewModel.restTimerProgress,
+                animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                label = "timerAnimation"
+            )
+            //Rest timer
+            Row(
+                modifier = Modifier
+                    .weight(0.45f)
+                    .fillMaxHeight(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { viewModel.addRestTime(false) },
+                    enabled = viewModel.restTime != 0
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_replay_10),
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(50.dp),
+                        progress = { timerProgress.value },
+                        strokeWidth = 5.dp
+                    )
+                    Text("${viewModel.restTime}")
+                }
+                IconButton(
+                    onClick = { viewModel.addRestTime(true) },
+                    enabled = viewModel.restTime != 0
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_forward_10),
+                        contentDescription = null,
+                        //TODO: add the necessary descriptions to all icons
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
+            }
+
         }
-        Spacer(modifier = Modifier.weight(0.4f))
     }
+
 }
 
 private fun formatTime(seconds: Int): String {

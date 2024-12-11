@@ -73,7 +73,8 @@ interface WorkoutDao {
                     exerciseId = it.exerciseDC.id,
                     notes = it.note,
                     workoutId = workoutId,
-                    setMode = it.setMode
+                    setMode = it.setMode,
+                    restTime = it.restTime
                 )
             )
             it.sets.forEach { set ->

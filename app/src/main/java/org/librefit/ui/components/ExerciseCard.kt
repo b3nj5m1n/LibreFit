@@ -46,9 +46,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -140,9 +142,24 @@ fun ExerciseCard(
                 }
             )
 
-            //Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
-            //TODO: rest timer
+            //Rest timer slider
+            var restTime by remember { mutableIntStateOf(exerciseWithSets.restTime) }
+            Text(stringResource(R.string.label_rest_time) + ": " + restTime
+                    + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
+            Slider(
+                value = restTime.toFloat(),
+                onValueChange = { restTime = it.toInt() },
+                onValueChangeFinished = {
+                    updateExercise(
+                        restTime.toString(),
+                        2
+                    )
+                },
+                valueRange = 0f..300f,
+                steps = 19
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -218,14 +235,15 @@ fun ExerciseCard(
             //Sets
             exerciseWithSets.sets.forEachIndexed { i, set ->
 
-                var timeValue by remember { mutableStateOf(
-                        set.elapsedTime.toString().padStart(4,'0')
+                var timeValue by remember {
+                    mutableStateOf(
+                        set.elapsedTime.toString().padStart(4, '0')
                     )
                 }
 
 
-                var repValue by remember { mutableStateOf( set.reps.toString() ) }
-                var weightValue by remember { mutableStateOf( set.weight.toString() ) }
+                var repValue by remember { mutableStateOf(set.reps.toString()) }
+                var weightValue by remember { mutableStateOf(set.weight.toString()) }
                 var timeError by remember { mutableStateOf(false) }
                 var repError by remember { mutableStateOf(false) }
                 var weightError by remember { mutableStateOf(false) }
@@ -394,7 +412,8 @@ private fun ExerciseCardPreview() {
                 category = Category.POWERLIFTING,
                 images = listOf("")
             ),
-            setMode = SetMode.TIME
+            setMode = SetMode.TIME,
+            sets = listOf(Set())
         ),
         {},
         {},

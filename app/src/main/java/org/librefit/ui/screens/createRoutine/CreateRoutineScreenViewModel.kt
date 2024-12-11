@@ -91,8 +91,9 @@ class CreateRoutineScreenViewModel : ViewModel() {
      * @param value The new value to assign to one attribute of [ExerciseWithSets]
      * @param mode Defines which attribute should the [value] be assigned.
      * Based on which attribute you want to change, you have to pass the corresponding value:
-     *  [ExerciseWithSets.note]    -> 0;
-     *  [ExerciseWithSets.setMode] -> 1;
+     *  [ExerciseWithSets.note]     -> 0;
+     *  [ExerciseWithSets.setMode]  -> 1;
+     *  [ExerciseWithSets.restTime] -> 2
      */
     fun updateExercise(exercise: ExerciseWithSets, value: String, mode: Int) {
         val index = exercises.indexOf(exercise)
@@ -106,7 +107,7 @@ class CreateRoutineScreenViewModel : ViewModel() {
                     else -> SetMode.WEIGHT
                 }
             )
-
+            2 -> exercise.copy(restTime = Integer.parseInt(value))
             else -> exercise
         }
     }

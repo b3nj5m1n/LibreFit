@@ -20,6 +20,7 @@
 package org.librefit.ui.screens.workout
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -89,6 +90,10 @@ class WorkoutScreenViewModel(
                 } else it
             }
         )
+
+        if (mode == 3 && value == 1 && exercise.restTime != 0) {
+            startRestTimer(exercise.restTime)
+        }
     }
 
     /**
@@ -97,8 +102,9 @@ class WorkoutScreenViewModel(
      * @param value The new value to assign to one attribute of [ExerciseWithSets]
      * @param mode Defines which attribute should the [value] be assigned.
      * Based on which attribute you want to change, you have to pass the corresponding value:
-     *  [ExerciseWithSets.note]    -> 0;
-     *  [ExerciseWithSets.setMode] -> 1;
+     *  [ExerciseWithSets.note]     -> 0;
+     *  [ExerciseWithSets.setMode]  -> 1;
+     *  [ExerciseWithSets.restTime] -> 2
      */
     fun updateExercise(exercise: ExerciseWithSets, value: String, mode: Int) {
         val index = exercises.indexOf(exercise)
@@ -113,6 +119,7 @@ class WorkoutScreenViewModel(
                 }
             )
 
+            2 -> exercise.copy(restTime = Integer.parseInt(value))
             else -> exercise
         }
     }
@@ -144,16 +151,17 @@ class WorkoutScreenViewModel(
             exercises.forEach { exercise ->
                 val exerciseDC = list.associateBy { it.id }[exercise.exerciseId]
                 if (exerciseDC != null) {
-                    getSetsFromExercise(exercise.id)
-
                     addExerciseWithSets(
                         ExerciseWithSets(
                             exerciseDC = exerciseDC,
                             exerciseId = exercise.id,
                             note = exercise.notes,
-                            setMode = exercise.setMode
+                            setMode = exercise.setMode,
+                            restTime = exercise.restTime
                         )
                     )
+
+                    getSetsFromExercise(exercise.id)
                 }
             }
         }
@@ -175,24 +183,25 @@ class WorkoutScreenViewModel(
         }
     }
 
+
     var timeElapsed by mutableIntStateOf(0)
         private set
-    var isTimerRunning by mutableStateOf(true)
+    var isChronometerRunning by mutableStateOf(true)
         private set
     private var pulsingText by mutableIntStateOf(0)
 
 
     init {
-        startTimer()
+        startChronometer()
     }
 
-    fun startTimer() {
-        isTimerRunning = true
+    fun startChronometer() {
+        isChronometerRunning = true
         val startTime = System.currentTimeMillis()
         val pastTimeElapsed = timeElapsed
 
         viewModelScope.launch(Dispatchers.IO) {
-            while (isTimerRunning) {
+            while (isChronometerRunning) {
                 val currentTime = System.currentTimeMillis()
 
                 timeElapsed = (currentTime - startTime).toInt() / 1000 + pastTimeElapsed
@@ -201,11 +210,11 @@ class WorkoutScreenViewModel(
         }
     }
 
-    fun stopTimer() {
-        isTimerRunning = false
+    fun stopChronometer() {
+        isChronometerRunning = false
 
         viewModelScope.launch(Dispatchers.IO) {
-            while (!isTimerRunning) {
+            while (!isChronometerRunning) {
                 pulsingText++
                 delay(600)
             }
@@ -213,6 +222,42 @@ class WorkoutScreenViewModel(
     }
 
     fun pulsingTimer(): Boolean {
-        return !isTimerRunning && pulsingText % 2 == 1
+        return !isChronometerRunning && pulsingText % 2 == 1
     }
+
+
+    var restTime by mutableIntStateOf(0)
+        private set
+    var restTimerProgress by mutableFloatStateOf(0f)
+        private set
+    private var isTimerRunning by mutableStateOf(false)
+    private var maxTimeValue by mutableIntStateOf(0)
+
+    fun startRestTimer(initialValue: Int) {
+        if (!isTimerRunning) {
+            maxTimeValue = initialValue
+            restTime = initialValue
+            isTimerRunning = true
+            viewModelScope.launch(Dispatchers.IO) {
+                while (restTime > 0 && isTimerRunning) {
+                    restTime--
+                    restTimerProgress = restTime.toFloat() / maxTimeValue
+                    delay(1000)
+                }
+                isTimerRunning = false
+            }
+        }
+    }
+
+    fun addRestTime(add: Boolean) {
+        restTime += if (add) 10 else -10
+        if (restTime < 0) {
+            restTime = 0
+            restTimerProgress = 0f
+        } else if (restTime > maxTimeValue) {
+            maxTimeValue = restTime
+        }
+    }
+
+    //TODO: notification when rest time ends
 }

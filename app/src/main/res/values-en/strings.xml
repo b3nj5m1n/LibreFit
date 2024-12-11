@@ -171,6 +171,7 @@
     <string name="label_reps">Reps</string>
     <string name="label_finished_on">Finished on</string>
     <string name="label_duration">Duration</string>
+    <string name="seconds">Seconds</string>
 
 
 </resources>

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">LibreFit</string>
 
+    <!--TODO: refactor all strings by removing "label" suffix-->
 
     <!--Navigation-->
     <string name="label_home">Home</string>
@@ -191,6 +192,7 @@
 
     <!--Util-->
     <string name="label_delete">Delete</string>
+    <string name="seconds">Seconds</string>
 
 
 </resources>
