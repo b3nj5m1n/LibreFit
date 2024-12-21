@@ -119,7 +119,7 @@
     <!-- Workout screen -->
     <string name="label_workout">Workout</string>
     <string name="label_exit_workout">Are you sure you want to exit? Your workout won\'t be saved</string>
-    <string name="label_play">Play</string>
+    <string name="label_resume">Resume</string>
     <string name="label_pause">Pause</string>
     <string name="label_add_to_empty_workout">Start by adding an exercise to your workout</string>
     <string name="label_elapsed_time">Elapsed time</string>
@@ -145,6 +145,18 @@
 
     <!--Filter card-->
     <string name="label_any">Any</string>
+
+
+    <!--Notification and channels-->
+    <string name="workout_info_channel_title">Real-time workout information</string>
+    <string name="workout_info_channel_desc">This channel is used to provide real-time updates on the ongoing workout.</string>
+    <string name="rest_timer_channel_title">Rest time alerts</string>
+    <string name="rest_timer_channel_desc">This channel is used to provide alerts when the rest time ends.</string>
+    <string name="rest_time_is_over">Rest time is over!</string>
+    <string name="rest">Rest</string>
+    <string name="add_ten_seconds">+10 secs</string>
+    <string name="reduce_ten_seconds">-10 secs</string>
+    <string name="workout_time">Workout time</string>
 
 
     <!--Exercise Enums-->

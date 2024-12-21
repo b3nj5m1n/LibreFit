@@ -30,16 +30,17 @@ import org.librefit.MainActivity
 import org.librefit.R
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.services.WorkoutService
+import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
 import org.librefit.util.formatTime
 
 
 class NotificationHelper(context: Context) {
     companion object {
-        const val WORKOUT_CHANNEL_ID = "workout_channel"
+        const val WORKOUT_CHANNEL_ID = "WORKOUT_CHANNEL_ID"
         const val WORKOUT_NOTIFICATION_ID = 1001
 
-        const val ALARM_CHANNEL_ID = "alarm_channel"
-        const val ALARM_NOTIFICATION_ID = 1002
+        const val TIMER_CHANNEL_ID = "TIMER_CHANNEL_ID"
+        const val TIMER_NOTIFICATION_ID = 1002
     }
 
     private val appContext = context.applicationContext
@@ -48,7 +49,7 @@ class NotificationHelper(context: Context) {
     private val workoutNotificationBuilder =
         NotificationCompat.Builder(appContext, WORKOUT_CHANNEL_ID)
 
-    private val alarmNotificationBuilder = NotificationCompat.Builder(appContext, ALARM_CHANNEL_ID)
+    private val timerNotificationBuilder = NotificationCompat.Builder(appContext, TIMER_CHANNEL_ID)
 
 
     private val notificationManager =
@@ -62,74 +63,56 @@ class NotificationHelper(context: Context) {
     }
 
     private fun initializeNotificationBuilders() {
+        val contentIntent = PendingIntent.getActivity(
+            appContext,
+            0,
+            Intent(appContext, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            },
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         workoutNotificationBuilder
-            //TODO: remove hardcoded strings
             .setSmallIcon(R.drawable.ic_logo_monochrome)
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    appContext,
-                    0,
-                    Intent(appContext, MainActivity::class.java).apply {
-                        // This flags allow to open an already running MainActivity (if any)
-                        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    },
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            .setContentIntent(contentIntent)
             .setAutoCancel(false)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
 
 
-        alarmNotificationBuilder
+        timerNotificationBuilder
             .setSmallIcon(R.drawable.ic_logo_monochrome)
-            .setContentTitle("Rest time is over!")
+            .setContentTitle(appContext.getString(R.string.rest_time_is_over))
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    appContext,
-                    0,
-                    Intent(appContext, MainActivity::class.java).apply {
-                        // This flags allow to open an already running MainActivity (if any)
-                        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    },
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
-            .setAutoCancel(false)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
 
-        alarmNotification = alarmNotificationBuilder.build()
+        timerNotification = timerNotificationBuilder.build()
     }
 
 
     private fun createNotificationChannels() {
-        //TODO: remove hardcoded strings
         notificationManager.createNotificationChannel(
             NotificationChannel(
                 WORKOUT_CHANNEL_ID,
-                "Workout info",
+                appContext.getString(R.string.workout_info_channel_title),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description =
-                    "This notification channel will be used to display information about " +
-                            "ongoing workouts"
+                description = appContext.getString(R.string.workout_info_channel_desc)
             }
         )
 
 
         notificationManager.createNotificationChannel(
             NotificationChannel(
-                ALARM_CHANNEL_ID,
-                "Rest alarms",
+                TIMER_CHANNEL_ID,
+                appContext.getString(R.string.rest_timer_channel_title),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "This notification channel will be used to send alarms " +
-                        "when rest time is over"
+                description = appContext.getString(R.string.rest_timer_channel_desc)
             }
         )
     }
@@ -139,47 +122,96 @@ class NotificationHelper(context: Context) {
         return workoutNotification
     }
 
-    fun notifyWorkout(timeInSeconds: Int, isChronometerPaused: Boolean) {
-        workoutNotificationBuilder
-            .setContentTitle(
-                appContext.getString(R.string.label_elapsed_time)
-                        + ": " + formatTime(timeInSeconds)
-            )
-            .setContentText("TODO: Now doing X or now resting for Y")
+    fun notifyOngoingWorkout(
+        timeInSeconds: Int,
+        isChronometerPaused: Boolean,
+        restTime: Int = 0,
+        initialRestTime: Int = 0,
+    ) {
+        val builder = workoutNotificationBuilder
 
-        workoutNotificationBuilder.clearActions()
+        builder
+            .setProgress(initialRestTime, restTime, false)
+            .clearActions()
 
-        workoutNotification =
-            if (isChronometerPaused) {
-                workoutNotificationBuilder
-                    .addAction(
-                        android.R.drawable.ic_media_play,
-                        "Resume",
-                        createPendingIntent(WorkoutServiceActions.START_CHRONOMETER.string)
+        if (isChronometerPaused) {
+            builder
+                .addAction(
+                    android.R.drawable.ic_media_play,
+                    appContext.getString(R.string.label_resume),
+                    createWorkoutServiceIntent(WorkoutServiceActions.START_CHRONOMETER.string)
+                )
+        } else {
+            builder
+                .addAction(
+                    R.drawable.ic_pause,
+                    appContext.getString(R.string.label_pause),
+                    createWorkoutServiceIntent(WorkoutServiceActions.PAUSE_CHRONOMETER.string)
+                )
+        }
+
+
+        if (restTime != 0 && initialRestTime != 0) {
+            builder
+                .setContentTitle(
+                    appContext.getString(R.string.rest) + ": " + formatTime(restTime).substring(3)
+                )
+                .setContentText(
+                    appContext.getString(R.string.workout_time) + ": " + formatTime(
+                        timeInSeconds
                     )
-            } else {
-                workoutNotificationBuilder
-                    .addAction(
-                        R.drawable.ic_pause,
-                        "Pause",
-                        createPendingIntent(WorkoutServiceActions.PAUSE_CHRONOMETER.string)
+                )
+                .addAction(
+                    R.drawable.ic_replay_10,
+                    appContext.getString(R.string.reduce_ten_seconds),
+                    createWorkoutServiceIntent(
+                        WorkoutServiceActions.MODIFY_REST_TIMER.string,
+                        false
                     )
-            }.build()
+                )
+                .addAction(
+                    R.drawable.ic_forward_10,
+                    appContext.getString(R.string.add_ten_seconds),
+                    createWorkoutServiceIntent(
+                        WorkoutServiceActions.MODIFY_REST_TIMER.string,
+                        true
+                    )
+                )
+        } else {
+            builder
+                .setContentTitle(
+                    appContext.getString(R.string.workout_time) + ": " + formatTime(
+                        timeInSeconds
+                    )
+                )
+                .setContentText("")
+        }
+
+
+
+
+        workoutNotification = builder.build()
 
         notificationManager.notify(WORKOUT_NOTIFICATION_ID, workoutNotification)
     }
 
 
-    private lateinit var alarmNotification: Notification
+    private lateinit var timerNotification: Notification
 
-    fun notifyAlarm() {
-        notificationManager.notify(ALARM_NOTIFICATION_ID, alarmNotification)
+    fun notifyTimerIsOver() {
+        notificationManager.notify(TIMER_NOTIFICATION_ID, timerNotification)
     }
-    
 
-    private fun createPendingIntent(action: String): PendingIntent {
+
+    private fun createWorkoutServiceIntent(
+        action: String,
+        addTenSeconds: Boolean? = null
+    ): PendingIntent {
         val intent = Intent(appContext, WorkoutService::class.java).apply {
             this.action = action
+            if (addTenSeconds != null) {
+                putExtra(EXTRA_ADD_TEN_SECONDS, addTenSeconds)
+            }
         }
         return PendingIntent.getService(appContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }

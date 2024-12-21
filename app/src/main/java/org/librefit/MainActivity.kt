@@ -20,6 +20,7 @@
 package org.librefit
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,11 +33,13 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
-import org.librefit.util.ExerciseDC
 import org.librefit.data.ExerciseDeserializer
-import org.librefit.nav.NavigationHost
-import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.enums.ThemeMode
+import org.librefit.enums.WorkoutServiceActions
+import org.librefit.nav.NavigationHost
+import org.librefit.services.WorkoutService
+import org.librefit.ui.theme.LibreFitTheme
+import org.librefit.util.ExerciseDC
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager
@@ -44,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        //TODO: implement splash screen
 
         userPreferences = DataStoreManager(this)
 
@@ -72,6 +77,14 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val workoutService = Intent(this, WorkoutService::class.java).apply {
+            action = WorkoutServiceActions.STOP_SERVICE.string
+        }
+        stopService(workoutService)
     }
 }
 

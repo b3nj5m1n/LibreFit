@@ -45,10 +45,11 @@ class WorkoutService : Service() {
         private val _restTime = MutableStateFlow(0)
         val restTime: StateFlow<Int> = _restTime
 
-        private val _isRestTimerPaused = MutableStateFlow(false)
-        val isRestTimerPaused: StateFlow<Boolean> = _isRestTimerPaused
+        const val EXTRA_INITIAL_REST_TIME = "EXTRA_INITIAL_REST_TIME"
+        const val EXTRA_ADD_TEN_SECONDS = "EXTRA_ADD_TEN_SECONDS"
     }
 
+    private var initialRestTime = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -64,17 +65,31 @@ class WorkoutService : Service() {
         when (action) {
             WorkoutServiceActions.START_CHRONOMETER -> startChronometer()
             WorkoutServiceActions.PAUSE_CHRONOMETER -> pauseChronometer()
-            WorkoutServiceActions.START_REST_TIMER -> startRestTimer()
-            WorkoutServiceActions.MODIFY_REST_TIMER -> modifyRestTimer()
+            WorkoutServiceActions.START_REST_TIMER -> {
+                val initialRestTime = intent?.getIntExtra(EXTRA_INITIAL_REST_TIME, 0) ?: 0
+
+                restTimerJob?.cancel()
+                this.initialRestTime = initialRestTime
+                _restTime.value = initialRestTime
+
+                startRestTimer()
+            }
+
+            WorkoutServiceActions.MODIFY_REST_TIMER -> {
+                val addTenSeconds = intent?.getBooleanExtra(EXTRA_ADD_TEN_SECONDS, true) != false
+                modifyRestTimer(addTenSeconds)
+            }
             WorkoutServiceActions.STOP_SERVICE -> stopService()
         }
         return START_STICKY
     }
 
     fun stopService() {
-        pauseChronometer()
         chronometerJob?.cancel()
         restTimerJob?.cancel()
+        _timeElapsed.value = 0
+        _restTime.value = 0
+        initialRestTime = 0
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -95,13 +110,22 @@ class WorkoutService : Service() {
         val startTime = System.currentTimeMillis()
         val pastTime = _timeElapsed.value
 
+        chronometerJob?.cancel()
+
         chronometerJob = CoroutineScope(Dispatchers.Main).launch {
-            while (!_isChronometerPaused.value) {
-                val currentTime = System.currentTimeMillis()
+            while (true) {
+                if (!_isChronometerPaused.value) {
+                    val currentTime = System.currentTimeMillis()
 
-                _timeElapsed.value = (currentTime - startTime).toInt() / 1000 + pastTime
+                    _timeElapsed.value = (currentTime - startTime).toInt() / 1000 + pastTime
+                }
 
-                notificationHelper.notifyWorkout(_timeElapsed.value, _isChronometerPaused.value)
+                notificationHelper.notifyOngoingWorkout(
+                    _timeElapsed.value,
+                    _isChronometerPaused.value,
+                    _restTime.value,
+                    initialRestTime
+                )
 
                 delay(1000)
             }
@@ -110,29 +134,33 @@ class WorkoutService : Service() {
 
     private fun pauseChronometer() {
         _isChronometerPaused.value = true
+        notificationHelper.notifyOngoingWorkout(_timeElapsed.value, _isChronometerPaused.value)
     }
 
 
     private var restTimerJob: Job? = null
 
     private fun startRestTimer() {
-        //TODO: retrieve restTimer from WorkoutScreenViewModel
-        _restTime.value = 10
-        val target = System.currentTimeMillis() + restTime.value * 1000
-
         restTimerJob = CoroutineScope(Dispatchers.Main).launch {
             while (_restTime.value > 0) {
-                val currentTime = System.currentTimeMillis()
-
-                _restTime.value = ((target - currentTime) / 1000).toInt()
-
+                _restTime.value--
                 delay(1000)
             }
-            notificationHelper.notifyAlarm()
+            notificationHelper.notifyTimerIsOver()
+
+            initialRestTime = 0
         }
     }
 
-    private fun modifyRestTimer() {
-
+    private fun modifyRestTimer(addTenSeconds: Boolean) {
+        if (addTenSeconds) {
+            _restTime.value += 10
+        } else {
+            if (_restTime.value > 10) {
+                _restTime.value -= 10
+            } else {
+                _restTime.value = 0
+            }
+        }
     }
 }

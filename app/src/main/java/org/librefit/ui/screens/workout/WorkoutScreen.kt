@@ -373,7 +373,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                     Icon(
                         imageVector = if (viewModel.isChronometerPaused) Icons.Default.PlayArrow else
                             ImageVector.vectorResource(id = R.drawable.ic_pause),
-                        contentDescription = stringResource(if (viewModel.isChronometerPaused) R.string.label_pause else R.string.label_play),
+                        contentDescription = stringResource(if (viewModel.isChronometerPaused) R.string.label_pause else R.string.label_resume),
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -396,7 +396,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
 
 
             val timerProgress = animateFloatAsState(
-                targetValue = viewModel.restTimerProgress,
+                targetValue = viewModel.getRestTimeProgress(),
                 animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                 label = "timerAnimation"
             )
@@ -409,7 +409,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { viewModel.addRestTime(false) },
+                    onClick = { viewModel.modifyRestTime(false) },
                     enabled = viewModel.restTime != 0
                 ) {
                     Icon(
@@ -429,7 +429,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                     Text("${viewModel.restTime}")
                 }
                 IconButton(
-                    onClick = { viewModel.addRestTime(true) },
+                    onClick = { viewModel.modifyRestTime(true) },
                     enabled = viewModel.restTime != 0
                 ) {
                     Icon(

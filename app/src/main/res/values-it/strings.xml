@@ -71,6 +71,10 @@
     <string name="label_exit_dialog">Esci</string>
     <string name="label_rest_time">Tempo di riposo</string>
     <string name="label_any">Qualsiasi</string>
+    <string name="rest_time_is_over">Il tempo di riposo è finito!</string>
+    <string name="rest">Riposo</string>
+    <string name="reduce_ten_seconds">-10 sec</string>
+    <string name="workout_time">Tempo d\'allenamento</string>
     <string name="label_force_static">Statico</string>
     <string name="label_force_pull">Tirata</string>
     <string name="label_force_push">Spinta</string>
@@ -128,7 +132,7 @@
     <string name="label_workout">Allenamento</string>
     <string name="label_navigate_back">Ritorna alla schermata precedente</string>
     <string name="label_exit_workout">Sei sicuro di voler uscire? Il tuo allenamento non sarà salvato</string>
-    <string name="label_play">Riprendi</string>
+    <string name="label_resume">Riprendi</string>
     <string name="label_pause">Pausa</string>
     <string name="error_title_length_exceeded">"Il titolo "</string>
     <string name="error_title_empty">Il titolo non può essere vuoto</string>
@@ -148,4 +152,9 @@
     <string name="label_duration">Durata</string>
     <string name="seconds">Secondi</string>
     <string name="notifications_permission">Notifiche</string>
+    <string name="workout_info_channel_title">Informazioni in tempo reale sull\'allenamento</string>
+    <string name="workout_info_channel_desc">Questo canale viene utilizzato per fornire aggiornamenti in tempo reale sull\'allenamento in corso.</string>
+    <string name="rest_timer_channel_title">Avvisi sui tempi di riposo</string>
+    <string name="rest_timer_channel_desc">Questo canale viene utilizzato per fornire avvisi quando il tempo di riposo termina.</string>
+    <string name="add_ten_seconds">+10 sec</string>
 </resources>

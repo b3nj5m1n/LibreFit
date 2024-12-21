@@ -22,7 +22,6 @@ package org.librefit.ui.screens.workout
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
 import org.librefit.db.Set
@@ -38,6 +36,8 @@ import org.librefit.db.Workout
 import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.services.WorkoutService
+import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
+import org.librefit.services.WorkoutService.Companion.EXTRA_INITIAL_REST_TIME
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
 import kotlin.random.Random
@@ -225,7 +225,9 @@ class WorkoutScreenViewModel(
         private set
     var isChronometerPaused by mutableStateOf(true)
         private set
-
+    var restTime by mutableIntStateOf(0)
+        private set
+    private var initialRestTime = 1
 
     private var appContext = context.applicationContext
 
@@ -234,10 +236,19 @@ class WorkoutScreenViewModel(
 
     init {
         startChronometer()
-        observeTimeChanges()
+        observeChanges()
     }
 
-    private fun observeTimeChanges() {
+    override fun onCleared() {
+        super.onCleared()
+        val service = workoutServiceIntent.apply {
+            action = WorkoutServiceActions.STOP_SERVICE.string
+        }
+        appContext.startForegroundService(service)
+        appContext.stopService(service)
+    }
+
+    private fun observeChanges() {
         viewModelScope.launch(Dispatchers.Main) {
             WorkoutService.timeElapsed.collect {
                 timeElapsed = it
@@ -248,6 +259,11 @@ class WorkoutScreenViewModel(
                 if (isPaused != isChronometerPaused) {
                     isChronometerPaused = isPaused
                 }
+            }
+        }
+        viewModelScope.launch(Dispatchers.Main) {
+            WorkoutService.restTime.collect { newRestTime ->
+                restTime = newRestTime.coerceAtLeast(0)
             }
         }
     }
@@ -266,51 +282,25 @@ class WorkoutScreenViewModel(
         appContext.startForegroundService(service)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        val service = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.STOP_SERVICE.string
-        }
-        appContext.startForegroundService(service)
-        appContext.stopService(service)
-    }
-
-
-    var restTime by mutableIntStateOf(0)
-        private set
-    var restTimerProgress by mutableFloatStateOf(0f)
-        private set
-    private var isTimerRunning by mutableStateOf(false)
-    private var maxTimeValue by mutableIntStateOf(0)
 
     fun startRestTimer(initialValue: Int) {
+        initialRestTime = initialValue
         val serviceIntent = workoutServiceIntent.apply {
             action = WorkoutServiceActions.START_REST_TIMER.string
+            putExtra(EXTRA_INITIAL_REST_TIME, initialValue)
         }
         appContext.startForegroundService(serviceIntent)
-        if (!isTimerRunning) {
-
-            maxTimeValue = initialValue
-            restTime = initialValue
-            isTimerRunning = true
-            viewModelScope.launch(Dispatchers.IO) {
-                while (restTime > 0 && isTimerRunning) {
-                    restTime--
-                    restTimerProgress = restTime.toFloat() / maxTimeValue
-                    delay(1000)
-                }
-                isTimerRunning = false
-            }
-        }
     }
 
-    fun addRestTime(add: Boolean) {
-        restTime += if (add) 10 else -10
-        if (restTime < 0) {
-            restTime = 0
-            restTimerProgress = 0f
-        } else if (restTime > maxTimeValue) {
-            maxTimeValue = restTime
+    fun modifyRestTime(addTenSeconds: Boolean) {
+        val serviceIntent = workoutServiceIntent.apply {
+            action = WorkoutServiceActions.MODIFY_REST_TIMER.string
+            putExtra(EXTRA_ADD_TEN_SECONDS, addTenSeconds)
         }
+        appContext.startForegroundService(serviceIntent)
+    }
+
+    fun getRestTimeProgress(): Float {
+        return restTime.toFloat() / initialRestTime
     }
 }
