@@ -28,9 +28,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
 import org.librefit.data.ExerciseDeserializer
@@ -45,10 +47,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val splashscreen = installSplashScreen()
 
-        //TODO: implement splash screen
+        super.onCreate(savedInstanceState)
+
+        var keepSplashScreen = true
+        splashscreen.setKeepOnScreenCondition { keepSplashScreen }
+        lifecycleScope.launch {
+            delay(1500)
+            keepSplashScreen = false
+        }
+
+        enableEdgeToEdge()
 
         userPreferences = DataStoreManager(this)
 

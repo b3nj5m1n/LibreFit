@@ -117,4 +117,7 @@ dependencies {
 
     //Lottie animations for jetpack compose
     implementation(libs.lottie.compose)
+
+    //Splash screen API
+    implementation(libs.androidx.core.splashscreen)
 }
