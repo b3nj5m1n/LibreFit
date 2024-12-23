@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens
+package org.librefit.ui.screens.shared
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.SharedViewModel
 import org.librefit.enums.Category
 import org.librefit.enums.Equipment
 import org.librefit.enums.Level

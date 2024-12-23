@@ -81,13 +81,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.data.DataStoreManager
-import org.librefit.data.SharedViewModel
 import org.librefit.db.Workout
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.ExerciseDetailModalBottomSheet
 import org.librefit.ui.components.animations.AddIconLottie
+import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
 import org.librefit.util.formatTime

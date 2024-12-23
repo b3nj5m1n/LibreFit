@@ -31,14 +31,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.librefit.data.DataStoreManager
-import org.librefit.data.SharedViewModel
-import org.librefit.ui.screens.AddExerciseScreen
 import org.librefit.ui.screens.MainScreen
-import org.librefit.ui.screens.RequestPermissionsScreen
 import org.librefit.ui.screens.about.AboutScreen
 import org.librefit.ui.screens.about.LicenseScreen
 import org.librefit.ui.screens.createRoutine.CreateRoutineScreen
 import org.librefit.ui.screens.settings.SettingsScreen
+import org.librefit.ui.screens.shared.AddExerciseScreen
+import org.librefit.ui.screens.shared.SharedViewModel
+import org.librefit.ui.screens.workout.RequestPermissionsScreen
 import org.librefit.ui.screens.workout.WorkoutScreen
 import org.librefit.util.ExerciseDC
 

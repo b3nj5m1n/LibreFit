@@ -17,8 +17,9 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens
+package org.librefit.ui.screens.workout
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +72,7 @@ fun RequestPermissionsScreen(
 
     val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(
-            android.Manifest.permission.POST_NOTIFICATIONS
+            Manifest.permission.POST_NOTIFICATIONS
         )
     } else {
         //Permission granted by default below Tiramisu
