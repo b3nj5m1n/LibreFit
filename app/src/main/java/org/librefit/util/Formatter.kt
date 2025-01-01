@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -19,6 +19,11 @@
 
 package org.librefit.util
 
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import org.librefit.R
 import org.librefit.enums.Category
 import org.librefit.enums.Equipment
@@ -105,5 +110,16 @@ fun formatTime(seconds: Int): String {
     val minutes = (seconds % 3600) / 60
     val secs = seconds % 60
     return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, secs)
+}
+
+
+/**
+ * It returns a string as follows: [boldText]:[text]
+ */
+fun formatDetails(boldText: String, text: String): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(style = SpanStyle(fontWeight = FontWeight.Medium)) { append("$boldText: ") }
+        append(text)
+    }
 }
 

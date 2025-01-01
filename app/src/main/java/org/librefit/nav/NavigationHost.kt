@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -86,6 +86,7 @@ fun NavigationHost(exerciseList: List<ExerciseDC>, userPreferences: DataStoreMan
         composable<Destination.InfoRoutineScreen> {
             InfoRoutineScreen(
                 workoutId = it.toRoute<Destination.InfoRoutineScreen>().workoutId,
+                workoutTitle = it.toRoute<Destination.InfoRoutineScreen>().workoutTitle,
                 list = exerciseList,
                 navController = navController
             )

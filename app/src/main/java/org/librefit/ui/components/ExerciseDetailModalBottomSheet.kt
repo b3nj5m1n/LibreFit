@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -51,25 +51,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.enums.Muscle
 import org.librefit.util.ExerciseDC
 import org.librefit.util.exerciseEnumToStringId
+import org.librefit.util.formatDetails
 import org.librefit.util.muscleToVectorId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseDetailModalBottomSheet(
     exercise: ExerciseDC,
-    onDismiss : () -> Unit
-){
+    onDismiss: () -> Unit
+) {
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
@@ -80,8 +76,8 @@ fun ExerciseDetailModalBottomSheet(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
-                Text(text = exercise.name, style = MaterialTheme.typography.headlineLarge )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text(text = exercise.name, style = MaterialTheme.typography.headlineLarge)
             }
 
             HorizontalDivider()
@@ -93,20 +89,20 @@ fun ExerciseDetailModalBottomSheet(
             HeadlineText(text = stringResource(id = R.string.details))
 
 
-            if(exercise.force != null )
+            if (exercise.force != null)
                 Text(
                     formatDetails(
                         stringResource(R.string.force),
                         stringResource(exerciseEnumToStringId(exercise.force))
+                    )
                 )
-            )
             Text(
                 text = formatDetails(
                     stringResource(R.string.level),
                     stringResource(exerciseEnumToStringId(exercise.level))
                 )
             )
-            if(exercise.mechanic != null ) {
+            if (exercise.mechanic != null) {
                 Text(
                     formatDetails(
                         stringResource(R.string.mechanic),
@@ -114,7 +110,7 @@ fun ExerciseDetailModalBottomSheet(
                     )
                 )
             }
-            if(exercise.equipment != null ) {
+            if (exercise.equipment != null) {
                 Text(
                     formatDetails(
                         stringResource(R.string.equipment),
@@ -130,12 +126,12 @@ fun ExerciseDetailModalBottomSheet(
             )
 
 
-            if (exercise.primaryMuscles.isNotEmpty() || exercise.secondaryMuscles.isNotEmpty()){
+            if (exercise.primaryMuscles.isNotEmpty() || exercise.secondaryMuscles.isNotEmpty()) {
                 HorizontalDivider()
                 HeadlineText(text = stringResource(id = R.string.muscles))
             }
 
-            if(exercise.primaryMuscles.isNotEmpty()){
+            if (exercise.primaryMuscles.isNotEmpty()) {
                 MuscleContent(
                     stringResource(id = R.string.primary_muscles),
                     musclesList = exercise.primaryMuscles
@@ -143,19 +139,20 @@ fun ExerciseDetailModalBottomSheet(
             }
 
 
-            if(exercise.secondaryMuscles.isNotEmpty()){
+            if (exercise.secondaryMuscles.isNotEmpty()) {
                 MuscleContent(
                     stringResource(id = R.string.secondary_muscles),
                     musclesList = exercise.secondaryMuscles
                 )
             }
-            
+
             HorizontalDivider()
 
             HeadlineText(text = stringResource(id = R.string.instructions))
 
-            Text(text = exercise.instructions.mapIndexed{ index, instruction->
-                    "${index+1}. $instruction"
+            Text(
+                text = exercise.instructions.mapIndexed { index, instruction ->
+                    "${index + 1}. $instruction"
                 }.joinToString("\n\n")
             )
         }
@@ -163,14 +160,14 @@ fun ExerciseDetailModalBottomSheet(
 }
 
 @Composable
-private fun MuscleContent(title : String, musclesList: List<Muscle>) {
+private fun MuscleContent(title: String, musclesList: List<Muscle>) {
     var list = ""
-    musclesList.forEachIndexed { index , muscle->
-        list += stringResource(exerciseEnumToStringId(muscle)) + if(index != musclesList.lastIndex) ", " else ""
+    musclesList.forEachIndexed { index, muscle ->
+        list += stringResource(exerciseEnumToStringId(muscle)) + if (index != musclesList.lastIndex) ", " else ""
     }
-    Text(text = formatDetails(title, list) )
+    Text(text = formatDetails(title, list))
     LazyRow {
-        items(musclesList){ muscle ->
+        items(musclesList) { muscle ->
             val vector = ImageVector.vectorResource(id = muscleToVectorId(muscle))
             Image(
                 imageVector = vector,
@@ -182,9 +179,11 @@ private fun MuscleContent(title : String, musclesList: List<Muscle>) {
 }
 
 @Composable
-private fun AlternatingImages(exercise: ExerciseDC){
-    val firstBitmap = BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[0]))
-    val secondBitmap = BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[1]))
+private fun AlternatingImages(exercise: ExerciseDC) {
+    val firstBitmap =
+        BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[0]))
+    val secondBitmap =
+        BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[1]))
 
     // State to hold the current image bitmap
     var currentBitmap by remember { mutableStateOf(firstBitmap) }
@@ -195,7 +194,8 @@ private fun AlternatingImages(exercise: ExerciseDC){
         while (true) {
             delay(1000)
             i++
-            currentBitmap = if(i % 2 == 0) firstBitmap else secondBitmap //Alternate images every second
+            currentBitmap =
+                if (i % 2 == 0) firstBitmap else secondBitmap //Alternate images every second
         }
     }
 
@@ -209,12 +209,5 @@ private fun AlternatingImages(exercise: ExerciseDC){
                 .clip(MaterialTheme.shapes.medium)
                 .fillMaxSize()
         )
-    }
-}
-
-private fun formatDetails(type: String, details : String) : AnnotatedString {
-    return buildAnnotatedString {
-        withStyle(style = SpanStyle(fontWeight = FontWeight.Medium)){ append("$type: ") }
-        append(details)
     }
 }

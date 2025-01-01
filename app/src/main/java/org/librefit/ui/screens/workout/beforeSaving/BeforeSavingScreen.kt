@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -205,6 +205,7 @@ fun BeforeSavingScreen(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
+                    //TODO: add date picker to change completed date
                     OutlinedTextField(
                         modifier = Modifier.weight(0.5f),
                         value = "${viewModel.getVolumeExercises()}",
@@ -300,10 +301,10 @@ fun BeforeSavingScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = "Title: " + viewModel.getRoutineTitle(),
+                                    text = stringResource(R.string.title) + " : " + viewModel.getRoutineTitle(),
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                Text("Created: " + viewModel.getRoutineDate())
+                                Text(stringResource(R.string.creation_date) + " : " + viewModel.getRoutineDate())
                             }
                             IconButton(
                                 onClick = { showDetachRoutineDialog.value = true }

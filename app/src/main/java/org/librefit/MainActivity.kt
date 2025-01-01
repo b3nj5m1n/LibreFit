@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
         val workoutService = Intent(this, WorkoutService::class.java).apply {
             action = WorkoutServiceActions.STOP_SERVICE.string
         }
+        //TODO: Fix crash when changing language from SettingsScreen
         startForegroundService(workoutService)
         stopService(workoutService)
     }

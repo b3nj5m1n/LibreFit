@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2024. LibreFit
+  ~ Copyright (c) 2024-2025. LibreFit
   ~
   ~ This file is part of LibreFit
   ~
@@ -56,6 +56,7 @@
     <string name="completed_sets">Set completati</string>
     <string name="exercises">Esercizi</string>
     <string name="routine">Routine</string>
+    <string name="creation_date">Data di creazione</string>
     <string name="start_creating_routine">Inizia aggiungendo un esercizio alla tua routine</string>
     <string name="exit_create_routine">Sei sicuro di voler uscire? La tua routine non sarà salvata</string>
     <string name="title">Titolo</string>

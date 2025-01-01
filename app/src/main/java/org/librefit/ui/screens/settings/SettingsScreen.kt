@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -352,6 +352,7 @@ fun SettingsScreen(
                     )
                 }
             }
+            //TODO: toggle to enable/disable rest timer sound
         }
     }
 }

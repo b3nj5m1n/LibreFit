@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -38,7 +38,8 @@ sealed class Destination {
 
     @Serializable
     data class InfoRoutineScreen(
-        val workoutId: Int = 0
+        val workoutId: Int = 0,
+        val workoutTitle: String = ""
     )
 
     @Serializable

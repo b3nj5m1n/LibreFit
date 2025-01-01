@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -109,6 +109,7 @@ fun AddExerciseScreen(
     val coroutineScope = rememberCoroutineScope()
 
     CustomScaffold(
+        // TODO: change title
         title = stringResource(id = R.string.add_exercise),
         navigateBack = navigateBack,
         actions = listOf {
@@ -243,6 +244,7 @@ private fun AddExerciseScreenContent(
             key = { exercise -> exercise.id }
         ) { exercise ->
             Row(
+                // TODO: make row clickable
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),

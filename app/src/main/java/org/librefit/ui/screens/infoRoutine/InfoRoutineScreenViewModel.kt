@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -19,21 +19,40 @@
 
 package org.librefit.ui.screens.infoRoutine
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
+import org.librefit.db.Workout
+import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 import kotlin.random.Random
 
 class InfoRoutineScreenViewModel(
     workoutId: Int,
     private val list: List<ExerciseDC>
 ) : ViewModel() {
+    private val routine = mutableStateOf(Workout())
+
+    fun getCreatedDate(): String {
+        return routine.value.created.format(
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
+                Locale.getDefault()
+            )
+        )
+    }
+
+    fun getNotes(): String {
+        return routine.value.notes
+    }
+
 
     val exercises = mutableStateListOf<ExerciseWithSets>()
 
@@ -51,11 +70,30 @@ class InfoRoutineScreenViewModel(
         exercises.add(newExerciseWithSets)
     }
 
+    fun getVolumeExercises(): String {
+        return exercises.sumOf {
+            it.sets.sumOf { set ->
+                if (it.setMode == SetMode.WEIGHT && set.completed) {
+                    set.weight * set.reps
+                } else 0
+            }
+        }.toString()
+    }
+
+    fun getTotalExercises(): String {
+        return exercises.size.toString()
+    }
+
+    fun getTotalSets(): String {
+        return exercises.sumOf { it.sets.size }.toString()
+    }
+
 
     private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
     init {
         getExercisesFromWorkout(workoutId)
+        getRoutineFromDB(workoutId)
     }
 
     private fun getExercisesFromWorkout(workoutId: Int) {
@@ -64,7 +102,6 @@ class InfoRoutineScreenViewModel(
             exercises.forEach { exercise ->
                 val exerciseDC = list.associateBy { it.id }[exercise.exerciseId]
                 if (exerciseDC != null) {
-                    Log.d("InfoRoutine", "Exercise added")
                     addExerciseWithSets(
                         ExerciseWithSets(
                             exerciseDC = exerciseDC,
@@ -90,4 +127,15 @@ class InfoRoutineScreenViewModel(
         }
     }
 
+    private fun getRoutineFromDB(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            routine.value = workoutDao.getWorkout(id)
+        }
+    }
+
+    fun deleteRoutine() {
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.deleteWorkout(routine.value)
+        }
+    }
 }

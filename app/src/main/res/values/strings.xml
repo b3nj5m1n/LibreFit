@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024. LibreFit
+  ~ Copyright (c) 2024-2025. LibreFit
   ~
   ~ This file is part of LibreFit
   ~
@@ -80,6 +80,7 @@
     <string name="completed_sets">Completed sets</string>
     <string name="exercises">Exercises</string>
     <string name="routine">Routine</string>
+    <string name="creation_date">Creation date</string>
 
 
     <!--Create routine screen-->

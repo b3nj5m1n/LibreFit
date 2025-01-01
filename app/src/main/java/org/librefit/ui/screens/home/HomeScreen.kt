@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -33,9 +33,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -124,7 +127,12 @@ fun HomeScreen(
                         .padding(5.dp)
                         .clip(CardDefaults.elevatedShape)
                         .clickable {
-                            navController.navigate(Destination.InfoRoutineScreen(workoutId = routine.id))
+                            navController.navigate(
+                                Destination.InfoRoutineScreen(
+                                    workoutId = routine.id,
+                                    workoutTitle = routine.title
+                                )
+                            )
                         }
                 ) {
                     Column(
@@ -135,7 +143,7 @@ fun HomeScreen(
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = routine.title,
@@ -143,6 +151,21 @@ fun HomeScreen(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Destination.InfoRoutineScreen(
+                                            workoutId = routine.id,
+                                            workoutTitle = routine.title
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = stringResource(R.string.info)
+                                )
+                            }
                         }
                         CustomTextButton(
                             text = stringResource(R.string.start_routine),
