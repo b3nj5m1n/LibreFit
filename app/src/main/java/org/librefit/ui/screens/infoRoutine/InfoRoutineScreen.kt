@@ -171,7 +171,7 @@ fun InfoRoutineScreen(
                         Text(
                             formatDetails(
                                 stringResource(R.string.volume),
-                                viewModel.getVolumeExercises()
+                                viewModel.getVolumeExercises() + " " + stringResource(R.string.kg)
                             )
                         )
                     }

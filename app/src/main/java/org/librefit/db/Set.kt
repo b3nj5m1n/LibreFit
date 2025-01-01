@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -38,7 +38,7 @@ import androidx.room.PrimaryKey
 )
 data class Set(
     @PrimaryKey(true) val id: Int = 0,
-    val weight: Int = 0,
+    val weight: Float = 0f,
     val reps: Int = 0,
     val elapsedTime: Int = 0,
     val completed: Boolean = false,

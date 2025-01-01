@@ -17,6 +17,8 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("KDocUnresolvedReference")
+
 package org.librefit.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
@@ -135,7 +137,7 @@ fun ExerciseCard(
     addSet: () -> Unit,
     onDetail: () -> Unit,
     onDelete: () -> Unit,
-    updateSet: (Set, Int, Int) -> Unit,
+    updateSet: (Set, Float, Int) -> Unit,
     deleteSet: (Set) -> Unit,
     updateExercise: (String, Int) -> Unit,
     showInfo: (InfoMode) -> Unit,
@@ -364,14 +366,8 @@ fun ExerciseCard(
                     key = { i, set -> set.id }
                 ) { i, set ->
                     var timeValue by remember { mutableIntStateOf(set.elapsedTime) }
-
                     var repValue by remember { mutableStateOf(set.reps.toString()) }
                     var weightValue by remember { mutableStateOf(set.weight.toString()) }
-
-                    //TODO: remove error variables
-                    var timeError by remember { mutableStateOf(false) }
-                    var repError by remember { mutableStateOf(false) }
-                    var weightError by remember { mutableStateOf(false) }
 
                     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
                         confirmValueChange = {
@@ -462,7 +458,7 @@ fun ExerciseCard(
 
                                                             updateSet(
                                                                 set,
-                                                                timeValue,
+                                                                timeValue.toFloat(),
                                                                 2
                                                             )
 
@@ -488,9 +484,9 @@ fun ExerciseCard(
                                         modifier = Modifier.width(80.dp),
                                         value = formatTime(timeValue).substring(3),
                                         onValueChange = { string ->
-                                            //TODO: ensure string is not too long
-
-                                            val stringValue = string.filter { it.isDigit() }
+                                            val stringValue = string
+                                                .filter { it.isDigit() }
+                                                .takeLast(4)
 
                                             val seconds = stringValue.toInt() % 100
                                             val minutes = (stringValue.toInt() - seconds) / 100
@@ -499,12 +495,11 @@ fun ExerciseCard(
 
                                             updateSet(
                                                 set,
-                                                timeValue,
+                                                timeValue.toFloat(),
                                                 2
                                             )
                                         },
                                         singleLine = true,
-                                        isError = timeError,
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     )
                                 }
@@ -514,22 +509,16 @@ fun ExerciseCard(
                                     modifier = Modifier.width(80.dp),
                                     value = repValue,
                                     onValueChange = { string ->
-                                        val stringValue = string.filter { it.isDigit() }
+                                        val stringValue = string.filter { it.isDigit() }.takeLast(4)
 
-                                        if (string.length > 4) {
-                                            repError = true
-                                        } else {
-                                            repError = false
-                                            repValue = stringValue
-                                            updateSet(
-                                                set,
-                                                repValue.ifEmpty { "0" }.toInt(),
-                                                1
-                                            )
-                                        }
+                                        repValue = stringValue.removePrefix("0")
+                                        updateSet(
+                                            set,
+                                            repValue.ifEmpty { "0" }.toFloat(),
+                                            1
+                                        )
                                     },
                                     singleLine = true,
-                                    isError = repError,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 )
                                 if (exerciseWithSets.setMode == SetMode.WEIGHT) {
@@ -538,24 +527,36 @@ fun ExerciseCard(
                                         modifier = Modifier.width(80.dp),
                                         value = weightValue,
                                         onValueChange = { string ->
-                                            //TODO: change weight to float
-                                            val stringValue = string.filter { it.isDigit() }
+                                            val stringValue = string
+                                                .replace(",", ".")
+                                                .filter { it.isDigit() || it == '.' }
+                                                .takeLast(5)
 
-                                            if (string.length > 4) {
-                                                weightError = true
-                                            } else {
+                                            val firstDotIndex = stringValue.indexOf(".")
+
+                                            if (firstDotIndex == -1) {
                                                 weightValue = stringValue
-                                                weightError = false
-                                                updateSet(
-                                                    set,
-                                                    weightValue.ifEmpty { "0" }.toInt(),
-                                                    0
+                                            } else {
+                                                val beforeFirstDot = stringValue.substring(
+                                                    0, firstDotIndex + 1
                                                 )
+
+                                                val afterFirstDot = stringValue
+                                                    .substring(firstDotIndex + 1)
+                                                    .replace(".", "")
+
+                                                weightValue = beforeFirstDot + afterFirstDot
                                             }
 
+
+
+                                            updateSet(
+                                                set,
+                                                weightValue.ifEmpty { "0" }.toFloat(),
+                                                0
+                                            )
                                         },
                                         singleLine = true,
-                                        isError = weightError,
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                     )
                                 }
@@ -567,7 +568,7 @@ fun ExerciseCard(
                                     onCheckedChange = { checked ->
                                         updateSet(
                                             set,
-                                            if (checked) 1 else 0,
+                                            if (checked) 1f else 0f,
                                             3
                                         )
                                     }

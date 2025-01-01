@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -44,14 +44,14 @@ class BeforeSavingScreenViewModel : ViewModel() {
         return exercises
     }
 
-    fun getVolumeExercises(): Int {
+    fun getVolumeExercises(): String {
         return exercises.sumOf {
             it.sets.sumOf { set ->
                 if (it.setMode == SetMode.WEIGHT && set.completed) {
-                    set.weight * set.reps
-                } else 0
+                    set.weight.toDouble() * set.reps
+                } else 0.toDouble()
             }
-        }
+        }.toString()
     }
 
     fun getTotalSets(): Int {
@@ -143,8 +143,8 @@ class BeforeSavingScreenViewModel : ViewModel() {
             exercise.copy(sets = exercise.sets.map {
                 // This keeps only relevant data on the actual type of set
                 when (exercise.setMode) {
-                    SetMode.TIME -> it.copy(reps = 0, weight = 0)
-                    SetMode.REPS -> it.copy(elapsedTime = 0, weight = 0)
+                    SetMode.TIME -> it.copy(reps = 0, weight = 0f)
+                    SetMode.REPS -> it.copy(elapsedTime = 0, weight = 0f)
                     SetMode.WEIGHT -> it.copy(elapsedTime = 0)
                 }
             })

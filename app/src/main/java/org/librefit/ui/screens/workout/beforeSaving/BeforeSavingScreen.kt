@@ -208,7 +208,7 @@ fun BeforeSavingScreen(
                     //TODO: add date picker to change completed date
                     OutlinedTextField(
                         modifier = Modifier.weight(0.5f),
-                        value = "${viewModel.getVolumeExercises()}",
+                        value = viewModel.getVolumeExercises(),
                         label = { Text(stringResource(R.string.volume)) },
                         suffix = { Text(stringResource(R.string.kg)) },
                         onValueChange = {},

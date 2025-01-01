@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -89,23 +89,23 @@ class WorkoutScreenViewModel(
      * The method will update the specified attribute of the [Set] if it matches the provided [set] ID.
      * If the [mode] is not recognized, the original [set] will remain unchanged.
      */
-    fun updateSet(index: Int, set: Set, value: Int, mode: Int) {
+    fun updateSet(index: Int, set: Set, value: Float, mode: Int) {
         val exercise = exercises[index]
         exercises[index] = exercise.copy(
             sets = exercise.sets.map {
                 if (it.id == set.id) {
                     when (mode) {
                         0 -> set.copy(weight = value)
-                        1 -> set.copy(reps = value)
-                        2 -> set.copy(elapsedTime = value)
-                        3 -> set.copy(completed = value == 1)
+                        1 -> set.copy(reps = value.toInt())
+                        2 -> set.copy(elapsedTime = value.toInt())
+                        3 -> set.copy(completed = value == 1f)
                         else -> set
                     }
                 } else it
             }
         )
 
-        if (mode == 3 && value == 1 && exercise.restTime != 0) {
+        if (mode == 3 && value == 1f && exercise.restTime != 0) {
             startRestTimer(exercise.restTime + 1)
         }
     }

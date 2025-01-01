@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -74,15 +74,15 @@ class CreateRoutineScreenViewModel : ViewModel() {
      * The method will update the specified attribute of the [Set] if it matches the provided [set] ID.
      * If the [mode] is not recognized, the original [set] will remain unchanged.
      */
-    fun updateSet(index: Int, set: Set, value: Int, mode: Int) {
+    fun updateSet(index: Int, set: Set, value: Float, mode: Int) {
         val exercise = exercises[index]
         exercises[index] = exercise.copy(
             sets = exercise.sets.map {
                 if (it.id == set.id) {
                     when (mode) {
                         0 -> set.copy(weight = value)
-                        1 -> set.copy(reps = value)
-                        2 -> set.copy(elapsedTime = value)
+                        1 -> set.copy(reps = value.toInt())
+                        2 -> set.copy(elapsedTime = value.toInt())
                         else -> set
                     }
                 } else it

@@ -71,13 +71,29 @@ class InfoRoutineScreenViewModel(
     }
 
     fun getVolumeExercises(): String {
-        return exercises.sumOf {
+        var stringValue = exercises.sumOf {
             it.sets.sumOf { set ->
-                if (it.setMode == SetMode.WEIGHT && set.completed) {
-                    set.weight * set.reps
-                } else 0
+                if (it.setMode == SetMode.WEIGHT) {
+                    (set.weight * set.reps).toDouble()
+                } else 0.toDouble()
             }
         }.toString()
+
+        val firstDotIndex = stringValue.indexOf(".")
+
+        if (firstDotIndex != -1) {
+            val beforeFirstDot = stringValue.substring(
+                0, firstDotIndex + 1
+            )
+
+            val afterFirstDot = stringValue
+                .substring(firstDotIndex + 1)
+                .take(3)
+
+            stringValue = beforeFirstDot + afterFirstDot
+        }
+
+        return stringValue
     }
 
     fun getTotalExercises(): String {
