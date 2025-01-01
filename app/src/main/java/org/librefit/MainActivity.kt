@@ -94,9 +94,7 @@ class MainActivity : AppCompatActivity() {
         val workoutService = Intent(this, WorkoutService::class.java).apply {
             action = WorkoutServiceActions.STOP_SERVICE.string
         }
-        //TODO: Fix crash when changing language from SettingsScreen
-        startForegroundService(workoutService)
-        stopService(workoutService)
+        startService(workoutService)
     }
 }
 

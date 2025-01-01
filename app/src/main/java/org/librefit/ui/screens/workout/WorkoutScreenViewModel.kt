@@ -238,11 +238,10 @@ class WorkoutScreenViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        val service = workoutServiceIntent.apply {
+        val serviceIntent = workoutServiceIntent.apply {
             action = WorkoutServiceActions.STOP_SERVICE.string
         }
-        appContext.startForegroundService(service)
-        appContext.stopService(service)
+        appContext.startService(serviceIntent)
     }
 
     private fun observeChanges() {
