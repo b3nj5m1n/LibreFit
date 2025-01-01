@@ -32,7 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -248,7 +248,7 @@ fun BeforeSavingScreen(
             }
 
             item {
-                Card {
+                ElevatedCard {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -289,7 +289,7 @@ fun BeforeSavingScreen(
                     HeadlineText(stringResource(R.string.routine))
                 }
                 item {
-                    Card {
+                    ElevatedCard {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

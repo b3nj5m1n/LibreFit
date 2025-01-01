@@ -209,6 +209,7 @@ class WorkoutScreenViewModel(
     private fun getSetsFromExercise(exerciseId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val sets = workoutDao.getSetsFromExercise(exerciseId)
+            //TODO: fix crash ConcurrentModificationException
             val exercise = exercises.find { it.exerciseId == exerciseId }!!
             val index = exercises.indexOf(exercise)
             exercises[index] = exercise.copy(sets = sets.map { it.copy(id = Random.nextInt()) })

@@ -32,7 +32,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
 import org.librefit.data.ExerciseDeserializer
@@ -47,16 +46,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userPreferences: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashscreen = installSplashScreen()
+        installSplashScreen()
 
         super.onCreate(savedInstanceState)
 
-        var keepSplashScreen = true
-        splashscreen.setKeepOnScreenCondition { keepSplashScreen }
-        lifecycleScope.launch {
-            delay(1500)
-            keepSplashScreen = false
-        }
+
 
         enableEdgeToEdge()
 

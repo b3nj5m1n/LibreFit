@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -40,7 +40,10 @@ fun DumbbellLottie() {
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.dumbbell_lottie))
 
-    val progress by animateLottieCompositionAsState(composition)
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        speed = 2f
+    )
 
     val dynamicProperties = rememberLottieDynamicProperties(
         rememberLottieDynamicProperty(

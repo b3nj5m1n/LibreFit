@@ -20,6 +20,7 @@
 package org.librefit.ui.screens.shared
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -244,10 +245,16 @@ private fun AddExerciseScreenContent(
             key = { exercise -> exercise.id }
         ) { exercise ->
             Row(
-                // TODO: make row clickable
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(100.dp)
+                    .clickable {
+                        if (selectedExercisesList.contains(exercise)) {
+                            selectedExercisesList.remove(exercise)
+                        } else {
+                            selectedExercisesList.add(exercise)
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
