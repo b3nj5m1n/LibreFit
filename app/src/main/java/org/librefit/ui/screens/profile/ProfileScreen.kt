@@ -81,6 +81,8 @@ fun ProfileScreen(
             .padding(start = 15.dp, end = 15.dp)
             .fillMaxSize()
     ) {
+        //TODO: body measurements
+
         item { HeadlineText(stringResource(R.string.your_workouts)) }
 
         if (workoutList.isEmpty()) {

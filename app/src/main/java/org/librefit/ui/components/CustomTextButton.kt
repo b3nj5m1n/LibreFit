@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -40,6 +40,7 @@ fun CustomTextButton(
     icon: ImageVector,
     iconDescription: String? = null,
     elevated: Boolean = true,
+    modifier: Modifier? = null,
     onClick: () -> Unit
 ) {
     TextButton(
@@ -50,7 +51,7 @@ fun CustomTextButton(
         ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = if (modifier != null) modifier else Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -22,6 +22,7 @@ package org.librefit.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -165,6 +167,21 @@ fun MainScreen(
                         )
                     }
                 )
+            }
+        },
+        floatingActionButton = {
+            if (homeSelected) {
+                FloatingActionButton(
+                    onClick = {
+                        sharedViewModel.updateWorkoutId(0)
+                        navController.navigate(Destination.EditWorkoutScreen)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.create_routine)
+                    )
+                }
             }
         }
     ) { innerPadding ->

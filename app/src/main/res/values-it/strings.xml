@@ -60,7 +60,7 @@
     <string name="creation_date">Data di creazione</string>
     <string name="label_when">Quando</string>
     <string name="select_date">Seleziona data</string>
-    <string name="start_creating_routine">Inizia aggiungendo un esercizio alla tua routine</string>
+    <string name="start_adding_exercises">Inizia aggiungendo un esercizio alla tua routine</string>
     <string name="exit_create_routine">Sei sicuro di voler uscire? La tua routine non sarà salvata</string>
     <string name="title">Titolo</string>
     <string name="set">Serie</string>
@@ -83,6 +83,7 @@
     <string name="screen_on_desc">Lo schermo rimane accesso durante l\'allenamento</string>
     <string name="screen_off_desc">Lo schermo non rimane accesso durante l\'allenamento</string>
     <string name="language_italian">Italiano</string>
+    <string name="explore_exercises">Esplora esercizi</string>
     <string name="coming_soon">Prossimamente</string>
     <string name="add_to_empty_workout">Inizia aggiungendo un esercizio al tuo allenamento</string>
     <string name="elapsed_time">Tempo trascorso</string>
@@ -199,4 +200,5 @@
     <string name="add">Aggiungi</string>
     <string name="save">Salva</string>
     <string name="workout_saved">Allenamento salvato</string>
+    <string name="start_creating_routine">Inizia creando una nuova routine</string>
 </resources>

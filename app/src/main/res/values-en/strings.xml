@@ -72,7 +72,7 @@
     <string name="creation_date">Creation date</string>
     <string name="label_when">When</string>
     <string name="select_date">Select date</string>
-    <string name="start_creating_routine">Start by adding an exercise to your routine</string>
+    <string name="start_adding_exercises">Start by adding an exercise to your routine</string>
     <string name="exit_create_routine">Are you sure you want to exit? Your routine won\'t be saved</string>
     <string name="title">Title</string>
     <string name="set">Set</string>
@@ -109,6 +109,7 @@
 
 
     <!--Profile screen-->
+    <string name="explore_exercises">Explore exercises</string>
     <string name="coming_soon">Coming soon</string>
 
 
@@ -234,6 +235,7 @@
     <string name="save">Save</string>
     <string name="workout_saved">Workout saved</string>
     <string name="edit_routine">Edit routine</string>
+    <string name="start_creating_routine">Start by creating a new routine</string>
 
 
 </resources>

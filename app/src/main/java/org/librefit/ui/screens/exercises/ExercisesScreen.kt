@@ -110,10 +110,10 @@ fun ExercisesScreen(
     CustomScaffold(
         title = stringResource(id = R.string.exercises),
         navigateBack = navigateBack,
-        actions = listOf {
+        actions = if (addExercises) listOf {
             viewModel.addSelectedExerciseToList(selectedExercisesList)
             navigateBack()
-        },
+        } else listOf(),
         actionsDescription = listOf(stringResource(R.string.add)),
         actionsEnabled = listOf(selectedExercisesList.isNotEmpty()),
         fabAction = {
@@ -246,7 +246,9 @@ private fun AddExerciseScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .clickable {
+                    .clickable(
+                        enabled = addExercises
+                    ) {
                         if (selectedExercisesList.contains(exercise)) {
                             selectedExercisesList.remove(exercise)
                         } else {
@@ -255,19 +257,23 @@ private fun AddExerciseScreenContent(
                     },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Checkbox(
-                    modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                    checked = selectedExercisesList.contains(exercise),
-                    onCheckedChange = {
-                        if (selectedExercisesList.contains(exercise)) {
-                            selectedExercisesList.remove(exercise)
-                        } else {
-                            selectedExercisesList.add(exercise)
+                if (addExercises) {
+                    Checkbox(
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                        checked = selectedExercisesList.contains(exercise),
+                        onCheckedChange = {
+                            if (selectedExercisesList.contains(exercise)) {
+                                selectedExercisesList.remove(exercise)
+                            } else {
+                                selectedExercisesList.add(exercise)
+                            }
                         }
-                    }
-                )
+                    )
+                }
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = if (addExercises) 0.dp else 20.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(

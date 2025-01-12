@@ -238,7 +238,7 @@ private fun EditScreen(
                 ) {
                     DumbbellLottie()
                     Text(
-                        text = stringResource(id = R.string.start_creating_routine),
+                        text = stringResource(id = R.string.start_adding_exercises),
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )

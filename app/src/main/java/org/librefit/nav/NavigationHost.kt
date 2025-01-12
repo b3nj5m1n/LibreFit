@@ -65,6 +65,7 @@ fun NavigationHost(userPreferences: DataStoreManager) {
         }
         composable<Destination.ExercisesScreen> {
             ExercisesScreen(
+                addExercises = it.toRoute<Destination.ExercisesScreen>().addExercises,
                 navigateBack = { navController.popBackStack() },
                 viewModel = sharedViewModel
             )
