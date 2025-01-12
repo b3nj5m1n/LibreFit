@@ -48,7 +48,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -127,7 +126,6 @@ fun ExercisesScreen(
             addExercises = addExercises,
             innerPadding = innerPadding,
             selectedExercisesList = selectedExercisesList,
-            viewModel = viewModel,
             listState = lazyListState
         )
     }
@@ -138,14 +136,12 @@ private fun AddExerciseScreenContent(
     addExercises: Boolean,
     innerPadding: PaddingValues,
     selectedExercisesList: MutableList<ExerciseDC>,
-    viewModel: SharedViewModel,
     listState: LazyListState
 ) {
     val exerciseList = MainApplication.exercisesList
-    // It deletes previous filters applied each time screen recomposes
-    LaunchedEffect(Unit) {
-        viewModel.cleanFilter()
-    }
+
+    val viewModel: ExercisesScreenViewModel = viewModel()
+
 
     var isFilterExpanded = rememberSaveable { mutableStateOf(false) }
 
@@ -245,6 +241,7 @@ private fun AddExerciseScreenContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .animateItem()
                     .height(100.dp)
                     .clickable(
                         enabled = addExercises

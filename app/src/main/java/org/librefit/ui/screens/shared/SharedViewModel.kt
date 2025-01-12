@@ -20,7 +20,6 @@
 package org.librefit.ui.screens.shared
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +27,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
 import org.librefit.db.Workout
-import org.librefit.enums.Category
-import org.librefit.enums.Equipment
-import org.librefit.enums.Force
-import org.librefit.enums.Level
-import org.librefit.enums.Mechanic
-import org.librefit.enums.Muscle
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
 import kotlin.random.Random
@@ -56,72 +49,6 @@ class SharedViewModel : ViewModel() {
         selectedExercisesList.clear()
     }
 
-
-    //They are used to filter the exercise list in AddExerciseScreen
-    private var levelFilter = mutableStateOf<Level?>(null)
-    private var forceFilter = mutableStateOf<Force?>(null)
-    private var mechanicFilter = mutableStateOf<Mechanic?>(null)
-    private var equipmentFilter = mutableStateOf<Equipment?>(null)
-    private var muscleFilter = mutableStateOf<Muscle?>(null)
-    private var categoryFilter = mutableStateOf<Category?>(null)
-
-
-    fun cleanFilter() {
-        levelFilter.value = null
-        forceFilter.value = null
-        mechanicFilter.value = null
-        equipmentFilter.value = null
-        muscleFilter.value = null
-        categoryFilter.value = null
-    }
-
-    fun updateFilter(enum: Enum<*>?, mode: Int) {
-        when (mode) {
-            0 -> levelFilter.value = enum as Level?
-            1 -> forceFilter.value = enum as Force?
-            2 -> mechanicFilter.value = enum as Mechanic?
-            3 -> equipmentFilter.value = enum as Equipment?
-            4 -> muscleFilter.value = enum as Muscle?
-            5 -> categoryFilter.value = enum as Category?
-            else -> null
-        }
-    }
-
-    fun getFilter(mode: Int): Enum<*>? {
-        return when (mode) {
-            0 -> levelFilter.value
-            1 -> forceFilter.value
-            2 -> mechanicFilter.value
-            3 -> equipmentFilter.value
-            4 -> muscleFilter.value
-            5 -> categoryFilter.value
-            else -> null
-        }
-    }
-
-    fun filterExercise(exercise: ExerciseDC): Boolean {
-        if (levelFilter.value != null && levelFilter.value != exercise.level) {
-            return false
-        }
-        if (forceFilter.value != null && forceFilter.value != exercise.force) {
-            return false
-        }
-        if (mechanicFilter.value != null && mechanicFilter.value != exercise.mechanic) {
-            return false
-        }
-        if (equipmentFilter.value != null && equipmentFilter.value != exercise.equipment) {
-            return false
-        }
-        if (muscleFilter.value != null && !exercise.primaryMuscles.contains(muscleFilter.value)
-            && !exercise.secondaryMuscles.contains(muscleFilter.value)
-        ) {
-            return false
-        }
-        if (categoryFilter.value != null && categoryFilter.value != exercise.category) {
-            return false
-        }
-        return true
-    }
 
 
     private var passedWorkout = Workout()

@@ -72,16 +72,14 @@ import org.librefit.enums.Force
 import org.librefit.enums.Level
 import org.librefit.enums.Mechanic
 import org.librefit.enums.Muscle
-import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.exerciseEnumToStringId
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FiltersCard(
     isFilterExpanded: MutableState<Boolean>,
-    viewModel: SharedViewModel
+    viewModel: ExercisesScreenViewModel
 ) {
-    //TODO: move FiltersCard to ExercisesScreen and remove method from SharedViewModel
     var iconRotation by rememberSaveable { mutableFloatStateOf(0f) }
 
     OutlinedCard(
