@@ -31,8 +31,8 @@ import java.time.LocalDateTime
 
 @Dao
 interface WorkoutDao {
-    @Query("SELECT * FROM workouts WHERE 1 = routine ORDER BY title" )
-    fun getRoutines() : Flow<List<Workout>>
+    @Query("SELECT * FROM workouts WHERE 1 = routine ORDER BY title")
+    fun getRoutines(): Flow<List<Workout>>
 
     @Query("SELECT * FROM workouts WHERE 0 = routine ORDER BY completed")
     fun getCompletedWorkouts(): Flow<List<Workout>>
@@ -41,22 +41,28 @@ interface WorkoutDao {
     fun getWorkout(id: Int): Workout
 
     @Insert
-    fun addWorkout(workout: Workout) : Long
+    suspend fun addWorkout(workout: Workout): Long
 
     @Update
-    fun updateWorkout(workout: Workout)
+    suspend fun updateWorkout(workout: Workout)
 
     @Delete
-    fun deleteWorkout(workout: Workout)
+    suspend fun deleteWorkout(workout: Workout)
 
     @Insert
-    fun addExercise(exercise: Exercise) : Long
+    suspend fun addExercise(exercise: Exercise): Long
+
+    @Update
+    suspend fun updateExercise(exercise: Exercise)
 
     @Delete
     suspend fun deleteExercise(exercise: Exercise)
 
     @Insert
     suspend fun addSet(set: Set)
+
+    @Update
+    suspend fun updateSet(set: Set)
 
     @Delete
     suspend fun deleteSet(set: Set)
@@ -65,32 +71,86 @@ interface WorkoutDao {
     suspend fun getExercisesFromWorkout(workoutId: Int): List<Exercise>
 
     @Query("SELECT * FROM sets WHERE exerciseId = :exerciseId")
-    suspend fun getSetsFromExercise(exerciseId : Int): List<Set>
+    suspend fun getSetsFromExercise(exerciseId: Int): List<Set>
 
     @Transaction
-    suspend fun addWorkoutWithExercises(workout: Workout, exercises: List<ExerciseWithSets>) {
-        val workoutId = if (workout.routine) {
-            addWorkout(workout.copy(id = 0, completed = LocalDateTime.now())).toInt()
+    suspend fun addWorkoutWithExercises(
+        workout: Workout,
+        exercisesWithSets: List<ExerciseWithSets>
+    ) {
+        val isNewWorkout = workout.id == 0
+
+        val workoutId = if (isNewWorkout) {
+            if (workout.routine) {
+                addWorkout(workout.copy(completed = LocalDateTime.now())).toInt()
+            } else {
+                addWorkout(workout.copy(created = LocalDateTime.now())).toInt()
+            }
         } else {
-            addWorkout(workout.copy(id = 0, created = LocalDateTime.now())).toInt()
+            workout.id
         }
-        exercises.forEach {
-            val exerciseId = addExercise(
-                Exercise(
-                    exerciseId = it.exerciseDC.id,
-                    notes = it.note,
-                    workoutId = workoutId,
-                    setMode = it.setMode,
-                    restTime = it.restTime
-                )
-            )
-            it.sets.forEach { set ->
-                addSet(
-                    set.copy(
-                        id = 0,
-                        exerciseId = exerciseId.toInt()
+
+        if (!isNewWorkout) {
+            updateWorkout(workout)
+        }
+
+        val oldExercises = getExercisesFromWorkout(workoutId)
+
+        // Deletes from db the exercises not found in the passed exercises
+        oldExercises.filter { e -> !exercisesWithSets.any { it.exerciseId == e.id } }
+            .forEach { exercise ->
+                deleteExercise(exercise)
+            }
+
+        exercisesWithSets.forEach { exerciseWithSets ->
+            val isNewExercise = !oldExercises.any { it.id == exerciseWithSets.exerciseId }
+
+            val exerciseId = if (isNewExercise) {
+                addExercise(
+                    Exercise(
+                        exerciseId = exerciseWithSets.exerciseDC.id,
+                        notes = exerciseWithSets.note,
+                        workoutId = workoutId,
+                        setMode = exerciseWithSets.setMode,
+                        restTime = exerciseWithSets.restTime
+                    )
+                ).toInt()
+            } else {
+                exerciseWithSets.exerciseId
+            }
+
+
+            if (!isNewExercise) {
+                updateExercise(
+                    Exercise(
+                        id = exerciseWithSets.exerciseId,
+                        exerciseId = exerciseWithSets.exerciseDC.id,
+                        notes = exerciseWithSets.note,
+                        workoutId = workoutId,
+                        setMode = exerciseWithSets.setMode,
+                        restTime = exerciseWithSets.restTime
                     )
                 )
+            }
+
+            val oldSets = getSetsFromExercise(exerciseId)
+
+            // Deletes from db the sets not found in the passed sets
+            oldSets.filter { s -> !exerciseWithSets.sets.any { it.id == s.id } }.forEach { set ->
+                deleteSet(set)
+            }
+
+            exerciseWithSets.sets.forEach { set ->
+                if (oldSets.any { it.id == set.id }) {
+                    updateSet(set)
+                } else {
+                    addSet(
+                        set.copy(
+                            id = 0,
+                            exerciseId = exerciseId.toInt()
+                        )
+                    )
+                }
             }
         }
     }

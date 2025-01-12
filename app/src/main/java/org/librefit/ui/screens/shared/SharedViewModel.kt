@@ -136,11 +136,13 @@ class SharedViewModel : ViewModel() {
     }
 
     fun setPassedData(
-        workout: Workout,
+        workout: Workout? = null,
         exercises: List<ExerciseWithSets>,
         routine: Workout? = null
     ) {
-        passedWorkout = workout
+        if (workout != null) {
+            passedWorkout = workout
+        }
         passedExercises = exercises
         if (routine != null) {
             passedRoutine = routine
@@ -180,23 +182,22 @@ class SharedViewModel : ViewModel() {
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
-                val workout = workoutDao.getWorkout(workoutId)
-                if (workout.routine) {
-                    passedWorkout = workout.copy(routine = false)
-                    passedRoutine = Workout()
+                passedWorkout = workoutDao.getWorkout(workoutId)
+
+                passedRoutine = if (passedWorkout.routine) {
+                    passedWorkout
                 } else {
-                    passedWorkout = workout
-                    passedRoutine = runCatching { workoutDao.getRoutines().first() }
+                    runCatching { workoutDao.getRoutines().first() }
                         .getOrDefault(emptyList())
-                        .find { it.workoutId == workout.workoutId }
-                        .takeIf { it?.id != workout.id } ?: Workout()
+                        .find { it.workoutId == passedWorkout.workoutId }
+                        .takeIf { it?.id != passedWorkout.id } ?: Workout()
                 }
+
             }
         } else {
             passedWorkout = Workout()
             passedRoutine = Workout()
             passedExercises = emptyList()
         }
-
     }
 }

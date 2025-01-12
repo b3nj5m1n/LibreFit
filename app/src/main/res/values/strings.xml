@@ -85,7 +85,7 @@
     <string name="select_date">Select date</string>
 
 
-    <!--Create routine screen-->
+    <!--Edit screen-->
     <string name="start_creating_routine">Start by adding an exercise to your routine</string>
     <string name="exit_create_routine">Are you sure you want to exit? Your routine won\'t be saved</string>
     <string name="title">Title</string>
@@ -96,12 +96,14 @@
     <string name="notes">Notes</string>
     <string name="title_cannot_be_empty">Title cannot be empty</string>
     <string name="title_length_exceeded_30">Title cannot exceed 30 characters</string>
+    <string name="edit_routine">Edit routine</string>
+    <string name="edit_workout">Edit workout</string>
 
 
     <!--Home screen-->
     <string name="your_routines">Your routines</string>
     <string name="start_empty_workout">Start empty workout</string>
-    <string name="create_routine">Create a routine</string>
+    <string name="create_routine">Create routine</string>
     <string name="start_routine">Start routine</string>
     <string name="confirm_delete">Are you certain you want to delete this? This action cannot be reversed.</string>
 

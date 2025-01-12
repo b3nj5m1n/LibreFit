@@ -32,9 +32,10 @@
 
 
     <!--Home screen-->
+    <string name="edit_workout">Edit workout</string>
     <string name="your_routines">Your routines</string>
     <string name="start_empty_workout">Start empty workout</string>
-    <string name="create_routine">Create a routine</string>
+    <string name="create_routine">Create routine</string>
 
 
     <!--About screen-->
@@ -232,6 +233,7 @@
     <string name="add">Add</string>
     <string name="save">Save</string>
     <string name="workout_saved">Workout saved</string>
+    <string name="edit_routine">Edit routine</string>
 
 
 </resources>

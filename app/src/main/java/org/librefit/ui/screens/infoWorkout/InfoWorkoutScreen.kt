@@ -57,6 +57,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.SetMode
+import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
@@ -128,7 +129,7 @@ fun InfoWorkoutScreen(
         navigateBack = { navController.popBackStack() },
         actions = listOf(
             {
-                //TODO: open create routine screen
+                navController.navigate(Destination.EditWorkoutScreen)
             },
             {
                 showConfirmDialog = true
@@ -210,7 +211,7 @@ fun InfoWorkoutScreen(
             }
 
 
-            if (viewModel.getRoutineTitle() != "") {
+            if (viewModel.getRoutineTitle() != "" && !viewModel.isRoutine()) {
                 item {
                     HeadlineText(stringResource(R.string.routine))
                 }

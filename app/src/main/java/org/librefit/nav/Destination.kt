@@ -31,7 +31,7 @@ sealed class Destination {
     object BeforeSavingScreen
 
     @Serializable
-    object CreateRoutineScreen
+    object EditWorkoutScreen
 
     @Serializable
     object ExercisesScreen

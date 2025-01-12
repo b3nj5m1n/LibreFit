@@ -34,15 +34,15 @@ import org.librefit.data.DataStoreManager
 import org.librefit.ui.screens.MainScreen
 import org.librefit.ui.screens.about.AboutScreen
 import org.librefit.ui.screens.about.LicenseScreen
-import org.librefit.ui.screens.createRoutine.CreateRoutineScreen
+import org.librefit.ui.screens.beforeSaving.BeforeSavingScreen
+import org.librefit.ui.screens.edit.EditScreen
+import org.librefit.ui.screens.exercises.ExercisesScreen
 import org.librefit.ui.screens.infoWorkout.InfoWorkoutScreen
 import org.librefit.ui.screens.settings.SettingsScreen
-import org.librefit.ui.screens.shared.ExercisesScreen
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.screens.shared.SuccessScreen
 import org.librefit.ui.screens.workout.RequestPermissionsScreen
 import org.librefit.ui.screens.workout.WorkoutScreen
-import org.librefit.ui.screens.workout.beforeSaving.BeforeSavingScreen
 
 @Composable
 fun NavigationHost(userPreferences: DataStoreManager) {
@@ -75,8 +75,8 @@ fun NavigationHost(userPreferences: DataStoreManager) {
                 navController = navController
             )
         }
-        composable<Destination.CreateRoutineScreen> {
-            CreateRoutineScreen(
+        composable<Destination.EditWorkoutScreen> {
+            EditScreen(
                 sharedViewModel = sharedViewModel,
                 navController = navController
             )

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -23,7 +23,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
 import org.librefit.db.Workout
@@ -41,12 +40,6 @@ class ProfileScreenViewModel : ViewModel() {
             workoutDao.getCompletedWorkouts().collect { workouts ->
                 workoutList.value = workouts
             }
-        }
-    }
-
-    fun deleteWorkout(workout: Workout){
-        viewModelScope.launch(Dispatchers.IO){
-            workoutDao.deleteWorkout(workout)
         }
     }
 }

@@ -46,7 +46,7 @@ class WorkoutScreenViewModel(
     //TODO: dependency injection using hilt
     context: Context
 ) : ViewModel() {
-    var initialized = false
+    private var initialized = false
     val exercises = mutableStateListOf<ExerciseWithSets>()
 
     fun initializeExercises(newExercises: List<ExerciseWithSets>) {

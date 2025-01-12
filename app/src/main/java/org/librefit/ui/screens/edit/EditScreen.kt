@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.createRoutine
+package org.librefit.ui.screens.edit
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +53,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.db.Workout
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Destination
@@ -70,11 +69,11 @@ import org.librefit.util.ExerciseWithSets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateRoutineScreen(
+fun EditScreen(
     sharedViewModel: SharedViewModel,
     navController: NavHostController
 ) {
-    val viewModel: CreateRoutineScreenViewModel = viewModel()
+    val viewModel: EditScreenViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->
@@ -84,6 +83,11 @@ fun CreateRoutineScreen(
                 )
             )
         }
+        viewModel.initialize(
+            workout = sharedViewModel.getPassedWorkout(),
+            newExercises = sharedViewModel.getPassedExercises(),
+            routine = sharedViewModel.getPassedRoutine()
+        )
     }
 
     var showExitDialog by remember { mutableStateOf(false) }
@@ -95,7 +99,8 @@ fun CreateRoutineScreen(
     if (showExitDialog) {
         ConfirmDialog(
             title = stringResource(R.string.exit),
-            text = stringResource(id = R.string.exit_create_routine),
+            text = if (viewModel.getTypeOfEdit() == false) stringResource(id = R.string.exit_workout)
+            else stringResource(id = R.string.exit_create_routine),
             onConfirm = {
                 navController.popBackStack()
                 showExitDialog = false
@@ -105,7 +110,11 @@ fun CreateRoutineScreen(
     }
 
     CustomScaffold(
-        title = stringResource(id = R.string.create_routine),
+        title = when (viewModel.getTypeOfEdit()) {
+            null -> stringResource(R.string.create_routine)
+            true -> stringResource(R.string.edit_routine)
+            false -> stringResource(R.string.edit_workout)
+        },
         navigateBack = {
             if (viewModel.isListEmpty()) {
                 navController.popBackStack()
@@ -114,18 +123,23 @@ fun CreateRoutineScreen(
             }
         },
         actions = listOf {
-            viewModel.saveExercisesWithRoutine(
-                workout = Workout(
-                    title = viewModel.getTitle(),
-                    notes = viewModel.getNotes()
-                ),
-                exercises = viewModel.exercises
-            )
-            navController.navigate(Destination.SuccessScreen(SuccessMessage.ROUTINE_SAVED)) {
-                popUpTo(Destination.MainScreen) { inclusive = false }
+            if (viewModel.getTypeOfEdit() == false) {
+                sharedViewModel.setPassedData(
+                    workout = viewModel.getWorkout(),
+                    exercises = viewModel.getExercises(),
+                )
+                navController.navigate(Destination.BeforeSavingScreen)
+            } else {
+                viewModel.saveWorkoutWithExercisesInDB()
+                navController.navigate(Destination.SuccessScreen(SuccessMessage.ROUTINE_SAVED)) {
+                    popUpTo(Destination.MainScreen) { inclusive = false }
+                }
             }
         },
-        actionsDescription = listOf(stringResource(R.string.save)),
+        actionsDescription = listOf(
+            if (viewModel.getTypeOfEdit() == false) stringResource(R.string.done)
+            else stringResource(R.string.save)
+        ),
         actionsEnabled = listOf(viewModel.isTitleAllowed() && !viewModel.isListEmpty()),
         fabIcon = Icons.Default.Add,
         fabAction = {
@@ -133,7 +147,7 @@ fun CreateRoutineScreen(
         },
         fabDescription = stringResource(R.string.add_exercise)
     ) { innerPadding ->
-        CreateRoutineScreen(
+        EditScreen(
             innerPadding = innerPadding,
             viewModel = viewModel
         )
@@ -141,9 +155,9 @@ fun CreateRoutineScreen(
 }
 
 @Composable
-private fun CreateRoutineScreen(
+private fun EditScreen(
     innerPadding: PaddingValues,
-    viewModel: CreateRoutineScreenViewModel
+    viewModel: EditScreenViewModel
 ) {
 
     /**
@@ -269,7 +283,8 @@ private fun CreateRoutineScreen(
                             mode = mode
                         )
                     },
-                    showInfo = { infoMode = it }
+                    showInfo = { infoMode = it },
+                    workout = viewModel.getTypeOfEdit() == false
                 )
             }
         }
@@ -280,5 +295,5 @@ private fun CreateRoutineScreen(
 @Preview
 @Composable
 private fun CreateRoutineScreenPreview() {
-    CreateRoutineScreen(viewModel(), rememberNavController())
+    EditScreen(viewModel(), rememberNavController())
 }

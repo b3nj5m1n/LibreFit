@@ -17,12 +17,10 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.createRoutine
+package org.librefit.ui.screens.edit
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +32,7 @@ import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseWithSets
 import kotlin.random.Random
 
-class CreateRoutineScreenViewModel : ViewModel() {
+class EditScreenViewModel : ViewModel() {
     val exercises = mutableStateListOf<ExerciseWithSets>()
 
     fun getExercises(): List<ExerciseWithSets> {
@@ -70,6 +68,7 @@ class CreateRoutineScreenViewModel : ViewModel() {
      *  - 0: [Set.weight]
      *  - 1: [Set.reps]
      *  - 2: [Set.elapsedTime]
+     *  - 3: [Set.completed] (where a [value] of 1 indicates 'true')
      *
      * The method will update the specified attribute of the [Set] if it matches the provided [set] ID.
      * If the [mode] is not recognized, the original [set] will remain unchanged.
@@ -83,6 +82,7 @@ class CreateRoutineScreenViewModel : ViewModel() {
                         0 -> set.copy(weight = value)
                         1 -> set.copy(reps = value.toInt())
                         2 -> set.copy(elapsedTime = value.toInt())
+                        3 -> set.copy(completed = value == 1f)
                         else -> set
                     }
                 } else it
@@ -149,48 +149,74 @@ class CreateRoutineScreenViewModel : ViewModel() {
         return exercises.isEmpty()
     }
 
+    private var initialized = false
+    private val workout = mutableStateOf(Workout())
+    private var routine = Workout()
+    private var isRoutine = false
 
-    private var titleRoutine by mutableStateOf("")
 
-    fun updateTitle(string: String) {
-        titleRoutine = string
+    fun initialize(workout: Workout, newExercises: List<ExerciseWithSets>, routine: Workout) {
+        if (!initialized) {
+            isRoutine = workout.id == 0 || workout.routine
+
+            this.workout.value = workout.copy(routine = false)
+
+            exercises.addAll(newExercises)
+
+            this.routine = routine
+
+            initialized = true
+        }
+    }
+
+    fun getWorkout(): Workout {
+        return workout.value
     }
 
     fun getTitle(): String {
-        return titleRoutine
+        return workout.value.title
+    }
+
+    fun updateTitle(string: String) {
+        workout.value = workout.value.copy(title = string)
     }
 
     fun isTitleEmpty(): Boolean {
-        return titleRoutine.isEmpty()
+        return workout.value.title.isEmpty()
     }
 
     fun isTitleTooLong(): Boolean {
-        return titleRoutine.length >= 30
+        return workout.value.title.length >= 30
     }
 
     fun isTitleAllowed(): Boolean {
         return !isTitleEmpty() && !isTitleTooLong()
     }
 
-
-    private var notesRoutine by mutableStateOf("")
-
     fun updateNotes(string: String) {
-        notesRoutine = string
+        workout.value = workout.value.copy(notes = string)
     }
 
     fun getNotes(): String {
-        return notesRoutine
+        return workout.value.notes
     }
-
 
     private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
-    fun saveExercisesWithRoutine(workout: Workout, exercises: List<ExerciseWithSets>) {
+    fun saveWorkoutWithExercisesInDB() {
         val list = exercises.toList()
         viewModelScope.launch(Dispatchers.IO) {
-            workoutDao.addWorkoutWithExercises(workout.copy(routine = true), list)
+            workoutDao.addWorkoutWithExercises(workout.value.copy(routine = isRoutine), list)
         }
+    }
+
+
+    /**
+     * Returns `null` when a new routine is created, `true` when a routine is edited and `false` when
+     * a past workout is edited
+     */
+    fun getTypeOfEdit(): Boolean? {
+        return if (workout.value.id == 0) null else isRoutine
     }
 }
 

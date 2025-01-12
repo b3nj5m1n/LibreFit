@@ -43,7 +43,6 @@ import org.librefit.ui.screens.shared.SharedViewModel
  */
 fun checkPermissionsBeforeNavigateToWorkout(
     workoutId: Int = 0,
-    title: String = "",
     requestPermissionAgain: Boolean = false,
     navController: NavHostController,
     sharedViewModel: SharedViewModel? = null,

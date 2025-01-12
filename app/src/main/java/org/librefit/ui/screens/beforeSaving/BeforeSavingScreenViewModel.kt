@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.workout.beforeSaving
+package org.librefit.ui.screens.beforeSaving
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -177,7 +177,7 @@ class BeforeSavingScreenViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             workoutDao.addWorkoutWithExercises(
                 workout = workout.value,
-                exercises = list
+                exercisesWithSets = list
             )
         }
     }

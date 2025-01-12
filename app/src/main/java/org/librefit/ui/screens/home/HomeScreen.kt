@@ -159,7 +159,6 @@ fun HomeScreen(
                         ) {
                             checkPermissionsBeforeNavigateToWorkout(
                                 workoutId = routine.id,
-                                title = routine.title,
                                 requestPermissionAgain = requestPermissionAgain.value,
                                 navController = navController,
                                 sharedViewModel = sharedViewModel,
@@ -180,7 +179,10 @@ fun HomeScreen(
             CustomTextButton(
                 text = stringResource(id = R.string.create_routine),
                 icon = Icons.Default.AddCircle,
-                onClick = { navController.navigate(Destination.CreateRoutineScreen) },
+                onClick = {
+                    sharedViewModel.updateWorkoutId(0)
+                    navController.navigate(Destination.EditWorkoutScreen)
+                },
             )
         }
 

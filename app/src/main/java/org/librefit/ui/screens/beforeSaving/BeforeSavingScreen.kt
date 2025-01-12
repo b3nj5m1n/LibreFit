@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.workout.beforeSaving
+package org.librefit.ui.screens.beforeSaving
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

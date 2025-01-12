@@ -221,6 +221,7 @@ fun WorkoutScreen(
                         onClick = {
                             sharedViewModel.setPassedData(
                                 workout = sharedViewModel.getPassedWorkout().copy(
+                                    id = 0,
                                     timeElapsed = viewModel.timeElapsed,
                                     completed = LocalDateTime.now(),
                                     routine = false
