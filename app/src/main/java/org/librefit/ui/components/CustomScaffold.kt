@@ -34,7 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.HapticFeedbackConstantsCompat
 import org.librefit.R
 
 
@@ -98,19 +100,26 @@ fun CustomScaffold(
                     }
                 },
                 actions = {
+                    val view = LocalView.current
+
                     actions.forEachIndexed { index, action ->
                         val description = actionsDescription.getOrNull(index)
 
                         val icon = actionsIcons.getOrNull(index)
 
-
                         val enabled = actionsEnabled.getOrNull(index) != false
+
+                        val elevated = actionsElevated.getOrNull(index) != false
+
 
                         if (icon != null) {
                             IconButton(
-                                onClick = action,
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstantsCompat.CONTEXT_CLICK)
+                                    action()
+                                },
                                 enabled = enabled,
-                                colors = if (actionsElevated.getOrNull(index) != false)
+                                colors = if (elevated)
                                     IconButtonDefaults.filledIconButtonColors() else
                                     IconButtonDefaults.iconButtonColors()
                             ) {
@@ -122,9 +131,12 @@ fun CustomScaffold(
                         }
                         if (description != null) {
                             Button(
-                                onClick = action,
+                                onClick = {
+                                    view.performHapticFeedback(HapticFeedbackConstantsCompat.CONTEXT_CLICK)
+                                    action()
+                                },
                                 enabled = enabled,
-                                colors = if (actionsElevated.getOrNull(index) != false)
+                                colors = if (elevated)
                                     ButtonDefaults.buttonColors() else
                                     ButtonDefaults.textButtonColors()
                             ) {

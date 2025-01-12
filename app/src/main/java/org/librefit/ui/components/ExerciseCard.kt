@@ -78,12 +78,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.R
@@ -210,9 +212,18 @@ fun ExerciseCard(
                 Text(stringResource(R.string.rest_time) + ": " + restTime
                         + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
             }
+
+            val view = LocalView.current
+            var oldValue by remember { mutableIntStateOf(0) }
             Slider(
                 value = restTime.toFloat(),
-                onValueChange = { restTime = it.roundToInt() },
+                onValueChange = {
+                    restTime = it.roundToInt()
+                    if (restTime != oldValue) {
+                        view.performHapticFeedback(HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK)
+                        oldValue = restTime
+                    }
+                },
                 onValueChangeFinished = {
                     updateExercise(
                         restTime.toString(),

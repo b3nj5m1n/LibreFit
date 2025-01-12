@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. LibreFit
+ * Copyright (c) 2024-2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -23,7 +23,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.HapticFeedbackConstantsCompat
 import org.librefit.R
 
 @Composable
@@ -33,19 +35,27 @@ fun ConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss : () -> Unit
 ){
+    val view = LocalView.current
+
     AlertDialog(
         title = { Text(text = title) },
         text = { Text(text = text) },
         onDismissRequest = onDismiss ,
         confirmButton = {
             TextButton(
-                onClick = onConfirm
+                onClick = {
+                    view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
+                    onConfirm()
+                }
             ){
                 Text(text = stringResource(R.string.ok_dialog))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss ){
+            TextButton(onClick = {
+                view.performHapticFeedback(HapticFeedbackConstantsCompat.REJECT)
+                onDismiss()
+            }) {
                 Text(text = stringResource(id = R.string.cancel_dialog))
             }
         }

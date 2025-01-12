@@ -57,11 +57,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.librefit.R
 import org.librefit.data.DataStoreManager
@@ -135,6 +137,8 @@ fun SettingsScreen(
         )
     }
 
+    val view = LocalView.current
+
     CustomScaffold(
         title = stringResource(id = R.string.settings),
         navigateBack = navigateBack
@@ -172,6 +176,7 @@ fun SettingsScreen(
                                 SegmentedButton(
                                     selected = selectedTheme == mode,
                                     onClick = {
+                                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
                                         viewModel.savePreference(
                                             key = userPreferences.themeModeKey,
                                             value = index
@@ -220,6 +225,10 @@ fun SettingsScreen(
                             modifier = paddingModifier,
                             checked = materialModeOn,
                             onCheckedChange = {
+                                view.performHapticFeedback(
+                                    if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                    else HapticFeedbackConstantsCompat.TOGGLE_OFF
+                                )
                                 viewModel.savePreference(
                                     key = userPreferences.materialModeKey,
                                     value = it
@@ -263,6 +272,10 @@ fun SettingsScreen(
                         modifier = paddingModifier,
                         checked = keepWorkoutScreenOn,
                         onCheckedChange = {
+                            view.performHapticFeedback(
+                                if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                else HapticFeedbackConstantsCompat.TOGGLE_OFF
+                            )
                             viewModel.savePreference(
                                 key = userPreferences.keepOnWorkoutScreenKey,
                                 value = it
@@ -336,6 +349,11 @@ fun SettingsScreen(
                         modifier = paddingModifier,
                         checked = viewModel.isIgnoringBatteryOptimization.value,
                         onCheckedChange = {
+                            view.performHapticFeedback(
+                                if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                else HapticFeedbackConstantsCompat.TOGGLE_OFF
+                            )
+
                             var intent: Intent
                             if (!viewModel.isIgnoringBatteryOptimization.value) {
                                 intent =
