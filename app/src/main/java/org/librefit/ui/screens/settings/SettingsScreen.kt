@@ -95,7 +95,7 @@ fun SettingsScreen(
 
     var selectedLanguage by remember {
         mutableStateOf(
-            AppCompatDelegate.getApplicationLocales().toLanguageTags()
+            AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore("-")
         )
     }
 
