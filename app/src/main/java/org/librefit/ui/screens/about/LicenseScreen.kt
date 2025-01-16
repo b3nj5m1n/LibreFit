@@ -75,6 +75,7 @@ fun LicenseScreen(navigateBack: () -> Unit) {
     if (showUrlDialog) {
         AlertDialog(
             onDismissRequest = { showUrlDialog = false },
+            title = { Text(stringResource(R.string.link)) },
             confirmButton = {
                 TextButton(
                     onClick = {
