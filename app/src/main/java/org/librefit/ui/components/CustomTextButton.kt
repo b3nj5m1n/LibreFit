@@ -44,6 +44,7 @@ fun CustomTextButton(
     onClick: () -> Unit
 ) {
     TextButton(
+        modifier = if (modifier != null) modifier else Modifier.fillMaxWidth(),
         onClick = onClick,
         colors = if (elevated) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -51,7 +52,6 @@ fun CustomTextButton(
         ),
     ) {
         Row(
-            modifier = if (modifier != null) modifier else Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

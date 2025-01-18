@@ -27,19 +27,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,16 +55,37 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
+import com.patrykandpatrick.vico.compose.common.ProvideVicoTheme
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
+import com.patrykandpatrick.vico.core.cartesian.Zoom
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
+import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import org.librefit.R
 import org.librefit.nav.Destination
+import org.librefit.ui.components.CustomTextButton
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
+import org.librefit.ui.components.rememberMarker
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.formatTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
+import java.text.DecimalFormat
+import java.time.LocalDateTime
 
 @Composable
 fun ProfileScreen(
@@ -67,25 +96,148 @@ fun ProfileScreen(
 
     val viewModel: ProfileScreenViewModel = viewModel()
 
-    val workoutList by viewModel.workoutList
-
-    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
-        Locale.getDefault()
-    )
-
-
+    val labelListKey = ExtraStore.Key<List<String>>()
+    val modelProducer = remember { CartesianChartModelProducer() }
+    LaunchedEffect(viewModel.getChartMode()) {
+        modelProducer.runTransaction {
+            columnSeries { series(viewModel.getYAxisDataChart()) }
+            extras { it[labelListKey] = viewModel.getXAxisDataChart() }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
             .padding(paddingValues = innerPadding)
             .padding(start = 15.dp, end = 15.dp)
-            .fillMaxSize()
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        //TODO: body measurements
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomTextButton(
+                    text = stringResource(R.string.statistics),
+                    icon = ImageVector.vectorResource(R.drawable.ic_chart),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    //TODO: statistics view
+                }
+                CustomTextButton(
+                    text = stringResource(R.string.explore_exercises),
+                    icon = Icons.Default.Search,
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    navController.navigate(Destination.ExercisesScreen(addExercises = false))
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomTextButton(
+                    text = stringResource(R.string.measurements),
+                    icon = ImageVector.vectorResource(R.drawable.ic_monitor),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    //TODO: body measurements
+                }
+                CustomTextButton(
+                    text = stringResource(R.string.calendar),
+                    icon = Icons.Default.DateRange,
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    //TODO: calendar view
+                }
+            }
+        }
+
+        item { HeadlineText(stringResource(R.string.overview)) }
+
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                items(3) { index ->
+                    FilterChip(
+                        selected = viewModel.getChartMode() == index,
+                        onClick = { viewModel.updateChartMode(index) },
+                        label = {
+                            Text(
+                                stringResource(
+                                    when (index) {
+                                        0 -> R.string.duration
+                                        1 -> R.string.volume
+                                        else -> R.string.reps
+                                    }
+                                )
+                            )
+                        },
+                        leadingIcon = {
+                            if (viewModel.getChartMode() == index) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+        }
+
+        item {
+            ProvideVicoTheme(rememberM3VicoTheme()) {
+                val format = when (viewModel.getChartMode()) {
+                    0 -> DecimalFormat("# " + stringResource(R.string.min))
+                    1 -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                    else -> DecimalFormat()
+                }
+                CartesianChartHost(
+                    chart = rememberCartesianChart(
+                        rememberColumnCartesianLayer(
+                            columnProvider = ColumnCartesianLayer.ColumnProvider.series(
+                                rememberLineComponent(
+                                    fill = fill(MaterialTheme.colorScheme.primary),
+                                    thickness = 32.dp,
+                                    shape = CorneredShape.rounded(32, 32)
+                                )
+                            ),
+                            columnCollectionSpacing = 64.dp
+                        ),
+                        marker = rememberMarker(
+                            DefaultCartesianMarker.ValueFormatter.default(format)
+
+                        ),
+                        startAxis = VerticalAxis.rememberStart(
+                            valueFormatter = CartesianValueFormatter.decimal(format)
+                        ),
+                        bottomAxis = HorizontalAxis.rememberBottom(
+                            valueFormatter = CartesianValueFormatter { context, x, _ ->
+                                context.model.extraStore.getOrNull(labelListKey)?.get(x.toInt())
+                                    ?: LocalDateTime.now().format(viewModel.shortFormatter)
+                            }
+                        ),
+                    ),
+                    zoomState = rememberVicoZoomState(
+                        zoomEnabled = false,
+                        minZoom = Zoom.fixed(),
+                        maxZoom = Zoom.fixed()
+                    ),
+                    modelProducer = modelProducer,
+                )
+            }
+        }
 
         item { HeadlineText(stringResource(R.string.your_workouts)) }
 
-        if (workoutList.isEmpty()) {
+        if (viewModel.workoutList.isEmpty()) {
             item {
                 Column(
                     modifier = Modifier
@@ -103,13 +255,11 @@ fun ProfileScreen(
         }
 
         items(
-            items = workoutList,
+            items = viewModel.workoutList,
             key = { it.id }
         ) { workout ->
             ElevatedCard(
-                modifier = Modifier
-                    .animateItem()
-                    .padding(5.dp)
+                modifier = Modifier.animateItem()
             ) {
                 Column(
                     modifier = Modifier
@@ -130,7 +280,7 @@ fun ProfileScreen(
                             )
                             Text(
                                 text = stringResource(R.string.finished_on) + ": "
-                                        + workout.completed.format(formatter),
+                                        + workout.completed.format(viewModel.longFormatter),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(

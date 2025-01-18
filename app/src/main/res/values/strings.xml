@@ -117,6 +117,9 @@
     <string name="finished_on">Finished on</string>
     <string name="duration">Duration</string>
     <string name="nothing_to_show">Nothing to show yet</string>
+    <string name="measurements">Measurements</string>
+    <string name="calendar">Calendar</string>
+    <string name="min">min</string>
 
 
     <!--Permission request screen-->

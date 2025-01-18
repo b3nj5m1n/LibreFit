@@ -33,7 +33,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -104,16 +103,6 @@ fun HomeScreen(
                     )
                 },
             )
-        }
-
-        item {
-            CustomTextButton(
-                text = stringResource(R.string.explore_exercises),
-                icon = Icons.Default.Search,
-                elevated = false
-            ) {
-                navController.navigate(Destination.ExercisesScreen(addExercises = false))
-            }
         }
 
 

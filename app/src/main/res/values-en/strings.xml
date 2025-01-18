@@ -115,6 +115,9 @@
 
     <!-- Workout screen -->
     <string name="nothing_to_show">Nothing to show yet</string>
+    <string name="measurements">Measurements</string>
+    <string name="calendar">Calendar</string>
+    <string name="min">min</string>
     <string name="before_starting_the_workout">Before starting the workout</string>
     <string name="best_experience_permissions">For the best experience in LibreFit, the following permission has to be granted:</string>
     <string name="notifications_permission_desc">It allows to send notifications about the ongoing workouts and rest intervals.</string>

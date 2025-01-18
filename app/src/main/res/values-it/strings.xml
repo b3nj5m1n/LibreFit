@@ -156,6 +156,9 @@
     <string name="equipment_dumbbell">Manubri</string>
     <string name="category_stretching">Stretching</string>
     <string name="nothing_to_show">Ancora niente da mostrare</string>
+    <string name="measurements">Misurazioni</string>
+    <string name="calendar">Calendario</string>
+    <string name="min">min</string>
     <string name="before_starting_the_workout">Prima di iniziare l\'allenamento</string>
     <string name="best_experience_permissions">Per la migliore esperienza in LibreFit, deve essere concesso il seguente permesso:</string>
     <string name="notifications_permission_desc">Consente di inviare notifiche sugli allenamenti in corso e sugli intervalli di riposo.</string>

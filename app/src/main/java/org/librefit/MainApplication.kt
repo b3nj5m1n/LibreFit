@@ -31,6 +31,7 @@ import org.librefit.util.ExerciseDC
 
 class MainApplication : Application() {
     companion object{
+        // TODO: dependency injection with Hilt
         lateinit var workoutDatabase: WorkoutDatabase
         lateinit var notificationHelper: NotificationHelper
         lateinit var exercisesList: List<ExerciseDC>

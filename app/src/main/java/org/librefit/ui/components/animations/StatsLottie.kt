@@ -90,7 +90,7 @@ fun StatsLottie() {
         )
     )
     LottieAnimation(
-        modifier = Modifier.fillMaxWidth(0.9f),
+        modifier = Modifier.fillMaxWidth(),
         composition = composition,
         progress = { progress },
         dynamicProperties = dynamicProperties

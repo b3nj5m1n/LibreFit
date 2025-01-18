@@ -19,26 +19,87 @@
 
 package org.librefit.ui.screens.profile
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.MainApplication
 import org.librefit.db.Workout
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 class ProfileScreenViewModel : ViewModel() {
+    val workoutList = mutableStateListOf<Workout>()
+    private var volume: List<Float> = listOf()
+    private var reps: List<Int> = listOf()
+
+    val longFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
+        Locale.getDefault()
+    )
+
+    val shortFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(
+        Locale.getDefault()
+    )
+
+    private var chartMode = mutableIntStateOf(0)
+
+    fun getYAxisDataChart(): List<Float> {
+        return workoutList.mapIndexed { index, it ->
+            when (chartMode.intValue) {
+                0 -> it.timeElapsed / 60f
+                1 -> if (index < volume.lastIndex) volume[index] else 0f
+                else -> if (index < reps.lastIndex) reps[index].toFloat() else 0f
+            }
+        }
+    }
+
+    fun getXAxisDataChart(): List<String> {
+        return workoutList.map { it ->
+            it.completed.format(shortFormatter).toString()
+        }
+    }
+
+    fun updateChartMode(value: Int) {
+        chartMode.intValue = value
+    }
+
+    fun getChartMode(): Int {
+        return chartMode.intValue
+    }
+
+
+
     private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
-    var workoutList: MutableState<List<Workout>> = mutableStateOf(emptyList())
 
     init {
         getWorkoutList()
     }
 
     private fun getWorkoutList() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             workoutDao.getCompletedWorkouts().collect { workouts ->
-                workoutList.value = workouts
+                if (workoutList != workouts) {
+                    workoutList.clear()
+                    workoutList.addAll(workouts)
+
+                    volume = emptyList()
+                    reps = emptyList()
+                    workouts.forEach {
+                        var volumeData = 0f
+                        var repsData = 0
+                        workoutDao.getExercisesFromWorkout(it.id).forEach { exercise ->
+                            workoutDao.getSetsFromExercise(exercise.id).forEach { set ->
+                                volumeData += if (set.completed) set.weight * set.reps else 0f
+                                repsData += if (set.completed) set.reps else 0
+                            }
+                        }
+                        volume += volumeData
+                        reps += repsData
+                    }
+                }
             }
         }
     }
