@@ -43,7 +43,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        resourceConfigurations += setOf("en", "it")
+        androidResources {
+            localeFilters.addAll(listOf("en", "it"))
+        }
         applicationIdSuffix = "app"
 
     }
