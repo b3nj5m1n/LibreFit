@@ -31,23 +31,23 @@ import org.librefit.R
 @Composable
 fun ConfirmDialog(
     title: String,
-    text : String,
+    text: String,
     onConfirm: () -> Unit,
-    onDismiss : () -> Unit
-){
+    onDismiss: () -> Unit
+) {
     val view = LocalView.current
 
     AlertDialog(
         title = { Text(text = title) },
         text = { Text(text = text) },
-        onDismissRequest = onDismiss ,
+        onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
                 onClick = {
                     view.performHapticFeedback(HapticFeedbackConstantsCompat.CONFIRM)
                     onConfirm()
                 }
-            ){
+            ) {
                 Text(text = stringResource(R.string.ok_dialog))
             }
         },

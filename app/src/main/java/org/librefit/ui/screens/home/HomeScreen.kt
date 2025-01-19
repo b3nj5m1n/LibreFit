@@ -51,11 +51,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.DataStoreManager
 import org.librefit.nav.Destination
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomTextButton
@@ -67,15 +67,13 @@ import org.librefit.ui.screens.shared.SharedViewModel
 fun HomeScreen(
     innerPadding: PaddingValues,
     navController: NavHostController,
-    userPreferences: DataStoreManager,
     sharedViewModel: SharedViewModel,
 ) {
-    val viewModel: HomeScreenViewModel = viewModel()
+    val viewModel: HomeScreenViewModel = hiltViewModel()
 
     val context = LocalContext.current
 
-    val requestPermissionAgain =
-        userPreferences.requestPermissionsAgain.collectAsState(initial = false)
+    val requestPermissionAgain by viewModel.requestPermissionAgain.collectAsState()
 
     val routineList by viewModel.routineList
 
@@ -96,7 +94,7 @@ fun HomeScreen(
                 icon = Icons.Default.PlayArrow,
                 onClick = {
                     checkPermissionsBeforeNavigateToWorkout(
-                        requestPermissionAgain = requestPermissionAgain.value,
+                        requestPermissionAgain = requestPermissionAgain,
                         navController = navController,
                         sharedViewModel = sharedViewModel,
                         appContext = context.applicationContext
@@ -175,7 +173,7 @@ fun HomeScreen(
                     ) {
                         checkPermissionsBeforeNavigateToWorkout(
                             workoutId = routine.id,
-                            requestPermissionAgain = requestPermissionAgain.value,
+                            requestPermissionAgain = requestPermissionAgain,
                             navController = navController,
                             sharedViewModel = sharedViewModel,
                             appContext = context.applicationContext
@@ -196,7 +194,6 @@ fun HomeScreenPreview() {
     HomeScreen(
         innerPadding = PaddingValues(20.dp),
         rememberNavController(),
-        DataStoreManager(LocalContext.current),
         viewModel()
     )
 }

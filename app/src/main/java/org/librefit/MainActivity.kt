@@ -27,15 +27,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dagger.hilt.android.AndroidEntryPoint
 import org.librefit.data.DataStoreManager
 import org.librefit.enums.ThemeMode
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.nav.NavigationHost
 import org.librefit.services.WorkoutService
 import org.librefit.ui.theme.LibreFitTheme
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var userPreferences: DataStoreManager
+    @Inject
+    lateinit var userPreferences: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -44,7 +48,6 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
 
-        userPreferences = DataStoreManager(this)
 
         setContent {
             val theme = userPreferences.themeMode.collectAsState(ThemeMode.SYSTEM)
@@ -58,9 +61,7 @@ class MainActivity : AppCompatActivity() {
                     ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 }
             ) {
-                NavigationHost(
-                    userPreferences = userPreferences
-                )
+                NavigationHost()
             }
         }
     }

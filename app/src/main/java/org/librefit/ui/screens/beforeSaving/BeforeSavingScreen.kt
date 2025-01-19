@@ -54,7 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.enums.InfoMode
@@ -74,7 +74,7 @@ fun BeforeSavingScreen(
     sharedViewModel: SharedViewModel,
     navController: NavHostController
 ) {
-    val viewModel: BeforeSavingScreenViewModel = viewModel()
+    val viewModel: BeforeSavingScreenViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
         viewModel.initializeWorkout(sharedViewModel.getPassedWorkout())

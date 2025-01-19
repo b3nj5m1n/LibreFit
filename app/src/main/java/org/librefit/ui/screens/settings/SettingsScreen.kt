@@ -64,9 +64,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.librefit.R
-import org.librefit.data.DataStoreManager
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
 import org.librefit.ui.components.CustomScaffold
@@ -77,13 +76,10 @@ import org.librefit.ui.components.bottomMargin
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    navigateBack: () -> Unit,
-    userPreferences: DataStoreManager
+    navigateBack: () -> Unit
 ) {
 
-    val viewModel: SettingsScreenViewModel = viewModel()
-
-    viewModel.initPreferences(userPreferences)
+    val viewModel: SettingsScreenViewModel = hiltViewModel()
 
 
     val context = LocalContext.current
@@ -99,11 +95,11 @@ fun SettingsScreen(
         )
     }
 
-    val selectedTheme by userPreferences.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
+    val selectedTheme by viewModel.themeMode.collectAsState()
 
-    val keepWorkoutScreenOn by userPreferences.workoutScreenOn.collectAsState(initial = true)
+    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState()
 
-    val materialModeOn by userPreferences.materialMode.collectAsState(initial = false)
+    val materialModeOn by viewModel.materialMode.collectAsState()
 
 
     var showPreferenceDialog by remember { mutableStateOf(false) }
@@ -178,7 +174,7 @@ fun SettingsScreen(
                                     onClick = {
                                         view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
                                         viewModel.savePreference(
-                                            key = userPreferences.themeModeKey,
+                                            key = 0,
                                             value = index
                                         )
                                     },
@@ -230,7 +226,7 @@ fun SettingsScreen(
                                     else HapticFeedbackConstantsCompat.TOGGLE_OFF
                                 )
                                 viewModel.savePreference(
-                                    key = userPreferences.materialModeKey,
+                                    key = 1,
                                     value = it
                                 )
                             }
@@ -277,7 +273,7 @@ fun SettingsScreen(
                                 else HapticFeedbackConstantsCompat.TOGGLE_OFF
                             )
                             viewModel.savePreference(
-                                key = userPreferences.keepOnWorkoutScreenKey,
+                                key = 2,
                                 value = it
                             )
                         }
@@ -400,5 +396,5 @@ private fun languageCodeToId(code: String): Int {
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen({}, DataStoreManager(LocalContext.current))
+    SettingsScreen({})
 }

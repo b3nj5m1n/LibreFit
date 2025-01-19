@@ -30,7 +30,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import org.librefit.data.DataStoreManager
 import org.librefit.ui.screens.MainScreen
 import org.librefit.ui.screens.about.AboutScreen
 import org.librefit.ui.screens.about.LicenseScreen
@@ -38,19 +37,18 @@ import org.librefit.ui.screens.beforeSaving.BeforeSavingScreen
 import org.librefit.ui.screens.edit.EditScreen
 import org.librefit.ui.screens.exercises.ExercisesScreen
 import org.librefit.ui.screens.infoWorkout.InfoWorkoutScreen
+import org.librefit.ui.screens.requestPermission.RequestPermissionScreen
 import org.librefit.ui.screens.settings.SettingsScreen
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.screens.shared.SuccessScreen
-import org.librefit.ui.screens.workout.RequestPermissionsScreen
 import org.librefit.ui.screens.workout.WorkoutScreen
 
 @Composable
-fun NavigationHost(userPreferences: DataStoreManager) {
+fun NavigationHost() {
 
     val navController = rememberNavController()
 
     val sharedViewModel: SharedViewModel = viewModel()
-
 
     NavHost(
         navController = navController,
@@ -62,13 +60,6 @@ fun NavigationHost(userPreferences: DataStoreManager) {
     ) {
         composable<Destination.AboutScreen> {
             AboutScreen(navController = navController)
-        }
-        composable<Destination.ExercisesScreen> {
-            ExercisesScreen(
-                addExercises = it.toRoute<Destination.ExercisesScreen>().addExercises,
-                navigateBack = { navController.popBackStack() },
-                viewModel = sharedViewModel
-            )
         }
         composable<Destination.BeforeSavingScreen> {
             BeforeSavingScreen(
@@ -82,6 +73,13 @@ fun NavigationHost(userPreferences: DataStoreManager) {
                 navController = navController
             )
         }
+        composable<Destination.ExercisesScreen> {
+            ExercisesScreen(
+                addExercises = it.toRoute<Destination.ExercisesScreen>().addExercises,
+                navigateBack = { navController.popBackStack() },
+                sharedViewModel = sharedViewModel
+            )
+        }
         composable<Destination.InfoRoutineScreen> {
             InfoWorkoutScreen(
                 sharedViewModel = sharedViewModel,
@@ -91,23 +89,20 @@ fun NavigationHost(userPreferences: DataStoreManager) {
         composable<Destination.MainScreen> {
             MainScreen(
                 navController = navController,
-                userPreferences = userPreferences,
                 sharedViewModel = sharedViewModel
             )
         }
         composable<Destination.LicenseScreen> {
             LicenseScreen(navigateBack = { navController.popBackStack() })
         }
-        composable<Destination.RequestPermissionsScreen> {
-            RequestPermissionsScreen(
-                userPreferences = userPreferences,
+        composable<Destination.RequestPermissionScreen> {
+            RequestPermissionScreen(
                 navController = navController
             )
         }
         composable<Destination.SettingsScreen> {
             SettingsScreen(
-                navigateBack = { navController.popBackStack() },
-                userPreferences = userPreferences
+                navigateBack = { navController.popBackStack() }
             )
         }
         composable<Destination.SuccessScreen> {
@@ -118,7 +113,6 @@ fun NavigationHost(userPreferences: DataStoreManager) {
         }
         composable<Destination.WorkoutScreen> {
             WorkoutScreen(
-                userPreferences = userPreferences,
                 navController = navController,
                 sharedViewModel = sharedViewModel
             )

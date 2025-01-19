@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -73,7 +74,7 @@ fun EditScreen(
     sharedViewModel: SharedViewModel,
     navController: NavHostController
 ) {
-    val viewModel: EditScreenViewModel = viewModel()
+    val viewModel: EditScreenViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->

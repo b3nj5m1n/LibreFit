@@ -23,16 +23,21 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.db.Set
 import org.librefit.db.Workout
+import org.librefit.db.WorkoutDao
 import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseWithSets
+import javax.inject.Inject
 import kotlin.random.Random
 
-class EditScreenViewModel : ViewModel() {
+@HiltViewModel
+class EditScreenViewModel @Inject constructor(
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
     val exercises = mutableStateListOf<ExerciseWithSets>()
 
     fun getExercises(): List<ExerciseWithSets> {
@@ -201,7 +206,6 @@ class EditScreenViewModel : ViewModel() {
         return workout.value.notes
     }
 
-    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
     fun saveWorkoutWithExercisesInDB() {
         val list = exercises.toList()

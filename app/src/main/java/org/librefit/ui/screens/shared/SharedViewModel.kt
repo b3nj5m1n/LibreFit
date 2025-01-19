@@ -19,19 +19,47 @@
 
 package org.librefit.ui.screens.shared
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
+import org.librefit.R
+import org.librefit.data.ExerciseDeserializer
 import org.librefit.db.Workout
+import org.librefit.db.WorkoutDao
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
+import javax.inject.Inject
 import kotlin.random.Random
 
-class SharedViewModel : ViewModel() {
+@HiltViewModel
+class SharedViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
+    val exercisesList: List<ExerciseDC> = loadExercisesFromRaw(context)
+
+    private fun loadExercisesFromRaw(context: Context): List<ExerciseDC> {
+        val inputStream = context.resources.openRawResource(R.raw.exercises)
+
+        return inputStream.bufferedReader().use { reader ->
+            val gson = GsonBuilder()
+                .registerTypeAdapter(ExerciseDC::class.java, ExerciseDeserializer())
+                .create()
+            val listType = object : TypeToken<List<ExerciseDC>>() {}.type
+
+            gson.fromJson(reader, listType)
+        }
+    }
+
+
     private val selectedExercisesList = mutableStateListOf<ExerciseDC>()
 
     fun getSelectedExercisesList(): List<ExerciseDC> {
@@ -48,7 +76,6 @@ class SharedViewModel : ViewModel() {
     fun resetSelectedExercisesList() {
         selectedExercisesList.clear()
     }
-
 
 
     private var passedWorkout = Workout()
@@ -89,8 +116,6 @@ class SharedViewModel : ViewModel() {
     }
 
 
-    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
-
     private fun getDataFromDB() {
         if (workoutId != 0) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -99,7 +124,7 @@ class SharedViewModel : ViewModel() {
                 passedExercises = exercises.map { exercise ->
                     ExerciseWithSets(
                         id = Random.nextInt(),
-                        exerciseDC = MainApplication.exercisesList.associateBy { it.id }[exercise.exerciseId]!!,
+                        exerciseDC = exercisesList.associateBy { it.id }[exercise.exerciseId]!!,
                         exerciseId = exercise.id,
                         note = exercise.notes,
                         sets = workoutDao.getSetsFromExercise(exercise.id),

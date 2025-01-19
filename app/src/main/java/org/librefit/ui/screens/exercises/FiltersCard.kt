@@ -144,7 +144,6 @@ fun FiltersCard(
         }
 
 
-
         //Animation to display the filters
         AnimatedVisibility(visible = isFilterExpanded.value) {
             Column(
@@ -159,7 +158,7 @@ fun FiltersCard(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    for(i in 0..5){
+                    for (i in 0..5) {
                         ItemFilter(
                             title = stringResource(titles[i]),
                             options = options[i],
@@ -245,7 +244,9 @@ private fun ItemFilter(
                             }
                         } else null,
                         modifier = Modifier.background(
-                            if (enumFilterValue == enum) MaterialTheme.colorScheme.inversePrimary.copy(0.3f) else Color.Unspecified
+                            if (enumFilterValue == enum) MaterialTheme.colorScheme.inversePrimary.copy(
+                                0.3f
+                            ) else Color.Unspecified
                         )
                     )
                 }

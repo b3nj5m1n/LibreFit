@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -93,8 +94,7 @@ fun ProfileScreen(
     navController: NavHostController,
     sharedViewModel: SharedViewModel
 ) {
-
-    val viewModel: ProfileScreenViewModel = viewModel()
+    val viewModel: ProfileScreenViewModel = hiltViewModel()
 
     val labelListKey = ExtraStore.Key<List<String>>()
     val modelProducer = remember { CartesianChartModelProducer() }

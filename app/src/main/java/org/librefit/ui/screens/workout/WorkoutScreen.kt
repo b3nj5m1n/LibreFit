@@ -70,13 +70,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import org.librefit.R
-import org.librefit.data.DataStoreManager
 import org.librefit.enums.InfoMode
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmDialog
@@ -94,15 +93,10 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutScreen(
-    userPreferences: DataStoreManager,
     navController: NavHostController,
     sharedViewModel: SharedViewModel
 ) {
-    val context = LocalContext.current
-
-    val viewModel: WorkoutScreenViewModel = viewModel()
-
-    viewModel.initializeService(context.applicationContext)
+    val viewModel: WorkoutScreenViewModel = hiltViewModel()
 
 
     LaunchedEffect(Unit) {
@@ -120,10 +114,12 @@ fun WorkoutScreen(
     }
 
 
-    val keepWorkoutScreenOn = userPreferences.workoutScreenOn.collectAsState(initial = true).value
+    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState()
 
     //It keeps the screen turned on
     if (keepWorkoutScreenOn) {
+        val context = LocalContext.current
+
         DisposableEffect(key1 = Unit) {
             val window = (context as Activity).window
 

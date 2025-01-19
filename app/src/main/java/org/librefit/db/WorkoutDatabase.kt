@@ -23,12 +23,16 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Workout::class, Exercise::class, Set::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Workout::class, Exercise::class, Set::class],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
-abstract class WorkoutDatabase : RoomDatabase(){
-    companion object{
+abstract class WorkoutDatabase : RoomDatabase() {
+    companion object {
         const val NAME = "workout_database"
     }
 
-    abstract fun getWorkoutDao() : WorkoutDao
+    abstract fun getWorkoutDao(): WorkoutDao
 }

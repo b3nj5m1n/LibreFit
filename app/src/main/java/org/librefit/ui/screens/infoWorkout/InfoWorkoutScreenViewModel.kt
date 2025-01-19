@@ -23,18 +23,23 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.db.Workout
+import org.librefit.db.WorkoutDao
 import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseWithSets
 import org.librefit.util.formatTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import javax.inject.Inject
 
-class InfoWorkoutScreenViewModel() : ViewModel() {
+@HiltViewModel
+class InfoWorkoutScreenViewModel @Inject constructor(
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
     private val workout = mutableStateOf(Workout())
 
     fun initializeWorkout(workout: Workout) {
@@ -122,8 +127,6 @@ class InfoWorkoutScreenViewModel() : ViewModel() {
         return exercises.sumOf { it.sets.filter { it.completed == true }.size }.toString()
     }
 
-
-    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
     fun deleteWorkout() {
         viewModelScope.launch(Dispatchers.IO) {

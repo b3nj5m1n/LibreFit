@@ -23,10 +23,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.db.Workout
+import org.librefit.db.WorkoutDao
 import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseWithSets
 import java.time.Instant
@@ -35,8 +36,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import javax.inject.Inject
 
-class BeforeSavingScreenViewModel : ViewModel() {
+@HiltViewModel
+class BeforeSavingScreenViewModel @Inject constructor(
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
 
     private var exercises = mutableStateListOf<ExerciseWithSets>()
 
@@ -159,8 +164,6 @@ class BeforeSavingScreenViewModel : ViewModel() {
         )
     }
 
-
-    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
     fun saveExercisesWithWorkout() {
         val list = this.exercises.map { exercise ->

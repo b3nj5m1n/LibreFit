@@ -22,6 +22,7 @@ package org.librefit.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,10 +30,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.helpers.NotificationHelper
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class WorkoutService : Service() {
 
     companion object {
@@ -81,9 +83,11 @@ class WorkoutService : Service() {
                 val addTenSeconds = intent?.getBooleanExtra(EXTRA_ADD_TEN_SECONDS, true) != false
                 modifyRestTimer(addTenSeconds)
             }
+
             WorkoutServiceActions.WORKOUT_FOCUS -> {
                 isFocused = intent?.getBooleanExtra(EXTRA_IS_FOCUSED, true) != false
             }
+
             WorkoutServiceActions.STOP_SERVICE -> stopService()
         }
         return START_STICKY
@@ -99,7 +103,8 @@ class WorkoutService : Service() {
         stopSelf()
     }
 
-    private var notificationHelper = MainApplication.notificationHelper
+    @Inject
+    lateinit var notificationHelper: NotificationHelper
 
 
     private var chronometerJob: Job? = null

@@ -33,7 +33,7 @@ import org.librefit.enums.Mechanic
 import org.librefit.enums.Muscle
 import java.util.Locale
 
-fun exerciseEnumToStringId(enum: Enum<*>?) : Int {
+fun exerciseEnumToStringId(enum: Enum<*>?): Int {
     return when (enum) {
         Force.PUSH -> R.string.force_push
         Force.PULL -> R.string.force_pull
@@ -83,8 +83,8 @@ fun exerciseEnumToStringId(enum: Enum<*>?) : Int {
     }
 }
 
-fun muscleToVectorId(muscle: Muscle) : Int {
-    return when(muscle){
+fun muscleToVectorId(muscle: Muscle): Int {
+    return when (muscle) {
         Muscle.ABDOMINALS -> R.drawable.abdominals
         Muscle.ABDUCTORS -> R.drawable.abductors
         Muscle.ADDUCTORS -> R.drawable.adductors

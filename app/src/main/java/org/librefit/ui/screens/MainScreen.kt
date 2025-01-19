@@ -49,7 +49,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,7 +58,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.DataStoreManager
 import org.librefit.nav.Destination
 import org.librefit.ui.screens.home.HomeScreen
 import org.librefit.ui.screens.profile.ProfileScreen
@@ -70,7 +68,6 @@ import org.librefit.ui.screens.shared.SharedViewModel
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    userPreferences: DataStoreManager,
     sharedViewModel: SharedViewModel
 ) {
 
@@ -186,7 +183,7 @@ fun MainScreen(
         }
     ) { innerPadding ->
         if (homeSelected)
-            HomeScreen(innerPadding, navController, userPreferences, sharedViewModel)
+            HomeScreen(innerPadding, navController, sharedViewModel)
         else ProfileScreen(innerPadding, navController, sharedViewModel)
     }
 }
@@ -194,6 +191,6 @@ fun MainScreen(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen(rememberNavController(), DataStoreManager(LocalContext.current), viewModel())
+    MainScreen(rememberNavController(), viewModel())
 }
 

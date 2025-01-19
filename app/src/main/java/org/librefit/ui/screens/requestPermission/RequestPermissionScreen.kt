@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.workout
+package org.librefit.ui.screens.requestPermission
 
 import android.Manifest
 import android.os.Build
@@ -37,7 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,14 +45,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.DataStoreManager
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.animations.PreferencesLottie
@@ -60,12 +59,12 @@ import org.librefit.ui.components.animations.PreferencesLottie
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestPermissionsScreen(
-    userPreferences: DataStoreManager,
+fun RequestPermissionScreen(
     navController: NavHostController
 ) {
+    val viewModel: RequestPermissionScreenViewModel = hiltViewModel()
 
-    val askPermissionAgain = userPreferences.requestPermissionsAgain.collectAsState(initial = true)
+    val requestPermissionAgain by viewModel.requestPermissionAgain.collectAsState()
 
     val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(
@@ -78,7 +77,6 @@ fun RequestPermissionsScreen(
 
     val context = LocalContext.current
 
-    val coroutineScope = rememberCoroutineScope()
 
     CustomScaffold(
         title = "",
@@ -159,14 +157,9 @@ fun RequestPermissionsScreen(
                 ) {
                     Checkbox(
                         enabled = notificationPermissionState?.status?.isGranted == false,
-                        checked = !askPermissionAgain.value,
+                        checked = !requestPermissionAgain,
                         onCheckedChange = {
-                            coroutineScope.launch {
-                                userPreferences.savePreference(
-                                    key = userPreferences.requestPermissionsAgainKey,
-                                    value = !it
-                                )
-                            }
+                            viewModel.saveRequestPermissionAgainPreference(value = !it)
                         }
                     )
                     Spacer(Modifier.width(10.dp))
@@ -184,12 +177,7 @@ fun RequestPermissionsScreen(
                 ) {
                     TextButton(
                         onClick = {
-                            coroutineScope.launch {
-                                userPreferences.savePreference(
-                                    key = userPreferences.requestPermissionsAgainKey,
-                                    value = true
-                                )
-                            }
+                            viewModel.saveRequestPermissionAgainPreference(value = true)
                             checkPermissionsBeforeNavigateToWorkout(
                                 navController = navController,
                                 appContext = context.applicationContext
@@ -203,7 +191,7 @@ fun RequestPermissionsScreen(
                     }
                     TextButton(
                         enabled = notificationPermissionState?.status?.isGranted != false
-                                || !askPermissionAgain.value,
+                                || !requestPermissionAgain,
                         colors = ButtonDefaults.buttonColors(),
                         onClick = {
                             checkPermissionsBeforeNavigateToWorkout(
@@ -226,8 +214,7 @@ fun RequestPermissionsScreen(
 @Preview
 @Composable
 private fun RequestPermissionsScreenPreview() {
-    RequestPermissionsScreen(
-        DataStoreManager(LocalContext.current),
+    RequestPermissionScreen(
         navController = rememberNavController()
     )
 }

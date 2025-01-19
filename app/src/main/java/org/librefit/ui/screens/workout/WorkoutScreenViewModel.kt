@@ -29,9 +29,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.R
+import org.librefit.data.DataStoreManager
 import org.librefit.db.Set
 import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutServiceActions
@@ -40,9 +45,14 @@ import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
 import org.librefit.services.WorkoutService.Companion.EXTRA_INITIAL_REST_TIME
 import org.librefit.services.WorkoutService.Companion.EXTRA_IS_FOCUSED
 import org.librefit.util.ExerciseWithSets
+import javax.inject.Inject
 import kotlin.random.Random
 
-class WorkoutScreenViewModel : ViewModel() {
+@HiltViewModel
+class WorkoutScreenViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    private val userPreferences: DataStoreManager
+) : ViewModel() {
     private var passed = false
     val exercises = mutableStateListOf<ExerciseWithSets>()
 
@@ -189,19 +199,13 @@ class WorkoutScreenViewModel : ViewModel() {
     private var initialRestTime = 1
     private var isFocused = true
 
-    private lateinit var appContext: Context
-    private lateinit var workoutServiceIntent: Intent
-    private var initialized = false
+    private var appContext = context.applicationContext
+    private var workoutServiceIntent = Intent(appContext, WorkoutService::class.java)
 
-    fun initializeService(appContext: Context) {
-        if (!initialized) {
-            this@WorkoutScreenViewModel.appContext = appContext
-            workoutServiceIntent = Intent(appContext, WorkoutService::class.java)
-            startChronometer()
-            observeChanges()
 
-            initialized = true
-        }
+    init {
+        startChronometer()
+        observeChanges()
     }
 
 
@@ -296,6 +300,19 @@ class WorkoutScreenViewModel : ViewModel() {
     }
 
 
+    // Used by set chronometer
     var setChronometerIsRunning = mutableStateOf(false)
     var setWithRunningChronometer = mutableStateOf(Set())
+
+
+    private val _keepScreenOn = MutableStateFlow(true)
+    val keepScreenOn = _keepScreenOn.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            userPreferences.workoutScreenOn.collect { value ->
+                _keepScreenOn.value = value
+            }
+        }
+    }
 }

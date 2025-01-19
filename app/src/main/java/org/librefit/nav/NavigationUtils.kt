@@ -28,11 +28,10 @@ import androidx.navigation.NavHostController
 import org.librefit.ui.screens.shared.SharedViewModel
 
 /**
- * Navigates to the [org.librefit.ui.screens.workout.WorkoutScreen] or [org.librefit.ui.screens.workout.RequestPermissionsScreen]
+ * Navigates to the [org.librefit.ui.screens.workout.WorkoutScreen] or [org.librefit.ui.screens.requestPermission.RequestPermissionScreen]
  * based on the granted permission.
  *
  * @param workoutId The ID of the [org.librefit.db.Workout] to open in [org.librefit.ui.screens.workout.WorkoutScreen].
- * @param title The title of the workout.
  * @param requestPermissionAgain Flag indicating whether to request permissions again (default is false).
  * @param sharedViewModel It loads the exercises from the routine/workouts. See [SharedViewModel.getDataFromDB]
  * @param navController The NavHostController used for navigation.
@@ -64,10 +63,10 @@ fun checkPermissionsBeforeNavigateToWorkout(
     val requestPermission = !hasNotificationPermission && requestPermissionAgain
 
     if (requestPermission) {
-        navController.navigate(Destination.RequestPermissionsScreen)
+        navController.navigate(Destination.RequestPermissionScreen)
     } else {
         navController.navigate(Destination.WorkoutScreen) {
-            popUpTo(Destination.RequestPermissionsScreen) { inclusive = true }
+            popUpTo(Destination.RequestPermissionScreen) { inclusive = true }
         }
     }
 }

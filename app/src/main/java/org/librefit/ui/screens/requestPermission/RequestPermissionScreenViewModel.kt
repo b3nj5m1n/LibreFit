@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. LibreFit
+ * Copyright (c) 2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -17,10 +17,8 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.home
+package org.librefit.ui.screens.requestPermission
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,14 +26,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.librefit.data.DataStoreManager
-import org.librefit.db.Workout
-import org.librefit.db.WorkoutDao
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor(
-    private val userPreferences: DataStoreManager,
-    private val workoutDao: WorkoutDao
+class RequestPermissionScreenViewModel @Inject constructor(
+    private val userPreferences: DataStoreManager
 ) : ViewModel() {
     private val _requestPermissionAgain = MutableStateFlow(false)
     val requestPermissionAgain = _requestPermissionAgain.asStateFlow()
@@ -48,19 +43,12 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-
-    var routineList: MutableState<List<Workout>> = mutableStateOf(emptyList())
-
-    init {
-        getRoutinesList()
-    }
-
-    private fun getRoutinesList() {
+    fun saveRequestPermissionAgainPreference(value: Boolean) {
         viewModelScope.launch {
-            workoutDao.getRoutines().collect { workouts ->
-                routineList.value = workouts
-            }
+            userPreferences.savePreference(
+                key = userPreferences.requestPermissionsAgainKey,
+                value = value
+            )
         }
     }
-
 }

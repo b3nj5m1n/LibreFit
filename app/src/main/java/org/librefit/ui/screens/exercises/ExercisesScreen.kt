@@ -63,7 +63,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.R
 import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.CustomScaffold
@@ -80,7 +79,7 @@ import org.librefit.util.exerciseEnumToStringId
 fun ExercisesScreen(
     addExercises: Boolean,
     navigateBack: () -> Unit,
-    viewModel: SharedViewModel
+    sharedViewModel: SharedViewModel
 ) {
     val selectedExercisesList = remember { mutableStateListOf<ExerciseDC>() }
 
@@ -110,7 +109,7 @@ fun ExercisesScreen(
         title = stringResource(id = R.string.exercises),
         navigateBack = navigateBack,
         actions = if (addExercises) listOf {
-            viewModel.addSelectedExerciseToList(selectedExercisesList)
+            sharedViewModel.addSelectedExerciseToList(selectedExercisesList)
             navigateBack()
         } else listOf(),
         actionsDescription = listOf(stringResource(R.string.add)),
@@ -126,7 +125,8 @@ fun ExercisesScreen(
             addExercises = addExercises,
             innerPadding = innerPadding,
             selectedExercisesList = selectedExercisesList,
-            listState = lazyListState
+            listState = lazyListState,
+            sharedViewModel = sharedViewModel
         )
     }
 }
@@ -136,9 +136,10 @@ private fun AddExerciseScreenContent(
     addExercises: Boolean,
     innerPadding: PaddingValues,
     selectedExercisesList: MutableList<ExerciseDC>,
-    listState: LazyListState
+    listState: LazyListState,
+    sharedViewModel: SharedViewModel
 ) {
-    val exerciseList = MainApplication.exercisesList
+    val exerciseList = sharedViewModel.exercisesList
 
     val viewModel: ExercisesScreenViewModel = viewModel()
 

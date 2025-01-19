@@ -23,15 +23,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.librefit.MainApplication
 import org.librefit.db.Workout
+import org.librefit.db.WorkoutDao
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import javax.inject.Inject
 
-class ProfileScreenViewModel : ViewModel() {
+@HiltViewModel
+class ProfileScreenViewModel @Inject constructor(
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
     val workoutList = mutableStateListOf<Workout>()
     private var volume: List<Float> = listOf()
     private var reps: List<Int> = listOf()
@@ -70,9 +75,6 @@ class ProfileScreenViewModel : ViewModel() {
         return chartMode.intValue
     }
 
-
-
-    private val workoutDao = MainApplication.workoutDatabase.getWorkoutDao()
 
     init {
         getWorkoutList()
