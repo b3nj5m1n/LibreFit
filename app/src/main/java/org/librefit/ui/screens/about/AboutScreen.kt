@@ -23,7 +23,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -128,8 +127,8 @@ fun AboutScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            val logoSize = 170.dp
             item {
+                val logoSize = 170.dp
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_logo),
                     contentDescription = stringResource(R.string.app_name),
@@ -153,21 +152,10 @@ fun AboutScreen(navController: NavHostController) {
                 )
             }
 
-            var version = ""
-
-            try {
-                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                if (pInfo != null) {
-                    version = pInfo.versionName.toString()
-                }
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-
             item {
-                if (version != "") {
-                    Text(version)
-                }
+                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                val version = pInfo.versionName.toString()
+                Text(stringResource(R.string.version) + ": " + version)
             }
 
             item {
@@ -252,18 +240,6 @@ fun AboutScreen(navController: NavHostController) {
                     stringResource(R.string.source_code),
                     onClick = {
                         url = context.getString(R.string.url_source_code)
-                        showUrlDialog = true
-                    }
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_codeberg),
-                    stringResource(R.string.codeberg),
-                    stringResource(R.string.source_code),
-                    onClick = {
-                        url = context.getString(R.string.url_codeberg)
                         showUrlDialog = true
                     }
                 )

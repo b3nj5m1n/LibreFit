@@ -65,9 +65,8 @@
     <string name="contributed_to">Contributed to: </string>
     <string name="view_online_version">View online version</string>
     <string name="url_gpl3" translatable="false">https://www.gnu.org/licenses/gpl-3.0.en.html#license-text</string>
-    <string name="url_codeberg" translatable="false">https://codeberg.org/IamDg/LibreFit</string>
     <string name="github" translatable="false">GitHub</string>
-    <string name="codeberg" translatable="false">Codeberg</string>
+    <string name="version">Version</string>
 
 
     <!--Before saving screen-->
