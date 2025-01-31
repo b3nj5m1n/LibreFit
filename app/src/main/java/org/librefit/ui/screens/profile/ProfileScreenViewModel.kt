@@ -86,24 +86,22 @@ class ProfileScreenViewModel @Inject constructor(
             workoutDao.getCompletedWorkouts()
                 .distinctUntilChanged()
                 .collect { workouts ->
-                    if (workoutList != workouts) {
-                        workoutList.clear()
-                        workoutList.addAll(workouts)
+                    workoutList.clear()
+                    workoutList.addAll(workouts)
 
-                        volume = emptyList()
-                        reps = emptyList()
-                        workouts.forEach {
-                            var volumeData = 0f
-                            var repsData = 0
-                            workoutDao.getExercisesFromWorkout(it.id).forEach { exercise ->
-                                workoutDao.getSetsFromExercise(exercise.id).forEach { set ->
-                                    volumeData += if (set.completed) set.weight * set.reps else 0f
-                                    repsData += if (set.completed) set.reps else 0
-                                }
+                    volume = emptyList()
+                    reps = emptyList()
+                    workouts.forEach {
+                        var volumeData = 0f
+                        var repsData = 0
+                        workoutDao.getExercisesFromWorkout(it.id).forEach { exercise ->
+                            workoutDao.getSetsFromExercise(exercise.id).forEach { set ->
+                                volumeData += if (set.completed) set.weight * set.reps else 0f
+                                repsData += if (set.completed) set.reps else 0
                             }
-                            volume += volumeData
-                            reps += repsData
                         }
+                        volume += volumeData
+                        reps += repsData
                     }
                 }
         }

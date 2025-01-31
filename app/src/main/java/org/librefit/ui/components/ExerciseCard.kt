@@ -441,8 +441,9 @@ fun ExerciseCard(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (workout) {
                                         IconButton(
-                                            enabled = !setChronometerIsRunning.value ||
-                                                    setWithRunningChronometer.value.id == set.id,
+                                            enabled = (!setChronometerIsRunning.value ||
+                                                    setWithRunningChronometer.value.id == set.id) &&
+                                                    !set.completed,
                                             onClick = {
                                                 if (setChronometerIsRunning.value) {
                                                     setChronometerIsRunning.value = false
@@ -575,6 +576,10 @@ fun ExerciseCard(
                                 Checkbox(
                                     checked = set.completed,
                                     onCheckedChange = { checked ->
+                                        if (setChronometerIsRunning.value) {
+                                            setChronometerIsRunning.value = false
+                                            setWithRunningChronometer.value = Set()
+                                        }
                                         updateSet(
                                             set,
                                             if (checked) 1f else 0f,
