@@ -58,7 +58,7 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.nav.Destination
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
-import org.librefit.ui.components.CustomTextButton
+import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.screens.shared.SharedViewModel
@@ -89,7 +89,7 @@ fun HomeScreen(
 
         item {
             //"Start empty workout" button
-            CustomTextButton(
+            CustomButton(
                 text = stringResource(id = R.string.start_empty_workout),
                 icon = Icons.Default.PlayArrow,
                 onClick = {
@@ -130,7 +130,6 @@ fun HomeScreen(
         items(routineList, key = { it.id }) { routine ->
             ElevatedCard(
                 modifier = Modifier
-                    .animateItem()
                     .padding(5.dp)
                     .clip(CardDefaults.elevatedShape)
                     .clickable {
@@ -141,7 +140,8 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(15.dp)
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -166,7 +166,7 @@ fun HomeScreen(
                             )
                         }
                     }
-                    CustomTextButton(
+                    CustomButton(
                         text = stringResource(R.string.start_routine),
                         icon = Icons.Default.PlayArrow,
                         elevated = false

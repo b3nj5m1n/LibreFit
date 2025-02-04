@@ -201,7 +201,7 @@ class WorkoutScreenViewModel @Inject constructor(
 
     var timeElapsed by mutableIntStateOf(0)
         private set
-    var isChronometerPaused by mutableStateOf(true)
+    var isChronometerPaused by mutableStateOf(false)
         private set
     var restTime by mutableIntStateOf(0)
         private set

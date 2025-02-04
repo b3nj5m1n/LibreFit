@@ -51,8 +51,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.librefit.R
+import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomScaffold
-import org.librefit.ui.components.CustomTextButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +112,7 @@ fun LicenseScreen(navigateBack: () -> Unit) {
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CustomTextButton(
+            CustomButton(
                 text = stringResource(R.string.view_online_version),
                 icon = Icons.AutoMirrored.Default.ExitToApp,
                 onClick = { showUrlDialog = true }

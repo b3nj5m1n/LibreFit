@@ -83,7 +83,7 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.nav.Destination
-import org.librefit.ui.components.CustomTextButton
+import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.animations.StatsLottie
@@ -159,7 +159,7 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                CustomTextButton(
+                CustomButton(
                     text = stringResource(R.string.statistics),
                     icon = ImageVector.vectorResource(R.drawable.ic_chart),
                     modifier = Modifier.weight(0.5f),
@@ -167,7 +167,7 @@ fun ProfileScreen(
                 ) {
                     //TODO: statistics view
                 }
-                CustomTextButton(
+                CustomButton(
                     text = stringResource(R.string.explore_exercises),
                     icon = Icons.Default.Search,
                     modifier = Modifier.weight(0.5f),
@@ -183,7 +183,7 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                CustomTextButton(
+                CustomButton(
                     text = stringResource(R.string.measurements),
                     icon = ImageVector.vectorResource(R.drawable.ic_monitor),
                     modifier = Modifier.weight(0.5f),
@@ -191,7 +191,7 @@ fun ProfileScreen(
                 ) {
                     //TODO: body measurements
                 }
-                CustomTextButton(
+                CustomButton(
                     text = stringResource(R.string.calendar),
                     icon = Icons.Default.DateRange,
                     modifier = Modifier.weight(0.5f),
@@ -320,9 +320,7 @@ fun ProfileScreen(
             items = viewModel.workoutList,
             key = { it.id }
         ) { workout ->
-            ElevatedCard(
-                modifier = Modifier.animateItem()
-            ) {
+            ElevatedCard {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

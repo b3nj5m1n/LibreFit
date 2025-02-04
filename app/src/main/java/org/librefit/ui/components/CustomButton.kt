@@ -27,20 +27,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CustomTextButton(
+fun CustomButton(
     text: String,
     icon: ImageVector,
     iconDescription: String? = null,
@@ -48,7 +49,7 @@ fun CustomTextButton(
     modifier: Modifier? = null,
     onClick: () -> Unit
 ) {
-    TextButton(
+    Button(
         modifier = if (modifier != null) modifier else Modifier.fillMaxWidth(),
         onClick = onClick,
         colors = if (elevated) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(
@@ -59,7 +60,9 @@ fun CustomTextButton(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
         ) {
             Icon(
                 imageVector = icon,
@@ -68,7 +71,9 @@ fun CustomTextButton(
             Spacer(Modifier.width(ButtonDefaults.IconSpacing))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.labelLarge,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
         }
     }
@@ -77,5 +82,5 @@ fun CustomTextButton(
 @Preview
 @Composable
 fun CustomTextButtonPreview() {
-    CustomTextButton("Example", Icons.Default.Check) { }
+    CustomButton("Example", Icons.Default.Check) { }
 }

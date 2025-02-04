@@ -33,9 +33,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -56,6 +59,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -63,6 +67,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -145,8 +150,6 @@ fun ExerciseCard(
     setWithRunningChronometer: MutableState<Set> = mutableStateOf(Set()),
     workout: Boolean = false
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     ElevatedCard(modifier) {
         Column(
             modifier = Modifier
@@ -361,247 +364,326 @@ fun ExerciseCard(
             }
 
             //Sets
-            val setHeight = 80
-            val animatedSetsColumnHeight = animateDpAsState(
-                targetValue = (exerciseWithSets.sets.size * setHeight).dp,
-                animationSpec = tween(600),
-                label = "animatedSetsColumnHeight",
+            Sets(
+                exerciseWithSets = exerciseWithSets,
+                deleteSet = deleteSet,
+                updateSet = updateSet,
+                workout = workout,
+                setChronometerIsRunning = setChronometerIsRunning,
+                setWithRunningChronometer = setWithRunningChronometer
             )
-            LazyColumn(
-                modifier = Modifier.height(animatedSetsColumnHeight.value)
-            ) {
-                itemsIndexed(
-                    items = exerciseWithSets.sets,
-                    key = { i, set -> set.id }
-                ) { i, set ->
-                    var timeValue by remember { mutableIntStateOf(set.elapsedTime) }
-                    var repValue by remember { mutableStateOf(set.reps.toString()) }
-                    var weightValue by remember { mutableStateOf(set.weight.toString()) }
-
-                    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = {
-                            when (it) {
-                                SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
-                                else -> deleteSet(set)
-                            }
-                            return@rememberSwipeToDismissBoxState true
-                        },
-                        positionalThreshold = { it * 0.3f }
-                    )
-
-                    SwipeToDismissBox(
-                        modifier = Modifier.animateItem(),
-                        state = swipeToDismissBoxState,
-                        backgroundContent = {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(MaterialTheme.shapes.small)
-                                    .background(
-                                        when (swipeToDismissBoxState.dismissDirection) {
-                                            SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.errorContainer
-                                            SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
-                                            SwipeToDismissBoxValue.Settled -> Color.Transparent
-                                        }
-                                    )
-                                    .padding(start = 10.dp, end = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete),
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete),
-                                )
-                            }
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .clip(MaterialTheme.shapes.small)
-                                .background(
-                                    if (set.completed) MaterialTheme.colorScheme.secondaryContainer
-                                    else MaterialTheme.colorScheme.surfaceContainerLow
-                                )
-                                .height(setHeight.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Text(
-                                text = "${i + 1}",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.padding(start = 20.dp, end = 10.dp)
-                            )
-
-                            if (exerciseWithSets.setMode == SetMode.TIME) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    if (workout) {
-                                        IconButton(
-                                            enabled = (!setChronometerIsRunning.value ||
-                                                    setWithRunningChronometer.value.id == set.id) &&
-                                                    !set.completed,
-                                            onClick = {
-                                                if (setChronometerIsRunning.value) {
-                                                    setChronometerIsRunning.value = false
-                                                    setWithRunningChronometer.value = Set()
-                                                } else {
-                                                    setChronometerIsRunning.value = true
-                                                    setWithRunningChronometer.value = set
-
-                                                    coroutineScope.launch {
-                                                        val startTime =
-                                                            System.currentTimeMillis()
-
-                                                        val pastTime = timeValue
-
-                                                        while (setChronometerIsRunning.value) {
-                                                            val currentTime =
-                                                                System.currentTimeMillis()
-
-                                                            timeValue =
-                                                                (currentTime - startTime)
-                                                                    .toInt() / 1000 + pastTime
-
-                                                            updateSet(
-                                                                set,
-                                                                timeValue.toFloat(),
-                                                                2
-                                                            )
-
-                                                            delay(1000)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        ) {
-                                            val running = setChronometerIsRunning.value ||
-                                                    setWithRunningChronometer.value.id == set.id
-                                            Icon(
-                                                imageVector = if (!running) Icons.Default.PlayArrow
-                                                else ImageVector.vectorResource(R.drawable.ic_pause),
-                                                contentDescription = if (running)
-                                                    stringResource(R.string.resume) else
-                                                    stringResource(R.string.pause)
-                                            )
-                                        }
-                                    }
-                                    //Time
-                                    OutlinedTextField(
-                                        modifier = Modifier.width(80.dp),
-                                        value = formatTime(timeValue).substring(3),
-                                        onValueChange = { string ->
-                                            val stringValue = string
-                                                .filter { it.isDigit() }
-                                                .takeLast(4)
-
-                                            val seconds = stringValue.toInt() % 100
-                                            val minutes = (stringValue.toInt() - seconds) / 100
-
-                                            timeValue = minutes * 60 + seconds
-
-                                            updateSet(
-                                                set,
-                                                timeValue.toFloat(),
-                                                2
-                                            )
-                                        },
-                                        singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    )
-                                }
-                            } else {
-                                //Reps
-                                OutlinedTextField(
-                                    modifier = Modifier.width(80.dp),
-                                    value = repValue,
-                                    onValueChange = { string ->
-                                        val stringValue = string.filter { it.isDigit() }.takeLast(4)
-
-                                        repValue = stringValue.removePrefix("0")
-                                        updateSet(
-                                            set,
-                                            repValue.ifEmpty { "0" }.toFloat(),
-                                            1
-                                        )
-                                    },
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                )
-                                if (exerciseWithSets.setMode == SetMode.WEIGHT) {
-                                    //Weight
-                                    OutlinedTextField(
-                                        modifier = Modifier.width(80.dp),
-                                        value = weightValue,
-                                        onValueChange = { string ->
-                                            val stringValue = string
-                                                .replace(",", ".")
-                                                .filter { it.isDigit() || it == '.' }
-                                                .takeLast(5)
-
-                                            val firstDotIndex = stringValue.indexOf(".")
-
-                                            if (firstDotIndex == -1) {
-                                                weightValue = stringValue
-                                            } else {
-                                                val beforeFirstDot = stringValue.substring(
-                                                    0, firstDotIndex + 1
-                                                )
-
-                                                val afterFirstDot = stringValue
-                                                    .substring(firstDotIndex + 1)
-                                                    .replace(".", "")
-
-                                                weightValue = beforeFirstDot + afterFirstDot
-                                            }
-
-                                            if (weightValue == ".") weightValue = "0.0"
-
-                                            updateSet(
-                                                set,
-                                                weightValue.ifEmpty { "0" }.toFloat(),
-                                                0
-                                            )
-                                        },
-                                        singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                                    )
-                                }
-                            }
-
-                            if (workout) {
-                                Checkbox(
-                                    checked = set.completed,
-                                    onCheckedChange = { checked ->
-                                        if (setChronometerIsRunning.value) {
-                                            setChronometerIsRunning.value = false
-                                            setWithRunningChronometer.value = Set()
-                                        }
-                                        updateSet(
-                                            set,
-                                            if (checked) 1f else 0f,
-                                            3
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
 
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
             //Add set button
-            CustomTextButton(
+            CustomButton(
                 text = stringResource(id = R.string.add_set),
                 icon = Icons.Default.AddCircle,
                 onClick = addSet,
                 elevated = false
             )
+        }
+    }
+}
+
+@Composable
+private fun Sets(
+    exerciseWithSets: ExerciseWithSets,
+    deleteSet: (Set) -> Unit,
+    updateSet: (Set, Float, Int) -> Unit,
+    workout: Boolean,
+    setChronometerIsRunning: MutableState<Boolean>,
+    setWithRunningChronometer: MutableState<Set>,
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val setHeight = 60
+    val animatedSetsColumnHeight = animateDpAsState(
+        targetValue = (exerciseWithSets.sets.size * setHeight).dp,
+        animationSpec = tween(600),
+        label = "animatedSetsColumnHeight",
+    )
+    LazyColumn(
+        modifier = Modifier.height(animatedSetsColumnHeight.value)
+    ) {
+        itemsIndexed(
+            items = exerciseWithSets.sets,
+            key = { i, set -> set.id }
+        ) { i, set ->
+            var timeValue by remember { mutableIntStateOf(set.elapsedTime) }
+            var repValue by remember { mutableStateOf(set.reps.toString()) }
+            var weightValue by remember { mutableStateOf(set.weight.toString()) }
+
+            val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+                confirmValueChange = {
+                    when (it) {
+                        SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
+                        else -> deleteSet(set)
+                    }
+                    return@rememberSwipeToDismissBoxState true
+                },
+                positionalThreshold = { it * 0.3f }
+            )
+
+            var zoom by remember { mutableStateOf(false) }
+            val view = LocalView.current
+            LaunchedEffect(swipeToDismissBoxState.progress < 0.3f) {
+                if (swipeToDismissBoxState.progress < 0.3f || swipeToDismissBoxState.progress == 1f) {
+                    zoom = false
+                } else {
+                    view.performHapticFeedback(HapticFeedbackConstantsCompat.DRAG_START)
+                    zoom = true
+                }
+            }
+
+            val size = animateDpAsState(
+                targetValue = if (zoom) {
+                    (Icons.Default.Delete.defaultHeight.value * 1.2f).dp
+                } else {
+                    Icons.Default.Delete.defaultHeight
+                }
+            )
+
+            SwipeToDismissBox(
+                modifier = Modifier.animateItem(),
+                state = swipeToDismissBoxState,
+                backgroundContent = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = CornerSize(if (i == 0) 15 else 0),
+                                    topEnd = CornerSize(if (i == 0) 15 else 0),
+                                    bottomEnd = CornerSize(
+                                        if (i == exerciseWithSets.sets.lastIndex) 15 else 0
+                                    ),
+                                    bottomStart = CornerSize(
+                                        if (i == exerciseWithSets.sets.lastIndex) 15 else 0
+                                    ),
+                                )
+                            )
+                            .background(
+                                when (swipeToDismissBoxState.dismissDirection) {
+                                    SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.errorContainer
+                                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
+                                    SwipeToDismissBoxValue.Settled -> Color.Transparent
+                                }
+                            )
+                            .padding(start = 10.dp, end = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(size.value),
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.delete),
+                        )
+                        Icon(
+                            modifier = Modifier.size(size.value),
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(R.string.delete),
+                        )
+                    }
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = CornerSize(if (i == 0) 15 else 0),
+                                topEnd = CornerSize(if (i == 0) 15 else 0),
+                                bottomEnd = CornerSize(
+                                    if (i == exerciseWithSets.sets.lastIndex) 15 else 0
+                                ),
+                                bottomStart = CornerSize(
+                                    if (i == exerciseWithSets.sets.lastIndex) 15 else 0
+                                ),
+                            )
+                        )
+                        .background(
+                            if (set.completed) MaterialTheme.colorScheme.secondaryContainer
+                            else MaterialTheme.colorScheme.surfaceContainerLow
+                        )
+                        .height(setHeight.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Text(
+                        text = "${i + 1}",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(start = 20.dp, end = 10.dp)
+                    )
+
+                    if (exerciseWithSets.setMode == SetMode.TIME) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (workout) {
+                                IconButton(
+                                    enabled = (!setChronometerIsRunning.value ||
+                                            setWithRunningChronometer.value.id == set.id) &&
+                                            !set.completed,
+                                    onClick = {
+                                        if (setChronometerIsRunning.value) {
+                                            setChronometerIsRunning.value = false
+                                            setWithRunningChronometer.value = Set()
+                                        } else {
+                                            setChronometerIsRunning.value = true
+                                            setWithRunningChronometer.value = set
+
+                                            coroutineScope.launch {
+                                                val startTime =
+                                                    System.currentTimeMillis()
+
+                                                val pastTime = timeValue
+
+                                                while (setChronometerIsRunning.value) {
+                                                    val currentTime =
+                                                        System.currentTimeMillis()
+
+                                                    timeValue =
+                                                        (currentTime - startTime)
+                                                            .toInt() / 1000 + pastTime
+
+                                                    updateSet(
+                                                        set,
+                                                        timeValue.toFloat(),
+                                                        2
+                                                    )
+
+                                                    delay(1000)
+                                                }
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    val running = setChronometerIsRunning.value ||
+                                            setWithRunningChronometer.value.id == set.id
+                                    Icon(
+                                        imageVector = if (!running) Icons.Default.PlayArrow
+                                        else ImageVector.vectorResource(R.drawable.ic_pause),
+                                        contentDescription = if (running)
+                                            stringResource(R.string.resume) else
+                                            stringResource(R.string.pause)
+                                    )
+                                }
+                            }
+                            //Time
+                            OutlinedTextField(
+                                modifier = Modifier.width(80.dp),
+                                value = formatTime(timeValue).substring(3),
+                                onValueChange = { string ->
+                                    val stringValue = string
+                                        .filter { it.isDigit() }
+                                        .takeLast(4)
+
+                                    val seconds = stringValue.toInt() % 100
+                                    val minutes = (stringValue.toInt() - seconds) / 100
+
+                                    timeValue = minutes * 60 + seconds
+
+                                    updateSet(
+                                        set,
+                                        timeValue.toFloat(),
+                                        2
+                                    )
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedBorderColor = Color.Transparent,
+                                    disabledBorderColor = Color.Transparent
+                                )
+                            )
+                        }
+                    } else {
+                        //Reps
+                        OutlinedTextField(
+                            modifier = Modifier.width(80.dp),
+                            value = repValue,
+                            onValueChange = { string ->
+                                val stringValue = string.filter { it.isDigit() }.takeLast(4)
+
+                                repValue = stringValue.removePrefix("0")
+                                updateSet(
+                                    set,
+                                    repValue.ifEmpty { "0" }.toFloat(),
+                                    1
+                                )
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                disabledBorderColor = Color.Transparent
+                            )
+                        )
+                        if (exerciseWithSets.setMode == SetMode.WEIGHT) {
+                            //Weight
+                            OutlinedTextField(
+                                modifier = Modifier.width(80.dp),
+                                value = weightValue,
+                                onValueChange = { string ->
+                                    val stringValue = string
+                                        .replace(",", ".")
+                                        .filter { it.isDigit() || it == '.' }
+                                        .takeLast(5)
+
+                                    val firstDotIndex = stringValue.indexOf(".")
+
+                                    if (firstDotIndex == -1) {
+                                        weightValue = stringValue
+                                    } else {
+                                        val beforeFirstDot = stringValue.substring(
+                                            0, firstDotIndex + 1
+                                        )
+
+                                        val afterFirstDot = stringValue
+                                            .substring(firstDotIndex + 1)
+                                            .replace(".", "")
+
+                                        weightValue = beforeFirstDot + afterFirstDot
+                                    }
+
+                                    if (weightValue == ".") weightValue = "0.0"
+
+                                    updateSet(
+                                        set,
+                                        weightValue.ifEmpty { "0" }.toFloat(),
+                                        0
+                                    )
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedBorderColor = Color.Transparent,
+                                    disabledBorderColor = Color.Transparent
+                                )
+                            )
+                        }
+                    }
+
+                    if (workout) {
+                        Checkbox(
+                            checked = set.completed,
+                            onCheckedChange = { checked ->
+                                if (setChronometerIsRunning.value) {
+                                    setChronometerIsRunning.value = false
+                                    setWithRunningChronometer.value = Set()
+                                }
+                                updateSet(
+                                    set,
+                                    if (checked) 1f else 0f,
+                                    3
+                                )
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
