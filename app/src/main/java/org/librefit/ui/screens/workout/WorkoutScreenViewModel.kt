@@ -32,7 +32,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.DataStoreManager
@@ -199,10 +198,8 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
 
-    var timeElapsed by mutableIntStateOf(0)
-        private set
-    var isChronometerPaused by mutableStateOf(false)
-        private set
+    val timeElapsed = WorkoutService.timeElapsed
+    val isChronometerPaused = WorkoutService.isChronometerPaused
     var restTime by mutableIntStateOf(0)
         private set
     private var initialRestTime = 1
@@ -228,33 +225,17 @@ class WorkoutScreenViewModel @Inject constructor(
 
     private fun observeChanges() {
         viewModelScope.launch(Dispatchers.Main) {
-            WorkoutService.timeElapsed
-                .distinctUntilChanged { old, new -> old == new }
-                .collect {
-                    timeElapsed = it
-                }
-        }
-        viewModelScope.launch(Dispatchers.Main) {
-            WorkoutService.isChronometerPaused
-                .distinctUntilChanged { old, new -> old == new }
-                .collect { isPaused ->
-                    isChronometerPaused = isPaused
-                }
-        }
-        viewModelScope.launch(Dispatchers.Main) {
             WorkoutService.restTime.collect { newRestTime ->
-                if (restTime != newRestTime) {
-                    restTime = newRestTime.coerceAtLeast(0)
+                restTime = newRestTime.coerceAtLeast(0)
 
-                    // When timer is over and screen is visible, it plays alert sound
-                    if (initialRestTime != 1 && restTime == 0 && isFocused) {
-                        val mediaPlayer = MediaPlayer.create(appContext, R.raw.alert_notification)
-                        mediaPlayer.setOnCompletionListener {
-                            it.release()
-                        }
-                        mediaPlayer.start()
-                        initialRestTime = 1
+                // When timer is over and screen is visible, it plays alert sound
+                if (initialRestTime != 1 && restTime == 0 && isFocused) {
+                    val mediaPlayer = MediaPlayer.create(appContext, R.raw.alert_notification)
+                    mediaPlayer.setOnCompletionListener {
+                        it.release()
                     }
+                    mediaPlayer.start()
+                    initialRestTime = 1
                 }
             }
         }
@@ -275,7 +256,7 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
     /**
-     * It ensures that [WorkoutService] sends an alert notification only when the app is focused so
+     * It ensures that [WorkoutService] sends an alert notification only when the app is not focused so
      * so only when [isFocused] is `false`
      */
     fun updateFocus(isFocused: Boolean) {

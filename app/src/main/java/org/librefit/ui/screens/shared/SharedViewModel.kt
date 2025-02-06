@@ -44,11 +44,13 @@ class SharedViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val workoutDao: WorkoutDao
 ) : ViewModel() {
+    //TODO : provide this list through Room Database (parse once)
     val exercisesList: List<ExerciseDC> = loadExercisesFromRaw(context)
 
     private fun loadExercisesFromRaw(context: Context): List<ExerciseDC> {
         val inputStream = context.resources.openRawResource(R.raw.exercises)
 
+        // TODO: use Moshi instead of Gson
         return inputStream.bufferedReader().use { reader ->
             val gson = GsonBuilder()
                 .registerTypeAdapter(ExerciseDC::class.java, ExerciseDeserializer())

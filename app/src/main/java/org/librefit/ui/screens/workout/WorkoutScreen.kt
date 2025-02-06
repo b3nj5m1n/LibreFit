@@ -116,6 +116,8 @@ fun WorkoutScreen(
         }
     }
 
+    val timeElapsed by viewModel.timeElapsed.collectAsState()
+
 
     val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState(initial = true)
 
@@ -208,7 +210,7 @@ fun WorkoutScreen(
                             sharedViewModel.setPassedData(
                                 workout = sharedViewModel.getPassedWorkout().copy(
                                     id = 0,
-                                    timeElapsed = viewModel.timeElapsed,
+                                    timeElapsed = timeElapsed,
                                     completed = LocalDateTime.now(),
                                     routine = false
                                 ),
@@ -341,6 +343,10 @@ fun WorkoutScreen(
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
+    val timeElapsed by viewModel.timeElapsed.collectAsState()
+
+    val isChronometerPaused by viewModel.isChronometerPaused.collectAsState()
+
     Column(modifier = Modifier.fillMaxSize()) {
         val animatedProgress = animateFloatAsState(
             targetValue = viewModel.getProgress(),
@@ -372,12 +378,12 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                 val maxHeight = maxHeight.value
                 val maxWidth = maxWidth.value
                 val animatedWidth = animateFloatAsState(
-                    targetValue = if (viewModel.isChronometerPaused) maxHeight else maxWidth
+                    targetValue = if (isChronometerPaused) maxHeight else maxWidth
                 )
                 //Play button
                 FilledIconButton(
                     onClick = {
-                        if (viewModel.isChronometerPaused) viewModel.startChronometer()
+                        if (isChronometerPaused) viewModel.startChronometer()
                         else viewModel.pauseChronometer()
                     },
                     modifier = Modifier
@@ -385,9 +391,9 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                         .width(animatedWidth.value.dp)
                 ) {
                     Icon(
-                        imageVector = if (viewModel.isChronometerPaused) Icons.Default.PlayArrow else
+                        imageVector = if (isChronometerPaused) Icons.Default.PlayArrow else
                             ImageVector.vectorResource(id = R.drawable.ic_pause),
-                        contentDescription = stringResource(if (viewModel.isChronometerPaused) R.string.pause else R.string.resume),
+                        contentDescription = stringResource(if (isChronometerPaused) R.string.pause else R.string.resume),
                         modifier = Modifier.fillMaxSize(0.7f)
                     )
                 }
@@ -404,7 +410,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                     style = MaterialTheme.typography.bodySmall
                 )
                 Text(
-                    text = formatTime(viewModel.timeElapsed)
+                    text = formatTime(timeElapsed)
                 )
             }
 
