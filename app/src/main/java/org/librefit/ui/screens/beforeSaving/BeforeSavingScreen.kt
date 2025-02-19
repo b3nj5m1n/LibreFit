@@ -66,7 +66,7 @@ import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

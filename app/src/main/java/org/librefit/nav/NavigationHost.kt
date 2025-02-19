@@ -50,6 +50,8 @@ fun NavigationHost() {
 
     val sharedViewModel: SharedViewModel = viewModel()
 
+    //TODO: create tutorial screen
+
     NavHost(
         navController = navController,
         startDestination = Destination.MainScreen,

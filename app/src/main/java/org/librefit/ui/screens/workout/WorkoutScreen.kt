@@ -90,7 +90,7 @@ import org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)

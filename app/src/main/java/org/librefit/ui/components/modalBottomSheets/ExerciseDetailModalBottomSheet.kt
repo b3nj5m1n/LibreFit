@@ -62,9 +62,7 @@ import org.librefit.enums.Muscle
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
 import org.librefit.util.ExerciseDC
-import org.librefit.util.exerciseEnumToStringId
-import org.librefit.util.formatDetails
-import org.librefit.util.muscleToVectorId
+import org.librefit.util.Formatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -97,27 +95,27 @@ fun ExerciseDetailModalBottomSheet(
             if (exercise.force != null) {
                 item {
                     Text(
-                        formatDetails(
+                        Formatter.formatDetails(
                             stringResource(R.string.force),
-                            stringResource(exerciseEnumToStringId(exercise.force))
+                            stringResource(Formatter.exerciseEnumToStringId(exercise.force))
                         )
                     )
                 }
             }
             item {
                 Text(
-                    text = formatDetails(
+                    Formatter.formatDetails(
                         stringResource(R.string.level),
-                        stringResource(exerciseEnumToStringId(exercise.level))
+                        stringResource(Formatter.exerciseEnumToStringId(exercise.level))
                     )
                 )
             }
             if (exercise.mechanic != null) {
                 item {
                     Text(
-                        formatDetails(
+                        Formatter.formatDetails(
                             stringResource(R.string.mechanic),
-                            stringResource(exerciseEnumToStringId(exercise.mechanic))
+                            stringResource(Formatter.exerciseEnumToStringId(exercise.mechanic))
                         )
                     )
                 }
@@ -125,18 +123,18 @@ fun ExerciseDetailModalBottomSheet(
             if (exercise.equipment != null) {
                 item {
                     Text(
-                        formatDetails(
+                        Formatter.formatDetails(
                             stringResource(R.string.equipment),
-                            stringResource(exerciseEnumToStringId(exercise.equipment))
+                            stringResource(Formatter.exerciseEnumToStringId(exercise.equipment))
                         )
                     )
                 }
             }
             item {
                 Text(
-                    formatDetails(
+                    Formatter.formatDetails(
                         stringResource(R.string.category),
-                        stringResource(exerciseEnumToStringId(exercise.category))
+                        stringResource(Formatter.exerciseEnumToStringId(exercise.category))
                     )
                 )
             }
@@ -186,10 +184,10 @@ private fun MusclesSection(musclesText: String, musclesList: List<Muscle>) {
     val context = LocalContext.current
 
     Text(
-        text = formatDetails(
+        text = Formatter.formatDetails(
             boldText = musclesText,
             text = musclesList.joinToString(separator = ", ") {
-                context.resources.getString(exerciseEnumToStringId(it))
+                context.resources.getString(Formatter.exerciseEnumToStringId(it))
             }
         )
     )
@@ -197,8 +195,8 @@ private fun MusclesSection(musclesText: String, musclesList: List<Muscle>) {
     LazyRow {
         items(musclesList) { muscle ->
             Image(
-                imageVector = ImageVector.vectorResource(id = muscleToVectorId(muscle)),
-                contentDescription = stringResource(exerciseEnumToStringId(muscle)),
+                imageVector = ImageVector.vectorResource(id = Formatter.muscleToVectorId(muscle)),
+                contentDescription = stringResource(Formatter.exerciseEnumToStringId(muscle)),
                 modifier = Modifier.size(150.dp)
             )
         }

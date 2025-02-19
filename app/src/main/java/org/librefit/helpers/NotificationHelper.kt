@@ -33,7 +33,7 @@ import org.librefit.R
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.services.WorkoutService
 import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 
 
 /**

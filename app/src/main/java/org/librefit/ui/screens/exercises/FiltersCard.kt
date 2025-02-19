@@ -72,7 +72,7 @@ import org.librefit.enums.Force
 import org.librefit.enums.Level
 import org.librefit.enums.Mechanic
 import org.librefit.enums.Muscle
-import org.librefit.util.exerciseEnumToStringId
+import org.librefit.util.Formatter.exerciseEnumToStringId
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

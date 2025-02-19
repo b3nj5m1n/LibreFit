@@ -71,7 +71,7 @@ import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.ExerciseDC
-import org.librefit.util.exerciseEnumToStringId
+import org.librefit.util.Formatter.exerciseEnumToStringId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -280,12 +280,12 @@ private fun AddExerciseScreenContent(
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Text(
-                            text = stringResource(id = exerciseEnumToStringId(exercise.category)),
+                            text = stringResource(exerciseEnumToStringId(exercise.category)),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         if (exercise.equipment != null) {
                             Text(
-                                text = stringResource(id = exerciseEnumToStringId(exercise.equipment)),
+                                text = stringResource(exerciseEnumToStringId(exercise.equipment)),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

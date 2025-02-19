@@ -101,7 +101,7 @@ import org.librefit.enums.Level
 import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseDC
 import org.librefit.util.ExerciseWithSets
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 import kotlin.math.roundToInt
 import kotlin.text.ifEmpty
 import kotlin.text.toInt
