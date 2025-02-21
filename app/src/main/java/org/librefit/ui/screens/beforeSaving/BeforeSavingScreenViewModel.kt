@@ -60,7 +60,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
                     set.weight.toDouble() * set.reps
                 } else 0.0
             }
-        }.toString()
+        }.toFloat().toString().format(Locale.getDefault(), "%.2f")
     }
 
     fun getTotalSets(): Int {
