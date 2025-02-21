@@ -60,40 +60,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
-import com.patrykandpatrick.vico.compose.common.ProvideVicoTheme
-import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
-import com.patrykandpatrick.vico.core.cartesian.Zoom
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
-import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
-import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import kotlinx.coroutines.delay
 import org.librefit.R
+import org.librefit.enums.ChartMode
 import org.librefit.nav.Destination
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
-import org.librefit.ui.components.animations.StatsLottie
 import org.librefit.ui.components.animations.StreakLottie
 import org.librefit.ui.components.bottomMargin
-import org.librefit.ui.components.rememberMarker
+import org.librefit.ui.components.charts.CustomCartesianChart
 import org.librefit.ui.screens.shared.SharedViewModel
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 import java.text.DecimalFormat
-import java.time.LocalDateTime
 
 @Composable
 fun ProfileScreen(
@@ -102,6 +84,10 @@ fun ProfileScreen(
     sharedViewModel: SharedViewModel
 ) {
     val viewModel: ProfileScreenViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.getWorkoutListFromDB()
+    }
 
     val labelListKey = ExtraStore.Key<List<String>>()
     val modelProducer = remember { CartesianChartModelProducer() }
@@ -208,23 +194,23 @@ fun ProfileScreen(
 
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(3) { index ->
+                    items(ChartMode.entries) { chartMode ->
                         FilterChip(
-                            selected = viewModel.getChartMode() == index,
-                            onClick = { viewModel.updateChartMode(index) },
+                            selected = viewModel.getChartMode() == chartMode,
+                            onClick = { viewModel.updateChartMode(chartMode) },
                             label = {
                                 Text(
                                     stringResource(
-                                        when (index) {
-                                            0 -> R.string.duration
-                                            1 -> R.string.volume
-                                            else -> R.string.reps
+                                        when (chartMode) {
+                                            ChartMode.DURATION -> R.string.duration
+                                            ChartMode.VOLUME -> R.string.volume
+                                            ChartMode.REPS -> R.string.reps
                                         }
                                     )
                                 )
                             },
                             leadingIcon = {
-                                if (viewModel.getChartMode() == index) {
+                                if (viewModel.getChartMode() == chartMode) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = null
@@ -237,61 +223,16 @@ fun ProfileScreen(
             }
 
             item {
-                ProvideVicoTheme(rememberM3VicoTheme()) {
-                    val format = when (viewModel.getChartMode()) {
-                        0 -> DecimalFormat("# " + stringResource(R.string.min))
-                        1 -> DecimalFormat("#.## " + stringResource(R.string.kg))
-                        else -> DecimalFormat()
-                    }
-                    CartesianChartHost(
-                        chart = rememberCartesianChart(
-                            rememberColumnCartesianLayer(
-                                columnProvider = ColumnCartesianLayer.ColumnProvider.series(
-                                    rememberLineComponent(
-                                        fill = fill(MaterialTheme.colorScheme.primary),
-                                        thickness = 32.dp,
-                                        shape = CorneredShape.rounded(32, 32)
-                                    )
-                                ),
-                                columnCollectionSpacing = 64.dp
-                            ),
-                            marker = rememberMarker(
-                                DefaultCartesianMarker.ValueFormatter.default(format)
-
-                            ),
-                            startAxis = VerticalAxis.rememberStart(
-                                valueFormatter = CartesianValueFormatter.decimal(format)
-                            ),
-                            bottomAxis = HorizontalAxis.rememberBottom(
-                                valueFormatter = CartesianValueFormatter { context, x, _ ->
-                                    context.model.extraStore.getOrNull(labelListKey)?.get(x.toInt())
-                                        ?: LocalDateTime.now().format(viewModel.shortFormatter)
-                                }
-                            ),
-                        ),
-                        zoomState = rememberVicoZoomState(
-                            zoomEnabled = false,
-                            minZoom = Zoom.fixed(),
-                            maxZoom = Zoom.fixed()
-                        ),
-                        modelProducer = modelProducer,
-                    )
-                }
-            }
-        } else {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    StatsLottie()
-                    Text(
-                        text = stringResource(R.string.complete_workout_to_display_chart),
-                        textAlign = TextAlign.Center
-                    )
-                }
+                CustomCartesianChart(
+                    format = when (viewModel.getChartMode()) {
+                        ChartMode.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                        ChartMode.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                        ChartMode.REPS -> DecimalFormat()
+                    },
+                    yAxisData = viewModel.getYAxisDataChart(),
+                    xAxisLabels = viewModel.getXAxisDataChart(),
+                    columns = true
+                )
             }
         }
 
@@ -352,7 +293,7 @@ fun ProfileScreen(
                         IconButton(
                             onClick = {
                                 sharedViewModel.updateWorkoutId(workout.id)
-                                navController.navigate(Destination.InfoRoutineScreen)
+                                navController.navigate(Destination.InfoWorkoutScreen)
                             },
                         ) {
                             Icon(Icons.Default.Info, stringResource(R.string.about))

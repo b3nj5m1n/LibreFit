@@ -85,6 +85,7 @@
     <string name="screen_off_desc">Lo schermo non rimane accesso durante l\'allenamento</string>
     <string name="language_italian">Italiano</string>
     <string name="explore_exercises">Esplora esercizi</string>
+    <string name="past_workouts">Allenamenti precedenti</string>
     <string name="coming_soon">Prossimamente</string>
     <string name="add_to_empty_workout">Inizia aggiungendo un esercizio al tuo allenamento</string>
     <string name="elapsed_time">Tempo trascorso</string>
@@ -160,7 +161,6 @@
     <string name="measurements">Misurazioni</string>
     <string name="calendar">Calendario</string>
     <string name="min">min</string>
-    <string name="complete_workout_to_display_chart">Completa almeno un\'allenamento per mostrare questo grafico</string>
     <string name="week_streak">Serie di settimane:</string>
     <string name="before_starting_the_workout">Prima di iniziare l\'allenamento</string>
     <string name="best_experience_permissions">Per la migliore esperienza in LibreFit, deve essere concesso il seguente permesso:</string>

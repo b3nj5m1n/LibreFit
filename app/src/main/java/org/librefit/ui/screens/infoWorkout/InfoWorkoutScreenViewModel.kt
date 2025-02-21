@@ -28,9 +28,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.db.Workout
 import org.librefit.db.WorkoutDao
+import org.librefit.enums.ChartMode
 import org.librefit.enums.SetMode
 import org.librefit.util.ExerciseWithSets
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -44,6 +45,9 @@ class InfoWorkoutScreenViewModel @Inject constructor(
 
     fun initializeWorkout(workout: Workout) {
         this.workout.value = workout
+        if (isRoutine()) {
+            getAllPastWorkoutsFromDB()
+        }
     }
 
     fun getWorkoutTitle(): String {
@@ -112,7 +116,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
             }
         }
 
-        return String.format(Locale.getDefault(), "%.3f", value)
+        return String.format(Locale.getDefault(), "%.2f", value)
     }
 
     fun getTotalExercises(): String {
@@ -127,6 +131,60 @@ class InfoWorkoutScreenViewModel @Inject constructor(
         return exercises.sumOf { it.sets.filter { it.completed == true }.size }.toString()
     }
 
+
+    val shortFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(
+        Locale.getDefault()
+    )
+    private var chartMode = mutableStateOf(ChartMode.DURATION)
+
+    fun getYAxisDataChart(): List<Float> {
+        return pastWorkouts.mapIndexed { index, it ->
+            when (chartMode.value) {
+                ChartMode.DURATION -> it.timeElapsed / 60f
+                ChartMode.VOLUME -> if (index < volume.lastIndex) volume[index] else 0f
+                ChartMode.REPS -> if (index < reps.lastIndex) reps[index].toFloat() else 0f
+            }
+        }.ifEmpty { listOf(0f) }
+    }
+
+    fun getXAxisDataChart(): List<String> {
+        return pastWorkouts.map { it ->
+            it.completed.format(shortFormatter).toString()
+        }
+    }
+
+    fun updateChartMode(value: ChartMode) {
+        chartMode.value = value
+    }
+
+    fun getChartMode(): ChartMode {
+        return chartMode.value
+    }
+
+    /**
+     * All the completed workouts linked to this routine by [Workout.workoutId]
+     */
+    private var pastWorkouts = mutableStateListOf<Workout>()
+    private var volume = mutableStateListOf<Float>()
+    private var reps = mutableStateListOf<Int>()
+
+    fun getAllPastWorkoutsFromDB() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (pastWorkouts.isEmpty()) {
+                pastWorkouts.addAll(
+                    workoutDao.getAllPastWorkouts(workout.value.workoutId)
+                )
+                pastWorkouts.forEach { workout ->
+                    workoutDao.getExercisesFromWorkout(workout.id).forEach { exercise ->
+                        workoutDao.getSetsFromExercise(exercise.id).forEach { set ->
+                            volume += if (set.completed) set.weight * set.reps else 0f
+                            reps += if (set.completed) set.reps else 0
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun deleteWorkout() {
         viewModelScope.launch(Dispatchers.IO) {

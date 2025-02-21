@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,17 +59,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
+import org.librefit.enums.ChartMode
 import org.librefit.enums.SetMode
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
+import org.librefit.ui.components.charts.CustomCartesianChart
 import org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.util.ExerciseDC
-import org.librefit.util.formatDetails
-import org.librefit.util.formatTime
+import org.librefit.util.Formatter.formatDetails
+import org.librefit.util.Formatter.formatTime
+import java.text.DecimalFormat
 
 @Composable
 fun InfoWorkoutScreen(
@@ -85,7 +90,6 @@ fun InfoWorkoutScreen(
         viewModel.initializeExercises(sharedViewModel.getPassedExercises())
         viewModel.initializeRoutine(sharedViewModel.getPassedRoutine())
     }
-
 
     var showConfirmDialog by remember { mutableStateOf(false) }
 
@@ -140,11 +144,10 @@ fun InfoWorkoutScreen(
         actionsElevated = listOf(false, false)
     ) {
         LazyColumn(
+            contentPadding = it,
             modifier = Modifier
-                .padding(it)
                 .padding(start = 15.dp, end = 15.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item { HeadlineText(stringResource(R.string.overview)) }
@@ -158,10 +161,7 @@ fun InfoWorkoutScreen(
                     ) {
                         if (viewModel.getNotes().isNotBlank()) {
                             Text(
-                                formatDetails(
-                                    stringResource(R.string.notes),
-                                    viewModel.getNotes()
-                                )
+                                formatDetails(stringResource(R.string.notes), viewModel.getNotes())
                             )
                         }
 
@@ -211,11 +211,58 @@ fun InfoWorkoutScreen(
                 }
             }
 
+            if (viewModel.getYAxisDataChart() != listOf(0f)) {
+                item { HeadlineText(stringResource(R.string.past_workouts)) }
+
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(ChartMode.entries) { chartMode ->
+                            FilterChip(
+                                selected = viewModel.getChartMode() == chartMode,
+                                onClick = { viewModel.updateChartMode(chartMode) },
+                                label = {
+                                    Text(
+                                        stringResource(
+                                            id = when (chartMode) {
+                                                ChartMode.DURATION -> R.string.duration
+                                                ChartMode.VOLUME -> R.string.volume
+                                                ChartMode.REPS -> R.string.reps
+                                            }
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    if (viewModel.getChartMode() == chartMode) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    CustomCartesianChart(
+                        format = when (viewModel.getChartMode()) {
+                            ChartMode.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                            ChartMode.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                            ChartMode.REPS -> DecimalFormat()
+                        },
+                        yAxisData = viewModel.getYAxisDataChart(),
+                        xAxisLabels = viewModel.getXAxisDataChart()
+                    )
+                }
+            }
+
 
             if (viewModel.getRoutineTitle() != "" && !viewModel.isRoutine()) {
                 item {
                     HeadlineText(stringResource(R.string.routine))
                 }
+
                 item {
                     ElevatedCard {
                         Row(
@@ -250,7 +297,8 @@ fun InfoWorkoutScreen(
 
             item { HeadlineText(stringResource(R.string.exercises)) }
             items(viewModel.exercises) { exercise ->
-                ElevatedCard {
+                //TODO: a unique composable function to display exercises outside workouts
+                ElevatedCard(Modifier.padding(5.dp)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -19,8 +19,8 @@
 
 package org.librefit.ui.screens.profile
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.librefit.db.Workout
 import org.librefit.db.WorkoutDao
+import org.librefit.enums.ChartMode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -41,8 +42,8 @@ class ProfileScreenViewModel @Inject constructor(
     private val workoutDao: WorkoutDao
 ) : ViewModel() {
     val workoutList = mutableStateListOf<Workout>()
-    private var volume: List<Float> = listOf()
-    private var reps: List<Int> = listOf()
+    private var volume = mutableStateListOf<Float>()
+    private var reps = mutableStateListOf<Int>()
 
     val longFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
         Locale.getDefault()
@@ -52,14 +53,14 @@ class ProfileScreenViewModel @Inject constructor(
         Locale.getDefault()
     )
 
-    private var chartMode = mutableIntStateOf(0)
+    private var chartMode = mutableStateOf(ChartMode.DURATION)
 
     fun getYAxisDataChart(): List<Float> {
         return workoutList.mapIndexed { index, it ->
-            when (chartMode.intValue) {
-                0 -> it.timeElapsed / 60f
-                1 -> if (index < volume.lastIndex) volume[index] else 0f
-                else -> if (index < reps.lastIndex) reps[index].toFloat() else 0f
+            when (chartMode.value) {
+                ChartMode.DURATION -> it.timeElapsed / 60f
+                ChartMode.VOLUME -> if (index < volume.lastIndex) volume[index] else 0f
+                ChartMode.REPS -> if (index < reps.lastIndex) reps[index].toFloat() else 0f
             }
         }
     }
@@ -70,20 +71,16 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateChartMode(value: Int) {
-        chartMode.intValue = value
+    fun updateChartMode(value: ChartMode) {
+        chartMode.value = value
     }
 
-    fun getChartMode(): Int {
-        return chartMode.intValue
+    fun getChartMode(): ChartMode {
+        return chartMode.value
     }
 
 
-    init {
-        getWorkoutList()
-    }
-
-    private fun getWorkoutList() {
+    fun getWorkoutListFromDB() {
         viewModelScope.launch(Dispatchers.IO) {
             workoutDao.getCompletedWorkouts()
                 .distinctUntilChanged()
@@ -91,19 +88,15 @@ class ProfileScreenViewModel @Inject constructor(
                     workoutList.clear()
                     workoutList.addAll(workouts)
 
-                    volume = emptyList()
-                    reps = emptyList()
-                    workouts.forEach {
-                        var volumeData = 0f
-                        var repsData = 0
+                    volume.clear()
+                    reps.clear()
+                    workoutList.forEach {
                         workoutDao.getExercisesFromWorkout(it.id).forEach { exercise ->
                             workoutDao.getSetsFromExercise(exercise.id).forEach { set ->
-                                volumeData += if (set.completed) set.weight * set.reps else 0f
-                                repsData += if (set.completed) set.reps else 0
+                                volume += if (set.completed) set.weight * set.reps else 0f
+                                reps += if (set.completed) set.reps else 0
                             }
                         }
-                        volume += volumeData
-                        reps += repsData
                     }
                 }
         }
