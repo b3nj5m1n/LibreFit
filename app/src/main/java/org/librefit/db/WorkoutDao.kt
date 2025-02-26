@@ -73,8 +73,8 @@ interface WorkoutDao {
     @Query("SELECT * FROM sets WHERE exerciseId = :exerciseId")
     suspend fun getSetsFromExercise(exerciseId: Int): List<Set>
 
-    @Query("SELECT * FROM workouts WHERE workoutId = :workoutId AND routine = 0 ORDER BY completed DESC")
-    suspend fun getAllPastWorkouts(workoutId: Long): List<Workout>
+    @Query("SELECT * FROM workouts WHERE routineId = :routineId AND routine = 0 ORDER BY completed DESC")
+    suspend fun getAllPastWorkouts(routineId: Long): List<Workout>
 
     /**
      * Adds a workout along with its associated exercises and sets to the database.

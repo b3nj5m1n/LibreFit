@@ -27,8 +27,8 @@ import java.time.LocalDateTime
  * Represents a workout.
  *
  * @property id The unique identifier for the workout. This is the primary key and is auto-incremented.
- * @property workoutId An identifier used for statistics to if the it has a parent routine. So every
- * workout from a single routine will share the same [workoutId]. It is used for statistics.
+ * @property routineId An identifier used for statistics to if the it has a parent routine. So every
+ * workout from a single routine will share the same [routineId]. It is used for statistics.
  * @property title The title of the workout visible to the user.
  * @property notes A user note about the routine or workout.
  * @property routine A boolean flag indicating whether the workout is a routine.
@@ -44,7 +44,7 @@ import java.time.LocalDateTime
 @Entity(tableName = "workouts")
 data class Workout(
     @PrimaryKey(true) val id: Int = 0,
-    val workoutId: Long = System.currentTimeMillis(),
+    val routineId: Long = System.currentTimeMillis(),
     val notes: String = "",
     val title: String = "",
     val routine: Boolean = false,

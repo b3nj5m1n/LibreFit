@@ -143,7 +143,7 @@ class SharedViewModel @Inject constructor(
                 } else {
                     runCatching { workoutDao.getRoutines().first() }
                         .getOrDefault(emptyList())
-                        .find { it.workoutId == passedWorkout.workoutId }
+                        .find { it.routineId == passedWorkout.routineId }
                         .takeIf { it?.id != passedWorkout.id } ?: Workout()
                 }
 

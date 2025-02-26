@@ -167,7 +167,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     }
 
     /**
-     * All the completed workouts linked to this routine by [Workout.workoutId]
+     * All the completed workouts linked to this routine by [Workout.routineId]
      */
     private var pastWorkouts = mutableStateListOf<Workout>()
     private var volume = mutableStateListOf<Float>()
@@ -177,7 +177,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (pastWorkouts.isEmpty()) {
                 pastWorkouts.addAll(
-                    workoutDao.getAllPastWorkouts(workout.value.workoutId)
+                    workoutDao.getAllPastWorkouts(workout.value.routineId)
                 )
                 volume.clear()
                 reps.clear()
@@ -206,7 +206,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
 
     fun detachWorkoutFromRoutine() {
         workout.value = workout.value.copy(
-            workoutId = System.currentTimeMillis()
+            routineId = System.currentTimeMillis()
         )
 
         routine.value = Workout()

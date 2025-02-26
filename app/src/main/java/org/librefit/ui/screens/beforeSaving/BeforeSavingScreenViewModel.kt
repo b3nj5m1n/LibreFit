@@ -121,7 +121,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
 
     fun detachWorkoutFromRoutine() {
         workout.value = workout.value.copy(
-            workoutId = System.currentTimeMillis()
+            routineId = System.currentTimeMillis()
         )
         routine.value = Workout()
     }
