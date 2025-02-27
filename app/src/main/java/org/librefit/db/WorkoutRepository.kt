@@ -21,11 +21,24 @@ package org.librefit.db
 
 import org.librefit.data.ExerciseWithSets
 
-
+/**
+ * Repository class for managing workout data.
+ *
+ * This class serves as a mediator between the workout database and the
+ * application, providing a clean API for data access.
+ *
+ * This class is provided by [org.librefit.di.DatabaseModule].
+ *
+ * @param workoutDao The [WorkoutDao] instance used to access workout data from the database.
+ * @property completedWorkouts Refer to [WorkoutDao.getCompletedWorkouts]
+ * @property routines Refer to [WorkoutDao.getRoutines]
+ *
+ */
 class WorkoutRepository(private val workoutDao: WorkoutDao) {
     val completedWorkouts = workoutDao.getCompletedWorkouts()
 
     val routines = workoutDao.getRoutines()
+
 
     fun getWorkout(id: Int): Workout {
         return workoutDao.getWorkout(id)
@@ -39,18 +52,30 @@ class WorkoutRepository(private val workoutDao: WorkoutDao) {
         workoutDao.deleteWorkout(workout)
     }
 
+    /**
+     * Refer to [WorkoutDao.getExercisesFromWorkout]
+     */
     suspend fun getExercisesFromWorkout(workoutId: Int): List<Exercise> {
         return workoutDao.getExercisesFromWorkout(workoutId)
     }
 
+    /**
+     * Refer to [WorkoutDao.getSetsFromExercise]
+     */
     suspend fun getSetsFromExercise(exerciseId: Int): List<Set> {
         return workoutDao.getSetsFromExercise(exerciseId)
     }
 
+    /**
+     * Refer to [WorkoutDao.getCompletedWorkoutsFromRoutine]
+     */
     suspend fun getAllPastWorkouts(routineId: Long): List<Workout> {
-        return workoutDao.getAllPastWorkouts(routineId)
+        return workoutDao.getCompletedWorkoutsFromRoutine(routineId)
     }
 
+    /**
+     * Refer to [WorkoutDao.addWorkoutWithExercises]
+     */
     suspend fun addWorkoutWithExercises(
         workout: Workout,
         exercisesWithSets: List<ExerciseWithSets>

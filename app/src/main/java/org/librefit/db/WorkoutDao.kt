@@ -31,9 +31,18 @@ import java.time.LocalDateTime
 
 @Dao
 interface WorkoutDao {
+    /**
+     * Returns a flow that emits a stream of [Workout]s which are routines ([Workout.routine] = `true`)
+     */
     @Query("SELECT * FROM workouts WHERE 1 = routine ORDER BY title")
     fun getRoutines(): Flow<List<Workout>>
 
+    /**
+     * Returns a flow that emits a stream of [Workout]s which are
+     * - completed ([Workout.completed] = `true`)
+     * - not routines ([Workout.routine] = `false`)
+     * - ordered by date from newest to latest ([Workout.completed])
+     */
     @Query("SELECT * FROM workouts WHERE 0 = routine ORDER BY completed DESC")
     fun getCompletedWorkouts(): Flow<List<Workout>>
 
@@ -67,14 +76,26 @@ interface WorkoutDao {
     @Delete
     suspend fun deleteSet(set: Set)
 
+    /**
+     * Retrieves the list of [Exercise]s associated with a specific workout.
+     * This function queries the database to fetch all exercises that belong to the given [Exercise.workoutId]
+     */
     @Query("SELECT * FROM exercises WHERE workoutId = :workoutId")
     suspend fun getExercisesFromWorkout(workoutId: Int): List<Exercise>
 
+    /**
+     * Retrieves the list of [Set]s associated with a specific exercise.
+     * This function queries the database to fetch all sets that belong to the given [Set.exerciseId]
+     */
     @Query("SELECT * FROM sets WHERE exerciseId = :exerciseId")
     suspend fun getSetsFromExercise(exerciseId: Int): List<Set>
 
+    /**
+     * Retrieves the list of [Workout]s associated with a specific routine.
+     * This function queries the database to fetch all workouts that belong to the given [Workout.routineId]
+     */
     @Query("SELECT * FROM workouts WHERE routineId = :routineId AND routine = 0 ORDER BY completed DESC")
-    suspend fun getAllPastWorkouts(routineId: Long): List<Workout>
+    suspend fun getCompletedWorkoutsFromRoutine(routineId: Long): List<Workout>
 
     /**
      * Adds a workout along with its associated exercises and sets to the database.
