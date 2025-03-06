@@ -20,6 +20,7 @@
 package org.librefit.db
 
 import org.librefit.data.ExerciseWithSets
+import org.librefit.data.WorkoutWithExercisesAndSets
 
 /**
  * Repository class for managing workout data.
@@ -35,6 +36,7 @@ import org.librefit.data.ExerciseWithSets
  *
  */
 class WorkoutRepository(private val workoutDao: WorkoutDao) {
+    //TODO: add kdoc
     val completedWorkouts = workoutDao.getCompletedWorkouts()
 
     val routines = workoutDao.getRoutines()
@@ -52,54 +54,32 @@ class WorkoutRepository(private val workoutDao: WorkoutDao) {
         workoutDao.deleteWorkout(workout)
     }
 
+    suspend fun getCompletedWorkoutsWithExercisesAndSets(): List<WorkoutWithExercisesAndSets> {
+        return workoutDao.getCompletedWorkoutsWithExercisesAndSets()
+    }
+
+
     /**
      * Refer to [WorkoutDao.getExercisesFromWorkout]
      */
-    suspend fun getExercisesFromWorkout(workoutId: Int): List<Exercise> {
+    suspend fun getExercisesFromWorkout(workoutId: Int): List<ExerciseWithSets> {
         return workoutDao.getExercisesFromWorkout(workoutId)
     }
 
     /**
-     * Refer to [WorkoutDao.getSetsFromExercise]
+     * Refer to [WorkoutDao.getCompletedWorkoutsWithExercisesAndSetsFromRoutine]
      */
-    suspend fun getSetsFromExercise(exerciseId: Int): List<Set> {
-        return workoutDao.getSetsFromExercise(exerciseId)
+    suspend fun getCompletedWorkoutsWithExercisesAndSetsFromRoutine(routineId: Long): List<WorkoutWithExercisesAndSets> {
+        return workoutDao.getCompletedWorkoutsWithExercisesAndSetsFromRoutine(routineId)
     }
 
     /**
-     * Refer to [WorkoutDao.getCompletedWorkoutsFromRoutine]
+     * Refer to [WorkoutDao.addWorkoutWithExercisesAndSets]
      */
-    suspend fun getAllPastWorkouts(routineId: Long): List<Workout> {
-        return workoutDao.getCompletedWorkoutsFromRoutine(routineId)
-    }
-
-    /**
-     * Refer to [WorkoutDao.addWorkoutWithExercises]
-     */
-    suspend fun addWorkoutWithExercises(
-        workout: Workout,
-        exercisesWithSets: List<ExerciseWithSets>
+    suspend fun addWorkoutWithExercisesAndSets(
+        workoutWithExercisesAndSets: WorkoutWithExercisesAndSets
     ) {
-        workoutDao.addWorkoutWithExercises(workout, exercisesWithSets)
+        workoutDao.addWorkoutWithExercisesAndSets(workoutWithExercisesAndSets)
     }
 
-    suspend fun getVolumeAndRepsFromWorkouts(workouts: List<Workout>): Pair<List<Float>, List<Int>> {
-        val volume = mutableListOf<Float>()
-        val reps = mutableListOf<Int>()
-
-        workouts.forEach { workout ->
-            val allSets = getExercisesFromWorkout(workout.id)
-                .flatMap { getSetsFromExercise(it.id) }
-                .filter { it.completed }
-
-            val (workoutVolume, workoutReps) = allSets.fold(0f to 0) { (volumeAcc, repsAcc), set ->
-                (volumeAcc + set.weight * set.reps) to (repsAcc + set.reps)
-            }
-
-            volume.add(workoutVolume)
-            reps.add(workoutReps)
-        }
-
-        return Pair(volume, reps)
-    }
 }

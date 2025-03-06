@@ -94,13 +94,10 @@ import androidx.core.view.HapticFeedbackConstantsCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.ExerciseDC
 import org.librefit.data.ExerciseWithSets
 import org.librefit.db.Set
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SetMode
-import org.librefit.enums.exercise.Category
-import org.librefit.enums.exercise.Level
 import org.librefit.util.Formatter.formatTime
 import kotlin.math.roundToInt
 import kotlin.text.ifEmpty
@@ -186,7 +183,7 @@ fun ExerciseCard(
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.notes)) },
-                value = exerciseWithSets.note,
+                value = exerciseWithSets.exercise.notes,
                 onValueChange = {
                     updateExercise(it, 0)
                 }
@@ -195,7 +192,7 @@ fun ExerciseCard(
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
             //Rest timer slider
-            var restTime by remember { mutableIntStateOf(exerciseWithSets.restTime) }
+            var restTime by remember { mutableIntStateOf(exerciseWithSets.exercise.restTime) }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -281,7 +278,7 @@ fun ExerciseCard(
                 ) {
                     TextField(
                         readOnly = true,
-                        value = stringResource(setModeToStringId(exerciseWithSets.setMode)),
+                        value = stringResource(setModeToStringId(exerciseWithSets.exercise.setMode)),
                         onValueChange = {},
                         singleLine = true,
                         trailingIcon = {
@@ -305,7 +302,7 @@ fun ExerciseCard(
                                         text = stringResource(setModeToStringId(mode))
                                     )
                                 },
-                                trailingIcon = if (exerciseWithSets.setMode == mode) {
+                                trailingIcon = if (exerciseWithSets.exercise.setMode == mode) {
                                     {
                                         Icon(
                                             imageVector = Icons.Default.CheckCircle,
@@ -314,7 +311,7 @@ fun ExerciseCard(
                                     }
                                 } else null,
                                 modifier = Modifier.background(
-                                    if (exerciseWithSets.setMode == mode) MaterialTheme.colorScheme.inversePrimary.copy(
+                                    if (exerciseWithSets.exercise.setMode == mode) MaterialTheme.colorScheme.inversePrimary.copy(
                                         0.3f
                                     ) else Color.Unspecified
                                 )
@@ -338,7 +335,7 @@ fun ExerciseCard(
                     text = stringResource(id = R.string.set),
                     color = MaterialTheme.colorScheme.secondary
                 )
-                if (exerciseWithSets.setMode == SetMode.TIME) {
+                if (exerciseWithSets.exercise.setMode == SetMode.TIME) {
                     Text(
                         text = stringResource(R.string.time),
                         color = MaterialTheme.colorScheme.secondary
@@ -348,7 +345,7 @@ fun ExerciseCard(
                         text = stringResource(id = R.string.reps),
                         color = MaterialTheme.colorScheme.secondary
                     )
-                    if (exerciseWithSets.setMode == SetMode.WEIGHT) {
+                    if (exerciseWithSets.exercise.setMode == SetMode.WEIGHT) {
                         Text(
                             text = stringResource(R.string.weight) + " (" + stringResource(R.string.kg) + ")",
                             color = MaterialTheme.colorScheme.secondary
@@ -516,7 +513,7 @@ private fun Sets(
                         modifier = Modifier.padding(start = 20.dp, end = 10.dp)
                     )
 
-                    if (exerciseWithSets.setMode == SetMode.TIME) {
+                    if (exerciseWithSets.exercise.setMode == SetMode.TIME) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (workout) {
                                 IconButton(
@@ -620,7 +617,7 @@ private fun Sets(
                                 disabledBorderColor = Color.Transparent
                             )
                         )
-                        if (exerciseWithSets.setMode == SetMode.WEIGHT) {
+                        if (exerciseWithSets.exercise.setMode == SetMode.WEIGHT) {
                             //Weight
                             OutlinedTextField(
                                 modifier = Modifier.width(80.dp),
@@ -703,21 +700,7 @@ private fun ExerciseCardPreview() {
     val set = rememberSaveable { mutableStateOf(Set()) }
     ExerciseCard(
         Modifier,
-        ExerciseWithSets(
-            exerciseDC = ExerciseDC(
-                id = "",
-                name = "Exercise",
-                level = Level.INTERMEDIATE,
-                primaryMuscles = emptyList(),
-                secondaryMuscles = emptyList(),
-                instructions = listOf(""),
-                category = Category.POWERLIFTING,
-                images = listOf("")
-            ),
-            setMode = SetMode.TIME,
-            sets = listOf(Set(elapsedTime = 120)),
-            restTime = 120
-        ),
+        ExerciseWithSets(),
         {},
         {},
         {},

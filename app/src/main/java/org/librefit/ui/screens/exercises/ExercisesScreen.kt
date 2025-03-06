@@ -162,7 +162,7 @@ private fun AddExerciseScreenContent(
         state = listState,
         modifier = Modifier.padding(innerPadding)
     ) {
-        // Search bar
+        // Search bar TODO: fix some exercises not showing
         item {
             Row(
                 modifier = Modifier

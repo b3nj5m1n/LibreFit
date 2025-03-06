@@ -24,6 +24,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import org.librefit.enums.SetMode
+import kotlin.random.Random
 
 @Entity(
     tableName = "exercises",
@@ -37,11 +38,11 @@ import org.librefit.enums.SetMode
     ],
     indices = [Index(value = ["workoutId"])]
 )
-data class Exercise(
-    @PrimaryKey(true) val id: Int = 0,
-    val exerciseId: String,
+data class Exercise( //TODO: add kdoc
+    @PrimaryKey(true) val id: Int = Random.nextInt(),
+    val exerciseId: String = "",
     val notes: String = "",
     val setMode: SetMode = SetMode.WEIGHT,
     val restTime: Int = 0,
-    val workoutId: Int // Foreign key reference to Workout
+    val workoutId: Int = 0// Foreign key reference to Workout
 )

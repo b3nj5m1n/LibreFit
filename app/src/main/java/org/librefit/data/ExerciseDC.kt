@@ -29,16 +29,16 @@ import org.librefit.enums.exercise.Muscle
 
 @JsonClass(generateAdapter = true)
 data class ExerciseDC(
-    val id: String,
-    val name: String,
+    val id: String = "",
+    val name: String = "",
     val force: Force? = null,
-    val level: Level,
+    val level: Level = Level.BEGINNER,
     val mechanic: Mechanic? = null,
     val equipment: Equipment? = null,
-    val primaryMuscles: List<Muscle>,
-    val secondaryMuscles: List<Muscle>,
-    val instructions: List<String>,
-    val category: Category,
-    val images: List<String>
+    val primaryMuscles: List<Muscle> = listOf(),
+    val secondaryMuscles: List<Muscle> = listOf(),
+    val instructions: List<String> = listOf(),
+    val category: Category = Category.POWERLIFTING,
+    val images: List<String> = listOf()
 )
 

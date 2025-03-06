@@ -25,9 +25,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import org.librefit.db.Workout
+import org.librefit.data.WorkoutWithExercisesAndSets
 import org.librefit.db.WorkoutRepository
 import org.librefit.enums.ChartMode
 import java.time.LocalDateTime
@@ -41,9 +40,7 @@ import javax.inject.Inject
 class ProfileScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
-    val workoutList = mutableStateListOf<Workout>()
-    private var volume = mutableStateListOf<Float>()
-    private var reps = mutableStateListOf<Int>()
+    val workoutsWithExercises = mutableStateListOf<WorkoutWithExercisesAndSets>()
 
     val longFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
         Locale.getDefault()
@@ -56,18 +53,23 @@ class ProfileScreenViewModel @Inject constructor(
     private var chartMode = mutableStateOf(ChartMode.DURATION)
 
     fun getYAxisDataChart(): List<Float> {
-        return workoutList.mapIndexed { index, it ->
+        return workoutsWithExercises.mapIndexed { index, it ->
             when (chartMode.value) {
-                ChartMode.DURATION -> it.timeElapsed / 60f
-                ChartMode.VOLUME -> if (index <= volume.lastIndex) volume[index] else 0f
-                ChartMode.REPS -> if (index <= reps.lastIndex) reps[index].toFloat() else 0f
-            }
+                ChartMode.DURATION -> it.workout.timeElapsed / 60f
+                ChartMode.VOLUME -> it.exercisesWithSets.sumOf {
+                    it.sets.filter { it.completed }.sumOf { it.weight.toDouble() * it.reps }
+                }
+
+                ChartMode.REPS -> it.exercisesWithSets.sumOf {
+                    it.sets.filter { it.completed }.sumOf { it.reps }
+                }
+            }.toFloat()
         }
     }
 
     fun getXAxisDataChart(): List<String> {
-        return workoutList.map { it ->
-            it.completed.format(shortFormatter).toString()
+        return workoutsWithExercises.map { it ->
+            it.workout.completed.format(shortFormatter).toString()
         }
     }
 
@@ -82,35 +84,30 @@ class ProfileScreenViewModel @Inject constructor(
 
     fun getWorkoutListFromDB() {
         viewModelScope.launch(Dispatchers.IO) {
-            val list = workoutRepository.completedWorkouts.firstOrNull() ?: emptyList()
-
-            val (volumeData, repsData) = workoutRepository.getVolumeAndRepsFromWorkouts(list)
-            volume.clear()
-            reps.clear()
-            volume.addAll(volumeData)
-            reps.addAll(repsData)
-
-            workoutList.clear()
-            workoutList.addAll(list)
+            val workoutsFromDb = workoutRepository.getCompletedWorkoutsWithExercisesAndSets()
+            if (workoutsWithExercises != workoutsFromDb) {
+                workoutsWithExercises.clear()
+                workoutsWithExercises.addAll(workoutsFromDb)
+            }
         }
     }
 
 
     fun getWeekStreak(): Int {
-        if (workoutList.size < 2 || ChronoUnit.DAYS.between(
-                workoutList.first().completed,
+        if (workoutsWithExercises.size < 2 || ChronoUnit.DAYS.between(
+                workoutsWithExercises.first().workout.completed,
                 LocalDateTime.now()
             ) > 7
         ) {
             return 0
         }
 
-        var index = workoutList.lastIndex
+        var index = workoutsWithExercises.lastIndex
 
-        for (i in 0 until workoutList.size - 1) {
+        for (i in 0 until workoutsWithExercises.size - 1) {
             if (ChronoUnit.DAYS.between(
-                    workoutList[i + 1].completed,
-                    workoutList[i].completed
+                    workoutsWithExercises[i + 1].workout.completed,
+                    workoutsWithExercises[i].workout.completed
                 ) > 7
             ) {
                 index = i
@@ -118,7 +115,10 @@ class ProfileScreenViewModel @Inject constructor(
             }
         }
 
-        return ChronoUnit.WEEKS.between(workoutList[index].completed, LocalDateTime.now()).toInt()
+        return ChronoUnit.WEEKS.between(
+            workoutsWithExercises[index].workout.completed,
+            LocalDateTime.now()
+        ).toInt()
     }
 
 }

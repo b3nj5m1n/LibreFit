@@ -23,6 +23,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlin.random.Random
 
 @Entity(
     tableName = "sets",
@@ -37,7 +38,7 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["exerciseId"])]
 )
 data class Set(
-    @PrimaryKey(true) val id: Int = 0,
+    @PrimaryKey(true) val id: Int = Random.nextInt(), //TODO: change id from Int to Long
     val weight: Float = 0f,
     val reps: Int = 0,
     val elapsedTime: Int = 0,

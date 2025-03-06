@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. LibreFit
+ * Copyright (c) 2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -20,18 +20,16 @@
 package org.librefit.data
 
 import androidx.room.Embedded
-import androidx.room.Ignore
 import androidx.room.Relation
 import org.librefit.db.Exercise
-import org.librefit.db.Set
+import org.librefit.db.Workout
 
-data class ExerciseWithSets( //TODO: add kdoc
-    @Embedded var exercise: Exercise = Exercise(),
+data class WorkoutWithExercisesAndSets( //TODO: add kdoc
+    @Embedded val workout: Workout,
     @Relation(
+        entity = Exercise::class,
         parentColumn = "id",
-        entityColumn = "exerciseId"
+        entityColumn = "workoutId"
     )
-    var sets: List<Set> = listOf(Set()),
-    @Ignore
-    var exerciseDC: ExerciseDC = ExerciseDC()
+    val exercisesWithSets: List<ExerciseWithSets>
 )

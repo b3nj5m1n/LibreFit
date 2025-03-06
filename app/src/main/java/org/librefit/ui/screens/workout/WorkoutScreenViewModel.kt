@@ -57,39 +57,34 @@ class WorkoutScreenViewModel @Inject constructor(
 
 
     private var passed = false
-    val exercises = mutableStateListOf<ExerciseWithSets>()
+    val exercisesWithSets = mutableStateListOf<ExerciseWithSets>()
 
     fun initializeExercises(newExercises: List<ExerciseWithSets>) {
         if (!passed) {
-            exercises.addAll(newExercises)
+            exercisesWithSets.addAll(newExercises)
             passed = true
         }
     }
 
     fun getExercises(): List<ExerciseWithSets> {
-        return exercises.toList()
+        return exercisesWithSets.toList()
     }
 
     fun addExerciseWithSets(exerciseWithSets: ExerciseWithSets) {
-        val newExerciseWithSets = exerciseWithSets.copy(
-            id = Random.nextInt(),
-            sets = if (exerciseWithSets.sets.isEmpty()) {
-                listOf(Set(id = Random.nextInt()))
-            } else exerciseWithSets.sets
-        )
-        exercises.add(newExerciseWithSets)
+        exercisesWithSets.add(exerciseWithSets)
     }
 
     fun addSetToExercise(index: Int) {
-        val exercise = exercises[index]
-        exercises[index] = exercise.copy(sets = exercise.sets + listOf(Set(id = Random.nextInt())))
+        val exercise = exercisesWithSets[index]
+        exercisesWithSets[index] =
+            exercise.copy(sets = exercise.sets + listOf(Set(id = Random.nextInt())))
     }
 
     /**
      * Updates a specific [Set] within an [ExerciseWithSets] by assigning a new value to one of its
      * attributes based on the specified mode.
      *
-     * @param index The index of the [ExerciseWithSets] in the [exercises] list that contains the
+     * @param index The index of the [ExerciseWithSets] in the [exercisesWithSets] list that contains the
      * set to be updated.
      *
      * @param set The [Set] object that needs to be updated.
@@ -105,9 +100,9 @@ class WorkoutScreenViewModel @Inject constructor(
      * If the [mode] is not recognized, the original [set] will remain unchanged.
      */
     fun updateSet(index: Int, set: Set, value: Float, mode: Int) {
-        val exercise = exercises[index]
-        exercises[index] = exercise.copy(
-            sets = exercise.sets.map {
+        val exerciseWithSets = exercisesWithSets[index]
+        exercisesWithSets[index] = exerciseWithSets.copy(
+            sets = exerciseWithSets.sets.map {
                 if (it.id == set.id) {
                     when (mode) {
                         0 -> set.copy(weight = value)
@@ -120,23 +115,23 @@ class WorkoutScreenViewModel @Inject constructor(
             }
         )
 
-        if (mode == 3 && value == 1f && exercise.restTime != 0) {
-            startRestTimer(exercise.restTime + 1)
+        if (mode == 3 && value == 1f && exerciseWithSets.exercise.restTime != 0) {
+            startRestTimer(exerciseWithSets.exercise.restTime + 1)
         }
     }
 
     /**
-     * Removes a specific set from the sets associated with an exercise in the [exercises] list.
+     * Removes a specific set from the sets associated with an exercise in the [exercisesWithSets] list.
      *
      * This function updates the exercise at the given [index] by filtering out the specified [set]
-     * based on its unique identifier. The modified exercise is then saved back to the [exercises] list.
+     * based on its unique identifier. The modified exercise is then saved back to the [exercisesWithSets] list.
      *
-     * @param index The index of the exercise in the [exercises] list from which the set will be deleted.
+     * @param index The index of the exercise in the [exercisesWithSets] list from which the set will be deleted.
      * @param set The set to be removed, identified by its unique ID.
      */
     fun deleteSet(index: Int, set: Set) {
-        val exercise = exercises[index]
-        exercises[index] = exercise.copy(
+        val exercise = exercisesWithSets[index]
+        exercisesWithSets[index] = exercise.copy(
             sets = exercise.sets.filter { it.id != set.id }
         )
 
@@ -149,51 +144,61 @@ class WorkoutScreenViewModel @Inject constructor(
     /**
      * Updates an instance of [ExerciseWithSets] by assigning a [value] to a specified attribute based on the provided [mode].
      *
-     * @param index The index of the [ExerciseWithSets] instance in the [exercises] list that needs to be updated.
+     * @param index The index of the [ExerciseWithSets] instance in the [exercisesWithSets] list that needs to be updated.
      * @param value The new value to be assigned to the specified attribute of the [ExerciseWithSets].
      * @param mode An integer that determines which attribute will be updated with the [value].
      * The following modes correspond to specific attributes:
-     *  - 0: [ExerciseWithSets.note]
-     *  - 1: [ExerciseWithSets.setMode]
-     *  - 2: [ExerciseWithSets.restTime]
+     *  - 0: [org.librefit.db.Exercise.notes]
+     *  - 1: [org.librefit.db.Exercise.setMode]
+     *  - 2: [org.librefit.db.Exercise.restTime]
      *
-     * Note: When updating [ExerciseWithSets.setMode], the [value] should be one of the following string representations:
+     * Note: When updating [org.librefit.db.Exercise.setMode], the [value] should be one of the following string representations:
      *  - [SetMode.WEIGHT].name
      *  - [SetMode.TIME].name
      *  - [SetMode.REPS].name;
      * If an invalid string is provided, the default value [SetMode.WEIGHT] will be assigned.
      */
     fun updateExercise(index: Int, value: String, mode: Int) {
-        val exercise = exercises[index]
-        exercises[index] = when (mode) {
-            0 -> exercise.copy(note = value.toString())
-            1 -> exercise.copy(
-                setMode = when (value) {
-                    SetMode.WEIGHT.name -> SetMode.WEIGHT
-                    SetMode.TIME.name -> SetMode.TIME
-                    SetMode.REPS.name -> SetMode.REPS
-                    else -> SetMode.WEIGHT
-                }
+        val exerciseWithSets = exercisesWithSets[index]
+        exercisesWithSets[index] = when (mode) {
+            0 -> exerciseWithSets.copy(exercise = exerciseWithSets.exercise.copy(notes = value.toString()))
+            1 -> exerciseWithSets.copy(
+                exercise = exerciseWithSets.exercise.copy(
+                    setMode = when (value) {
+                        SetMode.WEIGHT.name -> SetMode.WEIGHT
+                        SetMode.TIME.name -> SetMode.TIME
+                        SetMode.REPS.name -> SetMode.REPS
+                        else -> SetMode.WEIGHT
+                    }
+                )
             )
 
-            2 -> exercise.copy(restTime = Integer.parseInt(value))
-            else -> exercise
+            2 -> exerciseWithSets.copy(
+                exercise = exerciseWithSets.exercise.copy(
+                    restTime = Integer.parseInt(
+                        value
+                    )
+                )
+            )
+
+            else -> exerciseWithSets
         }
     }
 
     fun deleteExercise(index: Int) {
-        exercises.removeAt(index)
+        exercisesWithSets.removeAt(index)
     }
 
     fun isListEmpty(): Boolean {
-        return exercises.isEmpty()
+        return exercisesWithSets.isEmpty()
     }
 
     fun getProgress(): Float {
-        val totalSets = if (exercises.sumOf { it.sets.size } != 0) exercises.sumOf { it.sets.size }
+        val totalSets =
+            if (exercisesWithSets.sumOf { it.sets.size } != 0) exercisesWithSets.sumOf { it.sets.size }
         else 1
 
-        return exercises.sumOf { it.sets.filter { it.completed == true }.size }
+        return exercisesWithSets.sumOf { it.sets.filter { it.completed == true }.size }
             .toFloat() / totalSets
     }
 

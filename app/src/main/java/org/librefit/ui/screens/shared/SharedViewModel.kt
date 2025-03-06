@@ -36,7 +36,6 @@ import org.librefit.data.ExerciseWithSets
 import org.librefit.db.Workout
 import org.librefit.db.WorkoutRepository
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
@@ -67,7 +66,7 @@ class SharedViewModel @Inject constructor(
 
     fun getSelectedExercisesList(): List<ExerciseDC> {
         val list = selectedExercisesList.toList()
-        selectedExercisesList.clear()
+        resetSelectedExercisesList()
         return list
     }
 
@@ -100,7 +99,13 @@ class SharedViewModel @Inject constructor(
         if (workout != null) {
             passedWorkout = workout
         }
-        passedExercises = exercises
+        passedExercises = exercises.map {
+            it.apply {
+                val exDC = exercisesList.find { e -> e.id == it.exercise.exerciseId }!!
+                it.exercise = it.exercise.copy(exerciseId = exDC.id)
+                it.exerciseDC = exDC
+            }
+        }
         if (routine != null) {
             passedRoutine = routine
         }
@@ -122,18 +127,12 @@ class SharedViewModel @Inject constructor(
     private fun getDataFromDB() {
         if (workoutId != 0) {
             viewModelScope.launch(Dispatchers.IO) {
-                // Retrieves exercises from db and parse them to ExerciseWithSets
-                val exercises = workoutRepository.getExercisesFromWorkout(workoutId)
-                passedExercises = exercises.map { exercise ->
-                    ExerciseWithSets(
-                        id = Random.nextInt(),
-                        exerciseDC = exercisesList.associateBy { it.id }[exercise.exerciseId]!!,
-                        exerciseId = exercise.id,
-                        note = exercise.notes,
-                        sets = workoutRepository.getSetsFromExercise(exercise.id),
-                        setMode = exercise.setMode,
-                        restTime = exercise.restTime
-                    )
+                passedExercises = workoutRepository.getExercisesFromWorkout(workoutId).map {
+                    it.apply {
+                        val exDC = exercisesList.find { e -> e.id == it.exercise.exerciseId }!!
+                        it.exercise = it.exercise.copy(exerciseId = exDC.id)
+                        it.exerciseDC = exDC
+                    }
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {

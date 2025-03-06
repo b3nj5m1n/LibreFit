@@ -237,7 +237,7 @@ fun ProfileScreen(
         }
 
         items(
-            items = viewModel.workoutList,
+            items = viewModel.workoutsWithExercises.map { it.workout },
             key = { it.id }
         ) { workout ->
             ElevatedCard {

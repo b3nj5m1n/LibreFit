@@ -53,14 +53,14 @@ import org.librefit.util.Formatter.formatTime
  * This is a smaller version of [ExerciseCard]. It is suitable to only show data of [ExerciseWithSets]
  * but not to modify it.
  *
- * @param exercise A [ExerciseWithSets] that holds the data
+ * @param exerciseWithSets A [ExerciseWithSets] that holds the data
  * @param isRoutine When `false`, the card shows checkboxes of set completion
  * @param onDetail A lambda function triggered when the [Info] icon is clicked, which should open
  * the [org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet].
  */
 @Composable
 fun ExerciseCardSmall(
-    exercise: ExerciseWithSets,
+    exerciseWithSets: ExerciseWithSets,
     isRoutine: Boolean = false,
     onDetail: () -> Unit
 ) {
@@ -77,7 +77,7 @@ fun ExerciseCardSmall(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = exercise.exerciseDC.name,
+                    text = exerciseWithSets.exerciseDC.name,
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(
@@ -91,25 +91,26 @@ fun ExerciseCardSmall(
             }
 
 
-            if (exercise.note.isNotBlank()) {
+            if (exerciseWithSets.exercise.notes.isNotBlank()) {
                 HorizontalDivider()
 
-                Text(formatDetails(stringResource(R.string.notes), exercise.note))
+                Text(formatDetails(stringResource(R.string.notes), exerciseWithSets.exercise.notes))
             }
 
-            if (exercise.restTime != 0) {
+            if (exerciseWithSets.exercise.restTime != 0) {
                 HorizontalDivider()
                 Text(
                     formatDetails(
-                        stringResource(R.string.rest_time), exercise.restTime.toString()
+                        stringResource(R.string.rest_time),
+                        exerciseWithSets.exercise.restTime.toString()
                                 + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
                 )
             }
 
-            if (exercise.sets.isNotEmpty()) {
+            if (exerciseWithSets.sets.isNotEmpty()) {
                 HorizontalDivider()
 
-                val setMode = exercise.setMode
+                val setMode = exerciseWithSets.exercise.setMode
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -137,7 +138,7 @@ fun ExerciseCardSmall(
                 }
 
                 Column {
-                    exercise.sets.forEachIndexed { index, set ->
+                    exerciseWithSets.sets.forEachIndexed { index, set ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -146,10 +147,10 @@ fun ExerciseCardSmall(
                                         topStart = CornerSize(if (index == 0) 25 else 0),
                                         topEnd = CornerSize(if (index == 0) 25 else 0),
                                         bottomEnd = CornerSize(
-                                            if (index == exercise.sets.lastIndex) 25 else 0
+                                            if (index == exerciseWithSets.sets.lastIndex) 25 else 0
                                         ),
                                         bottomStart = CornerSize(
-                                            if (index == exercise.sets.lastIndex) 25 else 0
+                                            if (index == exerciseWithSets.sets.lastIndex) 25 else 0
                                         ),
                                     )
                                 )

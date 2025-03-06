@@ -56,6 +56,7 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.ExerciseWithSets
+import org.librefit.db.Exercise
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Destination
@@ -79,9 +80,7 @@ fun EditWorkoutScreen(
     LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->
             viewModel.addExerciseWithSets(
-                ExerciseWithSets(
-                    exerciseDC = exerciseDC
-                )
+                ExerciseWithSets(Exercise(exerciseId = exerciseDC.id), exerciseDC = exerciseDC)
             )
         }
         viewModel.initialize(
@@ -247,8 +246,8 @@ private fun EditWorkoutScreen(
             }
         } else {
             itemsIndexed(
-                items = viewModel.exercises,
-                key = { i, e -> e.id }
+                items = viewModel.exercisesWithSets,
+                key = { i, e -> e.exercise.id }
             ) { i, exerciseWithSets ->
                 ExerciseCard(
                     modifier = Modifier.animateItem(),

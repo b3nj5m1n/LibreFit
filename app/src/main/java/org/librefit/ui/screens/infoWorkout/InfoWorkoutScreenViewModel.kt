@@ -27,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.data.ExerciseWithSets
+import org.librefit.data.WorkoutWithExercisesAndSets
 import org.librefit.db.Workout
 import org.librefit.db.WorkoutRepository
 import org.librefit.enums.ChartMode
@@ -53,7 +54,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
             initialized = true
             this.workout.value = workout
             if (isRoutine()) {
-                getAllPastWorkoutsFromDB()
+                getCompletedWorkoutsFromDB()
             }
 
             this.routine.value = passedRoutine
@@ -109,7 +110,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     fun getVolumeExercises(): String {
         val value = exercises.sumOf {
             it.sets.sumOf { set ->
-                if (it.setMode == SetMode.WEIGHT) {
+                if (it.exercise.setMode == SetMode.WEIGHT) {
                     if (isRoutine()) {
                         (set.weight * set.reps).toDouble()
                     } else {
@@ -143,18 +144,23 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     private var chartMode = mutableStateOf(ChartMode.DURATION)
 
     fun getYAxisDataChart(): List<Float> {
-        return pastWorkouts.mapIndexed { index, it ->
+        return completedWorkoutsWithExercises.mapIndexed { index, it ->
             when (chartMode.value) {
-                ChartMode.DURATION -> it.timeElapsed / 60f
-                ChartMode.VOLUME -> volume[index]
-                ChartMode.REPS -> reps[index].toFloat()
-            }
+                ChartMode.DURATION -> it.workout.timeElapsed / 60f
+                ChartMode.VOLUME -> it.exercisesWithSets.sumOf {
+                    it.sets.filter { it.completed }.sumOf { it.weight.toDouble() * it.reps }
+                }
+
+                ChartMode.REPS -> it.exercisesWithSets.sumOf {
+                    it.sets.filter { it.completed }.sumOf { it.reps }
+                }
+            }.toFloat()
         }
     }
 
     fun getXAxisDataChart(): List<String> {
-        return pastWorkouts.map { it ->
-            it.completed.format(shortFormatter).toString()
+        return completedWorkoutsWithExercises.map { it ->
+            it.workout.completed.format(shortFormatter).toString()
         }
     }
 
@@ -167,26 +173,15 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     }
 
     /**
-     * All the completed workouts linked to this routine by [Workout.routineId]
+     * All the completed [WorkoutWithExercisesAndSets] linked to [routine] by [Workout.routineId]
      */
-    private var pastWorkouts = mutableStateListOf<Workout>()
-    private var volume = mutableStateListOf<Float>()
-    private var reps = mutableStateListOf<Int>()
+    private var completedWorkoutsWithExercises = mutableStateListOf<WorkoutWithExercisesAndSets>()
 
-    fun getAllPastWorkoutsFromDB() {
+    fun getCompletedWorkoutsFromDB() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (pastWorkouts.isEmpty()) {
-                pastWorkouts.addAll(
-                    workoutRepository.getAllPastWorkouts(workout.value.routineId)
-                )
-                volume.clear()
-                reps.clear()
-                val (volumeData, repsData) = workoutRepository.getVolumeAndRepsFromWorkouts(
-                    pastWorkouts
-                )
-                volume.addAll(volumeData)
-                reps.addAll(repsData)
-            }
+            completedWorkoutsWithExercises.addAll(
+                workoutRepository.getCompletedWorkoutsWithExercisesAndSetsFromRoutine(workout.value.routineId)
+            )
         }
     }
 

@@ -27,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.data.ExerciseWithSets
+import org.librefit.data.WorkoutWithExercisesAndSets
 import org.librefit.db.Workout
 import org.librefit.db.WorkoutRepository
 import org.librefit.enums.SetMode
@@ -56,7 +57,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
     fun getVolumeExercises(): String {
         return exercises.sumOf {
             it.sets.sumOf { set ->
-                if (it.setMode == SetMode.WEIGHT && set.completed) {
+                if (it.exercise.setMode == SetMode.WEIGHT && set.completed) {
                     set.weight.toDouble() * set.reps
                 } else 0.0
             }
@@ -169,7 +170,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
         val list = this.exercises.map { exercise ->
             exercise.copy(sets = exercise.sets.map {
                 // This keeps only relevant data on the actual type of set
-                when (exercise.setMode) {
+                when (exercise.exercise.setMode) {
                     SetMode.TIME -> it.copy(reps = 0, weight = 0f)
                     SetMode.REPS -> it.copy(elapsedTime = 0, weight = 0f)
                     SetMode.WEIGHT -> it.copy(elapsedTime = 0)
@@ -178,9 +179,8 @@ class BeforeSavingScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            workoutRepository.addWorkoutWithExercises(
-                workout = workout.value,
-                exercisesWithSets = list
+            workoutRepository.addWorkoutWithExercisesAndSets(
+                WorkoutWithExercisesAndSets(workout.value, list)
             )
         }
     }
