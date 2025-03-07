@@ -83,10 +83,10 @@ class SharedViewModel @Inject constructor(
     private var passedWorkout = Workout()
     private var passedExercises = listOf<ExerciseWithSets>()
     private var passedRoutine = Workout()
-    private var workoutId = 0
+    private var workoutId = 0L
 
 
-    fun updateWorkoutId(workoutId: Int) {
+    fun updateWorkoutId(workoutId: Long) {
         this.workoutId = workoutId
         getDataFromDB()
     }
@@ -125,7 +125,7 @@ class SharedViewModel @Inject constructor(
 
 
     private fun getDataFromDB() {
-        if (workoutId != 0) {
+        if (workoutId != 0L) {
             viewModelScope.launch(Dispatchers.IO) {
                 passedExercises = workoutRepository.getExercisesFromWorkout(workoutId).map {
                     it.apply {

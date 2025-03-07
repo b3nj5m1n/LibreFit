@@ -48,7 +48,7 @@ interface WorkoutDao {
     fun getCompletedWorkouts(): Flow<List<Workout>>
 
     @Query("SELECT * FROM workouts WHERE id = :id")
-    fun getWorkout(id: Int): Workout
+    fun getWorkout(id: Long): Workout
 
     @Insert
     suspend fun addWorkout(workout: Workout): Long
@@ -92,14 +92,14 @@ interface WorkoutDao {
      */
     @Transaction
     @Query("SELECT * FROM exercises WHERE workoutId = :workoutId")
-    suspend fun getExercisesFromWorkout(workoutId: Int): List<ExerciseWithSets>
+    suspend fun getExercisesFromWorkout(workoutId: Long): List<ExerciseWithSets>
 
     /**
      * Retrieves the list of [Set]s associated with a specific exercise.
      * This function queries the database to fetch all sets that belong to the given [Set.exerciseId]
      */
     @Query("SELECT * FROM sets WHERE exerciseId = :exerciseId")
-    suspend fun getSetsFromExercise(exerciseId: Int): List<Set>
+    suspend fun getSetsFromExercise(exerciseId: Long): List<Set>
 
     /**
      * Retrieves the list of [WorkoutWithExercisesAndSets]s associated with a specific routine.
@@ -135,13 +135,13 @@ interface WorkoutDao {
         workoutWithExercisesAndSets: WorkoutWithExercisesAndSets
     ) {
         val workout = workoutWithExercisesAndSets.workout
-        val isNewWorkout = workout.id == 0
+        val isNewWorkout = workout.id == 0L
 
         val workoutId = if (isNewWorkout) {
             if (workout.routine) {
-                addWorkout(workout.copy(completed = LocalDateTime.now())).toInt()
+                addWorkout(workout.copy(completed = LocalDateTime.now()))
             } else {
-                addWorkout(workout.copy(created = LocalDateTime.now())).toInt()
+                addWorkout(workout.copy(created = LocalDateTime.now()))
             }
         } else {
             workout.id
@@ -163,7 +163,7 @@ interface WorkoutDao {
             val isNewExercise = !oldExercises.any { it.exercise.id == exerciseWithSets.exercise.id }
 
             val exerciseId = if (isNewExercise) {
-                addExercise(exerciseWithSets.exercise.copy(id = 0, workoutId = workoutId)).toInt()
+                addExercise(exerciseWithSets.exercise.copy(id = 0, workoutId = workoutId))
             } else {
                 exerciseWithSets.exercise.id
             }
@@ -184,7 +184,7 @@ interface WorkoutDao {
                 if (oldSets.any { it.id == set.id }) {
                     updateSet(set)
                 } else {
-                    addSet(set.copy(id = 0, exerciseId = exerciseId.toInt()))
+                    addSet(set.copy(id = 0, exerciseId = exerciseId))
                 }
             }
         }

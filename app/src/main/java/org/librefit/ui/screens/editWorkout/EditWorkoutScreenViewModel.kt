@@ -33,7 +33,6 @@ import org.librefit.db.Workout
 import org.librefit.db.WorkoutRepository
 import org.librefit.enums.SetMode
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class EditWorkoutScreenViewModel @Inject constructor(
@@ -52,7 +51,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
     fun addSetToExercise(index: Int) {
         val exerciseWithSets = exercisesWithSets[index]
         exercisesWithSets[index] = exerciseWithSets
-            .copy(sets = exerciseWithSets.sets + listOf(Set(id = Random.nextInt())))
+            .copy(sets = exerciseWithSets.sets + listOf(Set()))
     }
 
     /**
@@ -166,7 +165,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
     fun initialize(workout: Workout, newExercises: List<ExerciseWithSets>, routine: Workout) {
         if (!initialized) {
-            isRoutine = workout.id == 0 || workout.routine
+            isRoutine = workout.id == 0L || workout.routine
 
             this.workout.value = workout.copy(routine = false)
 
@@ -226,7 +225,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
      * a past workout is edited
      */
     fun getTypeOfEdit(): Boolean? {
-        return if (workout.value.id == 0) null else isRoutine
+        return if (workout.value.id == 0L) null else isRoutine
     }
 }
 

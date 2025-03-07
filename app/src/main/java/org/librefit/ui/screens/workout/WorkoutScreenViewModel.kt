@@ -44,7 +44,6 @@ import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
 import org.librefit.services.WorkoutService.Companion.EXTRA_INITIAL_REST_TIME
 import org.librefit.services.WorkoutService.Companion.EXTRA_IS_FOCUSED
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class WorkoutScreenViewModel @Inject constructor(
@@ -77,7 +76,7 @@ class WorkoutScreenViewModel @Inject constructor(
     fun addSetToExercise(index: Int) {
         val exercise = exercisesWithSets[index]
         exercisesWithSets[index] =
-            exercise.copy(sets = exercise.sets + listOf(Set(id = Random.nextInt())))
+            exercise.copy(sets = exercise.sets + listOf(Set()))
     }
 
     /**

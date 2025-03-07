@@ -58,10 +58,10 @@ import kotlin.random.Random
     indices = [Index(value = ["workoutId"])]
 )
 data class Exercise(
-    @PrimaryKey(true) val id: Int = Random.nextInt(),
+    @PrimaryKey(true) val id: Long = Random.nextLong() + System.currentTimeMillis(),
     val exerciseId: String = "",
     val notes: String = "",
     val setMode: SetMode = SetMode.WEIGHT,
     val restTime: Int = 0,
-    val workoutId: Int = 0// Foreign key reference to Workout
+    val workoutId: Long = 0// Foreign key reference to Workout
 )

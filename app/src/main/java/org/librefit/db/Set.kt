@@ -60,10 +60,10 @@ import kotlin.random.Random
     indices = [Index(value = ["exerciseId"])]
 )
 data class Set(
-    @PrimaryKey(true) val id: Int = Random.nextInt(), //TODO: change id from Int to Long
+    @PrimaryKey(true) val id: Long = Random.nextLong() + System.currentTimeMillis(),
     val weight: Float = 0f,
     val reps: Int = 0,
     val elapsedTime: Int = 0,
     val completed: Boolean = false,
-    val exerciseId: Int = 0// Foreign key reference to Exercise
+    val exerciseId: Long = 0// Foreign key reference to Exercise
 )

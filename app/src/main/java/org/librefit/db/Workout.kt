@@ -22,6 +22,7 @@ package org.librefit.db
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
+import kotlin.random.Random
 
 /**
  * Entity representing an workout record in the "workouts" table.
@@ -45,8 +46,8 @@ import java.time.LocalDateTime
  */
 @Entity(tableName = "workouts")
 data class Workout(
-    @PrimaryKey(true) val id: Int = 0,
-    val routineId: Long = System.currentTimeMillis(),
+    @PrimaryKey(true) val id: Long = 0,
+    val routineId: Long = Random.nextLong() + System.currentTimeMillis(),
     val notes: String = "",
     val title: String = "",
     val routine: Boolean = false,

@@ -41,7 +41,7 @@ import org.librefit.ui.screens.shared.SharedViewModel
  * workout screen, popping the permission request screen from the back stack if it exists.
  */
 fun checkPermissionsBeforeNavigateToWorkout(
-    workoutId: Int = 0,
+    workoutId: Long = 0,
     requestPermissionAgain: Boolean = false,
     navController: NavHostController,
     sharedViewModel: SharedViewModel? = null,

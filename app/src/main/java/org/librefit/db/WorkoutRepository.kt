@@ -41,7 +41,7 @@ class WorkoutRepository(private val workoutDao: WorkoutDao) {
     val routines = workoutDao.getRoutines()
 
 
-    fun getWorkout(id: Int): Workout {
+    fun getWorkout(id: Long): Workout {
         return workoutDao.getWorkout(id)
     }
 
@@ -64,7 +64,7 @@ class WorkoutRepository(private val workoutDao: WorkoutDao) {
     /**
      * Refer to [WorkoutDao.getExercisesFromWorkout]
      */
-    suspend fun getExercisesFromWorkout(workoutId: Int): List<ExerciseWithSets> {
+    suspend fun getExercisesFromWorkout(workoutId: Long): List<ExerciseWithSets> {
         return workoutDao.getExercisesFromWorkout(workoutId)
     }
 
