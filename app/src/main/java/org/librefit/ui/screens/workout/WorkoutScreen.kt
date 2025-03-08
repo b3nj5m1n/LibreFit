@@ -81,6 +81,7 @@ import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.data.ExerciseWithSets
+import org.librefit.db.Exercise
 import org.librefit.enums.InfoMode
 import org.librefit.nav.Destination
 import org.librefit.ui.components.ConfirmDialog
@@ -109,7 +110,7 @@ fun WorkoutScreen(
         //It adds the selected exercises from AddExerciseScreen
         sharedViewModel.getSelectedExercisesList().forEach { exerciseDC ->
             viewModel.addExerciseWithSets(
-                ExerciseWithSets().apply { this.exerciseDC = exerciseDC }
+                ExerciseWithSets(Exercise(exerciseId = exerciseDC.id), exerciseDC = exerciseDC)
             )
         }
     }
