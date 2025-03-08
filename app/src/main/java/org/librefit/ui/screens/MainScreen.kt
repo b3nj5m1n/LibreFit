@@ -77,7 +77,7 @@ fun MainScreen(
             sharedViewModel.updateWorkoutId(0)
             navController.navigate(Destination.EditWorkoutScreen)
         },
-        fabIcon = Icons.Default.Add,
+        fabIcon = if (homeSelected) Icons.Default.Add else null,
         fabDescription = stringResource(R.string.create_routine),
         bottomBar = {
             NavigationBar {
