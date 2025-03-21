@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +63,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
@@ -154,13 +157,13 @@ private fun ExercisesScreenContent(
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
     /**
-     * Query used to filter exercises based on the name
+     * Query used to filter [exerciseList] based on the exercise name
      */
-    var query by remember { mutableStateOf("") }
+    val query by viewModel.query.collectAsState()
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.padding(innerPadding)
+        contentPadding = innerPadding
     ) {
         // Search bar
         item {
@@ -173,9 +176,7 @@ private fun ExercisesScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 10.dp, end = 10.dp),
-                    onValueChange = {
-                        query = it
-                    },
+                    onValueChange = viewModel::updateQuery,
                     shape = RoundedCornerShape(40.dp),
                     leadingIcon = {
                         Icon(
@@ -185,7 +186,7 @@ private fun ExercisesScreenContent(
                     },
                     trailingIcon = {
                         if (query.isNotEmpty()) {
-                            IconButton(onClick = { query = "" }) {
+                            IconButton(onClick = { viewModel.updateQuery("") }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(R.string.delete)
@@ -208,8 +209,11 @@ private fun ExercisesScreenContent(
         item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
 
         if (
-            !exerciseList.any {
-                it.name.contains(query, ignoreCase = true) && viewModel.filterExercise(it)
+            !exerciseList.fastAny {
+                viewModel.fuzzySearch(
+                    it.name,
+                    query
+                ) > 50 && viewModel.isExerciseEligible(it)
             }
         ) {
             item {
@@ -228,14 +232,13 @@ private fun ExercisesScreenContent(
             }
         }
 
-        //Filtered list of exercises
-        // TODO: fuzzy search
+        //Filtered list of exercises sorted by matching score
         itemsIndexed(
-            items = exerciseList.filter { exercise ->
-                exercise.name.contains(query, ignoreCase = true) && viewModel.filterExercise(
-                    exercise
-                )
-            },
+            items = exerciseList
+                .map { it to viewModel.fuzzySearch(it.name, query) }
+                .fastFilter { it.second > 50 && viewModel.isExerciseEligible(it.first) }
+                .sortedByDescending { it.second }
+                .map { it.first },
             key = { index, exercise -> exercise.id }
         ) { index, exercise ->
             if (index == 0) {

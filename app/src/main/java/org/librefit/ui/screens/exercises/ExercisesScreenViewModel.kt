@@ -21,6 +21,8 @@ package org.librefit.ui.screens.exercises
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.librefit.data.ExerciseDC
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
@@ -28,8 +30,24 @@ import org.librefit.enums.exercise.Force
 import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
+import org.librefit.util.fuzzySearch.FuzzySearch
 
 class ExercisesScreenViewModel : ViewModel() {
+    private val _query = MutableStateFlow("")
+    val query = _query.asStateFlow()
+
+    fun updateQuery(newQuery: String) {
+        _query.value = newQuery
+    }
+
+    /**
+     * Refer to [FuzzySearch.partialRatio]
+     */
+    fun fuzzySearch(name: String, query: String): Int {
+        if (query == "") return 100
+        return FuzzySearch.partialRatio(name.lowercase(), query.lowercase().trim())
+    }
+
     private var levelFilter = mutableStateOf<Level?>(null)
     private var forceFilter = mutableStateOf<Force?>(null)
     private var mechanicFilter = mutableStateOf<Mechanic?>(null)
@@ -62,7 +80,13 @@ class ExercisesScreenViewModel : ViewModel() {
         }
     }
 
-    fun filterExercise(exercise: ExerciseDC): Boolean {
+    /**
+     * This function checks each filter (such as [Level], [Force], [Mechanic], [Equipment], [Muscle],
+     * and [Category]) against the corresponding property of the [exercise]. If a filter value is not
+     * null, the exercise's property must match the filter. Specifically for the muscle filter, the
+     * exercise is eligible if the filter matches any of its primary or secondary muscles.
+     */
+    fun isExerciseEligible(exercise: ExerciseDC): Boolean {
         if (levelFilter.value != null && levelFilter.value != exercise.level) {
             return false
         }
