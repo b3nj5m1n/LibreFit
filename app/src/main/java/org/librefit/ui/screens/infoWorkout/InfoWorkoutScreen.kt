@@ -74,10 +74,6 @@ fun InfoWorkoutScreen(
     sharedViewModel: SharedViewModel,
     navController: NavHostController
 ) {
-    /*
-    This will pass "workoutId" to the view model so it can load and link
-    exercises from db just one time (in initialization)
-     */
     val viewModel: InfoWorkoutScreenViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
@@ -147,7 +143,6 @@ fun InfoWorkoutScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item { HeadlineText(stringResource(R.string.overview)) }
             item {
                 OutlinedCard {
                     Column(
