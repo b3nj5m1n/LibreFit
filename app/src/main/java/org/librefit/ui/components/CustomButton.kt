@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -36,21 +36,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.librefit.R
 
 @Composable
 fun CustomButton(
+    modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
     iconDescription: String? = null,
     elevated: Boolean = true,
-    modifier: Modifier? = null,
     onClick: () -> Unit
 ) {
     Button(
-        modifier = if (modifier != null) modifier else Modifier.fillMaxWidth(),
+        modifier = modifier,
         onClick = onClick,
         colors = if (elevated) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -82,5 +84,8 @@ fun CustomButton(
 @Preview
 @Composable
 fun CustomTextButtonPreview() {
-    CustomButton("Example", Icons.Default.Check) { }
+    CustomButton(
+        text = stringResource(R.string.start_routine),
+        icon = Icons.Default.PlayArrow
+    ) { }
 }
