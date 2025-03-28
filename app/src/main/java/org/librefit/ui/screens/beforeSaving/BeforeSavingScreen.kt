@@ -20,10 +20,13 @@
 package org.librefit.ui.screens.beforeSaving
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -144,247 +147,258 @@ fun BeforeSavingScreen(
         },
         actionsDescription = listOf(stringResource(R.string.save)),
         actionsEnabled = listOf(viewModel.isTitleAllowed())
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(start = 20.dp, end = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) { innerPadding ->
+        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
+        // This prevents the content from stretching too wide on larger (landscape) screens
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            item {
-                OutlinedTextField(
-                    value = viewModel.getWorkoutTitle(),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    onValueChange = { newTitle ->
-                        viewModel.updateWorkoutTitle(newTitle)
-                    },
-                    trailingIcon = {
-                        if (!viewModel.isTitleAllowed()) {
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp)
+                    .widthIn(max = 600.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = viewModel.getWorkoutTitle(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        onValueChange = { newTitle ->
+                            viewModel.updateWorkoutTitle(newTitle)
+                        },
+                        trailingIcon = {
+                            if (!viewModel.isTitleAllowed()) {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = stringResource(R.string.warning)
+                                )
+                            }
+                        },
+                        isError = !viewModel.isTitleAllowed(),
+                        label = { Text(text = stringResource(id = R.string.title)) },
+                        supportingText = {
+                            when {
+                                viewModel.isTitleTooLong() -> {
+                                    Text(stringResource(R.string.title_length_exceeded_30))
+                                }
+
+                                viewModel.isTitleEmpty() -> {
+                                    Text(stringResource(R.string.title_cannot_be_empty))
+                                }
+                            }
+                        }
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = viewModel.getWorkoutNotes(),
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { newNotes ->
+                            viewModel.updateWorkoutNotes(newNotes)
+                        },
+                        label = { Text(text = stringResource(id = R.string.notes)) },
+                    )
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.statistics),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        IconButton(
+                            onClick = {
+                                infoMode = InfoMode.BEFORE_SAVING_STATS
+                            }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = stringResource(R.string.warning)
+                                imageVector = Icons.Default.Info,
+                                contentDescription = stringResource(R.string.info)
                             )
                         }
-                    },
-                    isError = !viewModel.isTitleAllowed(),
-                    label = { Text(text = stringResource(id = R.string.title)) },
-                    supportingText = {
-                        when {
-                            viewModel.isTitleTooLong() -> {
-                                Text(stringResource(R.string.title_length_exceeded_30))
-                            }
-
-                            viewModel.isTitleEmpty() -> {
-                                Text(stringResource(R.string.title_cannot_be_empty))
-                            }
-                        }
                     }
-                )
-            }
-            item {
-                OutlinedTextField(
-                    value = viewModel.getWorkoutNotes(),
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { newNotes ->
-                        viewModel.updateWorkoutNotes(newNotes)
-                    },
-                    label = { Text(text = stringResource(id = R.string.notes)) },
-                )
-            }
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.statistics),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    IconButton(
-                        onClick = {
-                            infoMode = InfoMode.BEFORE_SAVING_STATS
-                        }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(R.string.info)
+
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = formatTime(viewModel.getTimeElapsed()),
+                            label = { Text(stringResource(R.string.elapsed_time)) },
+                            onValueChange = { string ->
+                                val stringValue = string.filter { it.isDigit() }.takeLast(6)
+
+                                val seconds = stringValue.toInt() % 100
+                                val minutes = (stringValue.toInt() % 10000 - seconds) / 100
+                                val hours =
+                                    (stringValue.toInt() - stringValue.toInt() % 10000) / 10000
+
+                                viewModel.setTimeElapsed(hours * 3600 + minutes * 60 + seconds)
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = viewModel.getCompletedDate(),
+                            onValueChange = {},
+                            label = { Text(stringResource(R.string.label_when)) },
+                            readOnly = true,
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    showDatePickerDialog = !showDatePickerDialog
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.DateRange,
+                                        contentDescription = stringResource(R.string.select_date)
+                                    )
+                                }
+                            }
                         )
                     }
                 }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = viewModel.getVolumeExercises(),
+                            label = { Text(stringResource(R.string.volume)) },
+                            suffix = { Text(stringResource(R.string.kg)) },
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = "${viewModel.getExercises().size}",
+                            label = { Text(stringResource(R.string.exercises)) },
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                        )
+                    }
+                }
 
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = formatTime(viewModel.getTimeElapsed()),
-                        label = { Text(stringResource(R.string.elapsed_time)) },
-                        onValueChange = { string ->
-                            val stringValue = string.filter { it.isDigit() }.takeLast(6)
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = "${viewModel.getTotalSets()}",
+                            label = { Text(stringResource(R.string.total_sets)) },
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier.weight(0.5f),
+                            value = "${viewModel.getCompletedSets()}",
+                            label = { Text(stringResource(R.string.completed_sets)) },
+                            onValueChange = {},
+                            readOnly = true,
+                            singleLine = true,
+                        )
+                    }
+                }
 
-                            val seconds = stringValue.toInt() % 100
-                            val minutes = (stringValue.toInt() % 10000 - seconds) / 100
-                            val hours = (stringValue.toInt() - stringValue.toInt() % 10000) / 10000
-
-                            viewModel.setTimeElapsed(hours * 3600 + minutes * 60 + seconds)
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = viewModel.getCompletedDate(),
-                        onValueChange = {},
-                        label = { Text(stringResource(R.string.label_when)) },
-                        readOnly = true,
-                        trailingIcon = {
-                            IconButton(onClick = { showDatePickerDialog = !showDatePickerDialog }) {
-                                Icon(
-                                    imageVector = Icons.Default.DateRange,
-                                    contentDescription = stringResource(R.string.select_date)
-                                )
+                if (viewModel.getRoutineTitle() != "") {
+                    item {
+                        HeadlineText(stringResource(R.string.routine))
+                    }
+                    item {
+                        ElevatedCard {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.title) + " : " + viewModel.getRoutineTitle(),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(stringResource(R.string.creation_date) + " : " + viewModel.getRoutineDate())
+                                }
+                                IconButton(
+                                    onClick = { showUnlikeRoutineDialog = true }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
+                                }
                             }
                         }
-                    )
+                    }
                 }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = viewModel.getVolumeExercises(),
-                        label = { Text(stringResource(R.string.volume)) },
-                        suffix = { Text(stringResource(R.string.kg)) },
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = "${viewModel.getExercises().size}",
-                        label = { Text(stringResource(R.string.exercises)) },
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = "${viewModel.getTotalSets()}",
-                        label = { Text(stringResource(R.string.total_sets)) },
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier.weight(0.5f),
-                        value = "${viewModel.getCompletedSets()}",
-                        label = { Text(stringResource(R.string.completed_sets)) },
-                        onValueChange = {},
-                        readOnly = true,
-                        singleLine = true,
-                    )
-                }
-            }
-
-            if (viewModel.getRoutineTitle() != "") {
                 item {
-                    HeadlineText(stringResource(R.string.routine))
+                    HeadlineText(stringResource(R.string.exercises))
                 }
+
                 item {
                     ElevatedCard {
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.title) + " : " + viewModel.getRoutineTitle(),
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(stringResource(R.string.creation_date) + " : " + viewModel.getRoutineDate())
-                            }
-                            IconButton(
-                                onClick = { showUnlikeRoutineDialog = true }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            item {
-                HeadlineText(stringResource(R.string.exercises))
-            }
-
-            item {
-                ElevatedCard {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Text(
-                                text = stringResource(R.string.completed_sets),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                        viewModel.getExercises().forEachIndexed { index, exercise ->
-                            if (index != 0) {
-                                HorizontalDivider()
-                            }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.End
                             ) {
                                 Text(
-                                    text = exercise.exerciseDC.name,
-                                    style = MaterialTheme.typography.titleMedium
+                                    text = stringResource(R.string.completed_sets),
+                                    style = MaterialTheme.typography.bodySmall
                                 )
-                                Text("${exercise.sets.filter { it.completed }.size} / ${exercise.sets.size}")
+                            }
+                            viewModel.getExercises().forEachIndexed { index, exercise ->
+                                if (index != 0) {
+                                    HorizontalDivider()
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = exercise.exerciseDC.name,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text("${exercise.sets.filter { it.completed }.size} / ${exercise.sets.size}")
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            bottomMargin()
+                bottomMargin()
+            }
         }
     }
 }

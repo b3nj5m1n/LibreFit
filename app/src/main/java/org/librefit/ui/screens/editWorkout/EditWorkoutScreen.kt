@@ -21,11 +21,13 @@ package org.librefit.ui.screens.editWorkout
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -53,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.db.entity.Exercise
@@ -150,15 +151,15 @@ fun EditWorkoutScreen(
         },
         fabDescription = stringResource(R.string.add_exercise)
     ) { innerPadding ->
-        EditWorkoutScreen(
+        EditWorkoutScreenContent(
             innerPadding = innerPadding,
-            viewModel = viewModel
+            viewModel = viewModel //TODO: remove view model as parameter
         )
     }
 }
 
 @Composable
-private fun EditWorkoutScreen(
+private fun EditWorkoutScreenContent(
     innerPadding: PaddingValues,
     viewModel: EditWorkoutScreenViewModel
 ) {
@@ -181,122 +182,129 @@ private fun EditWorkoutScreen(
     }
 
 
-    LazyColumn(
-        contentPadding = innerPadding,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 15.dp, end = 15.dp),
-        verticalArrangement = Arrangement.spacedBy(15.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
+    // This prevents the content from stretching too wide on larger (landscape) screens
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        item {
-            OutlinedTextField(
-                value = viewModel.getTitle(),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                onValueChange = { newTitle ->
-                    viewModel.updateTitle(newTitle)
-                },
-                trailingIcon = {
-                    if (!viewModel.isTitleAllowed()) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = stringResource(R.string.warning)
+        LazyColumn(
+            contentPadding = innerPadding,
+            modifier = Modifier
+                .padding(start = 15.dp, end = 15.dp)
+                .widthIn(max = 600.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                OutlinedTextField(
+                    value = viewModel.getTitle(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    onValueChange = { newTitle ->
+                        viewModel.updateTitle(newTitle)
+                    },
+                    trailingIcon = {
+                        if (!viewModel.isTitleAllowed()) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = stringResource(R.string.warning)
+                            )
+                        }
+                    },
+                    isError = !viewModel.isTitleAllowed(),
+                    label = { Text(text = stringResource(id = R.string.title)) },
+                    supportingText = {
+                        when {
+                            viewModel.isTitleTooLong() -> {
+                                Text(stringResource(R.string.title_length_exceeded_30))
+                            }
+
+                            viewModel.isTitleEmpty() -> {
+                                Text(stringResource(R.string.title_cannot_be_empty))
+                            }
+                        }
+                    }
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = viewModel.getNotes(),
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { newNotes ->
+                        viewModel.updateNotes(newNotes)
+                    },
+                    label = { Text(text = stringResource(id = R.string.notes)) },
+                )
+            }
+            item {
+                HorizontalDivider()
+            }
+            if (viewModel.isListEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        DumbbellLottie()
+                        Text(
+                            text = stringResource(id = R.string.start_adding_exercises),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
                         )
                     }
-                },
-                isError = !viewModel.isTitleAllowed(),
-                label = { Text(text = stringResource(id = R.string.title)) },
-                supportingText = {
-                    when {
-                        viewModel.isTitleTooLong() -> {
-                            Text(stringResource(R.string.title_length_exceeded_30))
-                        }
-
-                        viewModel.isTitleEmpty() -> {
-                            Text(stringResource(R.string.title_cannot_be_empty))
-                        }
-                    }
                 }
-            )
-        }
-        item {
-            OutlinedTextField(
-                value = viewModel.getNotes(),
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { newNotes ->
-                    viewModel.updateNotes(newNotes)
-                },
-                label = { Text(text = stringResource(id = R.string.notes)) },
-            )
-        }
-        item {
-            HorizontalDivider()
-        }
-        if (viewModel.isListEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    DumbbellLottie()
-                    Text(
-                        text = stringResource(id = R.string.start_adding_exercises),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
+            } else {
+                itemsIndexed(
+                    items = viewModel.exercisesWithSets,
+                    key = { i, e -> e.exercise.id }
+                ) { i, exerciseWithSets ->
+                    ExerciseCard(
+                        modifier = Modifier.animateItem(),
+                        exerciseWithSets = exerciseWithSets,
+                        addSet = {
+                            viewModel.addSetToExercise(i)
+                        },
+                        onDetail = {
+                            selectedExercise = exerciseWithSets.exerciseDC
+                            isModalSheetOpen = true
+                        },
+                        onDelete = {
+                            viewModel.deleteExercise(i)
+                        },
+                        updateSet = { set, value, mode ->
+                            viewModel.updateSet(
+                                index = i,
+                                set = set,
+                                value = value,
+                                mode = mode
+                            )
+                        },
+                        deleteSet = { set ->
+                            viewModel.deleteSet(
+                                index = i,
+                                set = set
+                            )
+                        },
+                        updateExercise = { value, mode ->
+                            viewModel.updateExercise(
+                                index = i,
+                                value = value,
+                                mode = mode
+                            )
+                        },
+                        showInfo = { infoMode = it },
+                        workout = viewModel.getTypeOfEdit() == false
                     )
                 }
             }
-        } else {
-            itemsIndexed(
-                items = viewModel.exercisesWithSets,
-                key = { i, e -> e.exercise.id }
-            ) { i, exerciseWithSets ->
-                ExerciseCard(
-                    modifier = Modifier.animateItem(),
-                    exerciseWithSets = exerciseWithSets,
-                    addSet = {
-                        viewModel.addSetToExercise(i)
-                    },
-                    onDetail = {
-                        selectedExercise = exerciseWithSets.exerciseDC
-                        isModalSheetOpen = true
-                    },
-                    onDelete = {
-                        viewModel.deleteExercise(i)
-                    },
-                    updateSet = { set, value, mode ->
-                        viewModel.updateSet(
-                            index = i,
-                            set = set,
-                            value = value,
-                            mode = mode
-                        )
-                    },
-                    deleteSet = { set ->
-                        viewModel.deleteSet(
-                            index = i,
-                            set = set
-                        )
-                    },
-                    updateExercise = { value, mode ->
-                        viewModel.updateExercise(
-                            index = i,
-                            value = value,
-                            mode = mode
-                        )
-                    },
-                    showInfo = { infoMode = it },
-                    workout = viewModel.getTypeOfEdit() == false
-                )
-            }
+            bottomMargin()
         }
-        bottomMargin()
     }
 }
 
 @Preview
 @Composable
-private fun CreateRoutineScreenPreview() {
-    EditWorkoutScreen(viewModel(), rememberNavController())
+private fun EditWorkoutScreenPreview() {
+    EditWorkoutScreenContent(PaddingValues(), viewModel())
 }

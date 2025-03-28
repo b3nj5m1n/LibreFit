@@ -24,8 +24,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -125,97 +127,104 @@ private fun ProfileScreenContent(
     updateChartMode: (ChartMode) -> Unit,
     updateWorkoutId: (Long) -> Unit
 ) {
-    LazyColumn(
-        contentPadding = innerPadding,
-        modifier = Modifier.padding(start = 15.dp, end = 15.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        item {
-            var clicks = rememberSaveable { mutableIntStateOf(0) }
 
-            LaunchedEffect(Unit) {
-                while (true) {
-                    delay(500)
-                    clicks.intValue = clicks.intValue.dec().coerceAtLeast(0)
+    // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
+    // This prevents the content from stretching too wide on larger (landscape) screens
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        LazyColumn(
+            contentPadding = innerPadding,
+            modifier = Modifier
+                .padding(start = 15.dp, end = 15.dp)
+                .widthIn(max = 600.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            item {
+                var clicks = rememberSaveable { mutableIntStateOf(0) }
+
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        delay(500)
+                        clicks.intValue = clicks.intValue.dec().coerceAtLeast(0)
+                    }
+                }
+                OutlinedCard(
+                    onClick = {
+                        clicks.intValue++
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(modifier = Modifier.weight(0.25f)) {
+                            StreakLottie(weekStreak + clicks.intValue)
+                        }
+                        Column(
+                            modifier = Modifier.weight(0.75f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.week_streak) + " " + weekStreak,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
+                    }
                 }
             }
-            OutlinedCard(
-                onClick = {
-                    clicks.intValue++
-                }
-            ) {
+
+            item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(modifier = Modifier.weight(0.25f)) {
-                        StreakLottie(weekStreak + clicks.intValue)
-                    }
-                    Column(
-                        modifier = Modifier.weight(0.75f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    CustomButton(
+                        text = stringResource(R.string.statistics),
+                        icon = ImageVector.vectorResource(R.drawable.ic_chart),
+                        modifier = Modifier.weight(0.5f),
+                        elevated = false
                     ) {
-                        Text(
-                            text = stringResource(R.string.week_streak) + " " + weekStreak,
-                            style = MaterialTheme.typography.titleLarge
-                        )
+                        //TODO: statistics view
+                    }
+                    CustomButton(
+                        text = stringResource(R.string.explore_exercises),
+                        icon = Icons.Default.Search,
+                        modifier = Modifier.weight(0.5f),
+                        elevated = false
+                    ) {
+                        navController.navigate(Route.ExercisesScreen(addExercises = false))
                     }
                 }
             }
-        }
 
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CustomButton(
-                    text = stringResource(R.string.statistics),
-                    icon = ImageVector.vectorResource(R.drawable.ic_chart),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    //TODO: statistics view
-                }
-                CustomButton(
-                    text = stringResource(R.string.explore_exercises),
-                    icon = Icons.Default.Search,
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.ExercisesScreen(addExercises = false))
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CustomButton(
-                    text = stringResource(R.string.measurements),
-                    icon = ImageVector.vectorResource(R.drawable.ic_monitor),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.MeasurementScreen)
-                }
-                CustomButton(
-                    text = stringResource(R.string.calendar),
-                    icon = Icons.Default.DateRange,
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.CalendarScreen)
+                    CustomButton(
+                        text = stringResource(R.string.measurements),
+                        icon = ImageVector.vectorResource(R.drawable.ic_monitor),
+                        modifier = Modifier.weight(0.5f),
+                        elevated = false
+                    ) {
+                        navController.navigate(Route.MeasurementScreen)
+                    }
+                    CustomButton(
+                        text = stringResource(R.string.calendar),
+                        icon = Icons.Default.DateRange,
+                        modifier = Modifier.weight(0.5f),
+                        elevated = false
+                    ) {
+                        navController.navigate(Route.CalendarScreen)
+                    }
                 }
             }
-        }
 
-        item { HeadlineText(stringResource(R.string.overview)) }
-
-        if (listChartData.isNotEmpty()) {
+            item { HeadlineText(stringResource(R.string.overview)) }
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(ChartMode.entries) { mode ->
@@ -259,73 +268,75 @@ private fun ProfileScreenContent(
             }
 
             item { HeadlineText(stringResource(R.string.your_workouts)) }
-        } else {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    EmptyLottie()
-                    Text(
-                        text = stringResource(R.string.nothing_to_show),
-                        textAlign = TextAlign.Center
-                    )
+            if (workoutsWithExercises.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        EmptyLottie()
+                        Text(
+                            text = stringResource(R.string.nothing_to_show),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
-        }
 
-        items(
-            items = workoutsWithExercises.map { it.workout },
-            key = { it.id }
-        ) { workout ->
-            ElevatedCard {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(15.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+            items(
+                items = workoutsWithExercises.map { it.workout },
+                key = { it.id }
+            ) { workout ->
+                ElevatedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = workout.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = stringResource(R.string.finished_on) + ": "
-                                        + workout.completed.format(
-                                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(
-                                        Locale.getDefault()
-                                    )
-                                ),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = stringResource(R.string.duration) + ": "
-                                        + formatTime(workout.timeElapsed),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                updateWorkoutId(workout.id)
-                                navController.navigate(Route.InfoWorkoutScreen)
-                            },
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(Icons.Default.Info, stringResource(R.string.about))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = workout.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    text = stringResource(R.string.finished_on) + ": "
+                                            + workout.completed.format(
+                                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                                            .withLocale(
+                                                Locale.getDefault()
+                                            )
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = stringResource(R.string.duration) + ": "
+                                            + formatTime(workout.timeElapsed),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    updateWorkoutId(workout.id)
+                                    navController.navigate(Route.InfoWorkoutScreen)
+                                },
+                            ) {
+                                Icon(Icons.Default.Info, stringResource(R.string.about))
+                            }
                         }
                     }
                 }
             }
+            bottomMargin()
         }
-        bottomMargin()
     }
 }
 
@@ -365,7 +376,7 @@ private fun ProfileScreenPreview() {
             innerPadding = it,
             navController = rememberNavController(),
             weekStreak = 90,
-            listChartData = listOf(2f, 1f, 3f, 2f, 4f).map { ChartData(it) },
+            listChartData = listOf<Float>().map(::ChartData),
             chartMode = ChartMode.DURATION,
             workoutsWithExercises = remember {
                 mutableStateListOf(

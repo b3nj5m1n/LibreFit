@@ -27,12 +27,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -117,171 +119,178 @@ fun AboutScreen(navController: NavHostController) {
         title = AnnotatedString(stringResource(id = R.string.about)),
         navigateBack = { navController.popBackStack() },
     ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 15.dp, end = 15.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
+        // This prevents the content from stretching too wide on larger (landscape) screens
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp)
+                    .widthIn(max = 600.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-            item {
-                val logoSize = 170.dp
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_logo),
-                    contentDescription = stringResource(R.string.app_name),
-                    modifier = Modifier
-                        .size(logoSize)
-                        .border(
-                            BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceContainer),
-                            RoundedCornerShape(logoSize)
-                        )
-                )
-            }
-            item {
-                Text(
-                    buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(stringResource(id = R.string.app_name).removeRange(5, 8))
+                item {
+                    val logoSize = 170.dp
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_logo),
+                        contentDescription = stringResource(R.string.app_name),
+                        modifier = Modifier
+                            .size(logoSize)
+                            .border(
+                                BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceContainer),
+                                RoundedCornerShape(logoSize)
+                            )
+                    )
+                }
+                item {
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(stringResource(id = R.string.app_name).removeRange(5, 8))
+                            }
+                            append(stringResource(id = R.string.app_name).removeRange(0, 5))
+                        },
+                        style = MaterialTheme.typography.displayMedium
+                    )
+                }
+
+                item {
+                    val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                    val version = pInfo?.versionName.toString()
+                    Text(stringResource(R.string.version) + ": $version")
+                }
+
+                item {
+                    HeadlineText(text = stringResource(R.string.support_project))
+                }
+
+
+                item {
+                    AboutItem(
+                        Icons.Default.Favorite,
+                        text = stringResource(R.string.donate),
+                        description = stringResource(R.string.donate_desc),
+                        onClick = {},
+                        enabled = false
+                    )
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_handshake),
+                        text = stringResource(R.string.contribute),
+                        description = stringResource(R.string.contribute_desc),
+                        onClick = {},
+                        enabled = false
+                    )
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_translate),
+                        stringResource(R.string.translate),
+                        description = stringResource(R.string.translate_desc),
+                        onClick = {},
+                        enabled = false
+                    )
+                }
+
+                item {
+                    HeadlineText(stringResource(R.string.info))
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_policy),
+                        stringResource(R.string.privacy_policy),
+                        description = stringResource(R.string.privacy_policy_desc),
+                        onClick = {
+                            url = context.getString(R.string.url_privacy)
                         }
-                        append(stringResource(id = R.string.app_name).removeRange(0, 5))
-                    },
-                    style = MaterialTheme.typography.displayMedium
-                )
+
+                    )
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_globe),
+                        stringResource(R.string.website),
+                        onClick = {
+                            url = context.getString(R.string.url_website)
+                        }
+                    )
+                }
+
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_license),
+                        stringResource(R.string.license),
+                        description = stringResource(R.string.license_desc),
+                        onClick = {
+                            navController.navigate(Route.LicenseScreen)
+                        }
+                    )
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_github),
+                        stringResource(R.string.github),
+                        stringResource(R.string.source_code),
+                        onClick = {
+                            url = context.getString(R.string.url_source_code)
+                        }
+                    )
+                }
+
+                item {
+                    AboutItem(
+                        ImageVector.vectorResource(R.drawable.ic_library),
+                        stringResource(R.string.libraries),
+                        onClick = {
+                            navController.navigate(Route.LibrariesScreen)
+                        }
+                    )
+                }
+
+
+                item {
+                    HeadlineText(stringResource(R.string.contributors))
+                }
+
+                item {
+                    AboutItem(
+                        Icons.Default.Person,
+                        stringResource(R.string.url_IamDg).split("/").last(),
+                        stringResource(R.string.founder),
+                        onClick = {
+                            url = context.getString(R.string.url_IamDg)
+                        }
+                    )
+                }
+
+                item {
+                    HeadlineText(stringResource(R.string.translators))
+                }
+
+                item {
+                    AboutItem(
+                        Icons.Default.Person,
+                        stringResource(R.string.url_IamDg).split("/").last(),
+                        stringResource(R.string.contributed_to) + stringResource(R.string.language_italian),
+                        onClick = {
+                            url = context.getString(R.string.url_IamDg)
+                        }
+                    )
+                }
+                bottomMargin()
             }
-
-            item {
-                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                val version = pInfo?.versionName.toString()
-                Text(stringResource(R.string.version) + ": $version")
-            }
-
-            item {
-                HeadlineText(text = stringResource(R.string.support_project))
-            }
-
-
-            item {
-                AboutItem(
-                    Icons.Default.Favorite,
-                    text = stringResource(R.string.donate),
-                    description = stringResource(R.string.donate_desc),
-                    onClick = {},
-                    enabled = false
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_handshake),
-                    text = stringResource(R.string.contribute),
-                    description = stringResource(R.string.contribute_desc),
-                    onClick = {},
-                    enabled = false
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_translate),
-                    stringResource(R.string.translate),
-                    description = stringResource(R.string.translate_desc),
-                    onClick = {},
-                    enabled = false
-                )
-            }
-
-            item {
-                HeadlineText(stringResource(R.string.info))
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_policy),
-                    stringResource(R.string.privacy_policy),
-                    description = stringResource(R.string.privacy_policy_desc),
-                    onClick = {
-                        url = context.getString(R.string.url_privacy)
-                    }
-
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_globe),
-                    stringResource(R.string.website),
-                    onClick = {
-                        url = context.getString(R.string.url_website)
-                    }
-                )
-            }
-
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_license),
-                    stringResource(R.string.license),
-                    description = stringResource(R.string.license_desc),
-                    onClick = {
-                        navController.navigate(Route.LicenseScreen)
-                    }
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_github),
-                    stringResource(R.string.github),
-                    stringResource(R.string.source_code),
-                    onClick = {
-                        url = context.getString(R.string.url_source_code)
-                    }
-                )
-            }
-
-            item {
-                AboutItem(
-                    ImageVector.vectorResource(R.drawable.ic_library),
-                    stringResource(R.string.libraries),
-                    onClick = {
-                        navController.navigate(Route.LibrariesScreen)
-                    }
-                )
-            }
-
-
-            item {
-                HeadlineText(stringResource(R.string.contributors))
-            }
-
-            item {
-                AboutItem(
-                    Icons.Default.Person,
-                    stringResource(R.string.url_IamDg).split("/").last(),
-                    stringResource(R.string.founder),
-                    onClick = {
-                        url = context.getString(R.string.url_IamDg)
-                    }
-                )
-            }
-
-            item {
-                HeadlineText(stringResource(R.string.translators))
-            }
-
-            item {
-                AboutItem(
-                    Icons.Default.Person,
-                    stringResource(R.string.url_IamDg).split("/").last(),
-                    stringResource(R.string.contributed_to) + stringResource(R.string.language_italian),
-                    onClick = {
-                        url = context.getString(R.string.url_IamDg)
-                    }
-                )
-            }
-            bottomMargin()
         }
     }
 }
@@ -328,7 +337,7 @@ private fun AboutItem(
 }
 
 
-@Preview
+@Preview(device = "spec:width=673dp,height=841dp,orientation=landscape")
 @Composable
 private fun AboutScreenPreview() {
     AboutScreen(rememberNavController())

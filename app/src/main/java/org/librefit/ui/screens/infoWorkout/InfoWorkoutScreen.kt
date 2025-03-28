@@ -20,10 +20,13 @@
 package org.librefit.ui.screens.infoWorkout
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -135,172 +138,181 @@ fun InfoWorkoutScreen(
         ),
         actionsIcons = listOf(Icons.Default.Edit, Icons.Default.Delete),
         actionsElevated = listOf(false, false)
-    ) {
-        LazyColumn(
-            contentPadding = it,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) { innerPadding ->
+        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
+        // This prevents the content from stretching too wide on larger (landscape) screens
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            item {
-                OutlinedCard {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        if (viewModel.getNotes().isNotBlank()) {
-                            Text(
-                                formatDetails(stringResource(R.string.notes), viewModel.getNotes())
-                            )
-                        }
-
-                        if (!viewModel.isRoutine()) {
-                            Text(
-                                formatDetails(
-                                    stringResource(R.string.duration),
-                                    viewModel.getElapsedTime()
-                                )
-                            )
-                        }
-
-                        Text(
-                            formatDetails(
-                                if (viewModel.isRoutine()) stringResource(R.string.creation_date)
-                                else stringResource(R.string.label_when),
-                                viewModel.getDate()
-                            )
-                        )
-                        Text(
-                            formatDetails(
-                                stringResource(R.string.exercises),
-                                viewModel.getTotalExercises()
-                            )
-                        )
-                        Text(
-                            formatDetails(
-                                stringResource(R.string.total_sets),
-                                viewModel.getTotalSets()
-                            )
-                        )
-                        if (!viewModel.isRoutine()) {
-                            Text(
-                                formatDetails(
-                                    stringResource(R.string.completed_sets),
-                                    viewModel.getCompletedSets()
-                                )
-                            )
-                        }
-                        Text(
-                            formatDetails(
-                                stringResource(R.string.volume),
-                                viewModel.getVolumeExercises() + " " + stringResource(R.string.kg)
-                            )
-                        )
-                    }
-                }
-            }
-
-            if (viewModel.getListChartData().size > 1) {
-                item { HeadlineText(stringResource(R.string.past_workouts)) }
-
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp)
+                    .widthIn(max = 600.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(ChartMode.entries) { chartMode ->
-                            FilterChip(
-                                selected = viewModel.getChartMode() == chartMode,
-                                onClick = { viewModel.updateChartMode(chartMode) },
-                                label = {
-                                    Text(
-                                        stringResource(
-                                            id = when (chartMode) {
-                                                ChartMode.DURATION -> R.string.duration
-                                                ChartMode.VOLUME -> R.string.volume
-                                                ChartMode.REPS -> R.string.reps
-                                            }
-                                        )
-                                    )
-                                },
-                                leadingIcon = {
-                                    if (viewModel.getChartMode() == chartMode) {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    CustomCartesianChart(
-                        format = when (viewModel.getChartMode()) {
-                            ChartMode.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
-                            ChartMode.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
-                            ChartMode.REPS -> DecimalFormat()
-                        },
-                        listChartData = viewModel.getListChartData()
-                    )
-                }
-            }
-
-
-            if (viewModel.getRoutineTitle() != "" && !viewModel.isRoutine()) {
-                item {
-                    HeadlineText(stringResource(R.string.routine))
-                }
-
-                item {
-                    ElevatedCard {
-                        Row(
+                    OutlinedCard {
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
+                            if (viewModel.getNotes().isNotBlank()) {
                                 Text(
-                                    text = stringResource(R.string.title) + " : " + viewModel.getRoutineTitle(),
-                                    style = MaterialTheme.typography.titleMedium
+                                    formatDetails(
+                                        stringResource(R.string.notes),
+                                        viewModel.getNotes()
+                                    )
                                 )
-                                Text(stringResource(R.string.creation_date) + " : " + viewModel.getRoutineDate())
                             }
-                            IconButton(
-                                onClick = { showUnlikeRoutineDialog = true }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.delete)
+
+                            if (!viewModel.isRoutine()) {
+                                Text(
+                                    formatDetails(
+                                        stringResource(R.string.duration),
+                                        viewModel.getElapsedTime()
+                                    )
+                                )
+                            }
+
+                            Text(
+                                formatDetails(
+                                    if (viewModel.isRoutine()) stringResource(R.string.creation_date)
+                                    else stringResource(R.string.label_when),
+                                    viewModel.getDate()
+                                )
+                            )
+                            Text(
+                                formatDetails(
+                                    stringResource(R.string.exercises),
+                                    viewModel.getTotalExercises()
+                                )
+                            )
+                            Text(
+                                formatDetails(
+                                    stringResource(R.string.total_sets),
+                                    viewModel.getTotalSets()
+                                )
+                            )
+                            if (!viewModel.isRoutine()) {
+                                Text(
+                                    formatDetails(
+                                        stringResource(R.string.completed_sets),
+                                        viewModel.getCompletedSets()
+                                    )
+                                )
+                            }
+                            Text(
+                                formatDetails(
+                                    stringResource(R.string.volume),
+                                    viewModel.getVolumeExercises() + " " + stringResource(R.string.kg)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                if (viewModel.getListChartData().size > 1) {
+                    item { HeadlineText(stringResource(R.string.past_workouts)) }
+
+                    item {
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            items(ChartMode.entries) { chartMode ->
+                                FilterChip(
+                                    selected = viewModel.getChartMode() == chartMode,
+                                    onClick = { viewModel.updateChartMode(chartMode) },
+                                    label = {
+                                        Text(
+                                            stringResource(
+                                                id = when (chartMode) {
+                                                    ChartMode.DURATION -> R.string.duration
+                                                    ChartMode.VOLUME -> R.string.volume
+                                                    ChartMode.REPS -> R.string.reps
+                                                }
+                                            )
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        if (viewModel.getChartMode() == chartMode) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
                                 )
                             }
                         }
                     }
+
+                    item {
+                        CustomCartesianChart(
+                            format = when (viewModel.getChartMode()) {
+                                ChartMode.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                                ChartMode.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                                ChartMode.REPS -> DecimalFormat()
+                            },
+                            listChartData = viewModel.getListChartData()
+                        )
+                    }
                 }
-            }
 
 
-            item { HeadlineText(stringResource(R.string.exercises)) }
-            items(viewModel.exercises) { exercise ->
-                ExerciseCardSmall(exercise, viewModel.isRoutine()) {
-                    selectedExercise = exercise.exerciseDC
-                    isModalSheetOpen = true
+                if (viewModel.getRoutineTitle() != "" && !viewModel.isRoutine()) {
+                    item {
+                        HeadlineText(stringResource(R.string.routine))
+                    }
+
+                    item {
+                        ElevatedCard {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.title) + " : " + viewModel.getRoutineTitle(),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(stringResource(R.string.creation_date) + " : " + viewModel.getRoutineDate())
+                                }
+                                IconButton(
+                                    onClick = { showUnlikeRoutineDialog = true }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
+
+
+                item { HeadlineText(stringResource(R.string.exercises)) }
+                items(viewModel.exercises) { exercise ->
+                    ExerciseCardSmall(exercise, viewModel.isRoutine()) {
+                        selectedExercise = exercise.exerciseDC
+                        isModalSheetOpen = true
+                    }
+                }
+                bottomMargin()
             }
-            bottomMargin()
         }
-
-        // Opened by info icon next to exercise name, it shows the details of an exercise
-        if (isModalSheetOpen) {
-            ExerciseDetailModalBottomSheet(exercise = selectedExercise!!) {
-                isModalSheetOpen = false
-            }
+    }
+    // Opened by info icon next to exercise name, it shows the details of an exercise
+    if (isModalSheetOpen) {
+        ExerciseDetailModalBottomSheet(exercise = selectedExercise!!) {
+            isModalSheetOpen = false
         }
     }
 }
