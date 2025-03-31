@@ -158,6 +158,7 @@
     <!--Exercise Enums-->
     <string name="rest_time">Rest time</string>
     <string name="type_of_set">Type of set</string>
+    <string name="not_enough_data">Not enough data to display this chart</string>
     <string name="any">Any</string>
     <string name="rest_time_is_over">Rest time is over!</string>
     <string name="rest">Rest</string>

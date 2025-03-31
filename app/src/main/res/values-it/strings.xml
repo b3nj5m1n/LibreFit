@@ -109,6 +109,7 @@
     <string name="exit">Esci</string>
     <string name="rest_time">Tempo di riposo</string>
     <string name="type_of_set">Tipologia di serie</string>
+    <string name="not_enough_data">Dati non sufficienti per mostrare questo grafico</string>
     <string name="any">Qualsiasi</string>
     <string name="rest_time_is_over">Il tempo di riposo è finito!</string>
     <string name="rest">Riposo</string>

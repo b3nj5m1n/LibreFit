@@ -199,6 +199,10 @@
     <string name="type_of_set">Type of set</string>
 
 
+    <!--Chart-->
+    <string name="not_enough_data">"Not enough data to display this chart"</string>
+
+
     <!--Filter card-->
     <string name="any">Any</string>
     <string name="checkbox">Checkbox</string>

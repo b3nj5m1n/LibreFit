@@ -25,13 +25,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -60,19 +63,22 @@ import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shader.ShaderProvider
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import org.librefit.R
 import org.librefit.data.ChartData
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.animations.StatsLottie
+import org.librefit.ui.theme.LibreFitTheme
 import java.text.DecimalFormat
 
 /**
  * A custom [com.patrykandpatrick.vico.core.cartesian.CartesianChart]
  *
  * @param format It is used by [VerticalAxis] to display Y axis values following the provided format
- * @param listChartData A list of [org.librefit.data.ChartData] containing the actual values of the chart, it must be not empty.
+ * @param listChartData A list of [org.librefit.data.ChartData] containing the actual points of the chart.
+ * If empty,a placeholder is shown.
+ * Leave all [ChartData.xValue]s blank to display default ordinal numeration in  axis.
  *
  * @param columns When `false`, the chart becomes a line chart.
  *
- * @throws IllegalArgumentException when [listChartData] is empty
  */
 @Composable
 fun CustomCartesianChart(
@@ -80,108 +86,134 @@ fun CustomCartesianChart(
     listChartData: List<ChartData>,
     columns: Boolean = false
 ) {
-    require(listChartData.isNotEmpty()) {
-        "Chart data must not be empty."
-    }
-
-    val yAxisData = listChartData.map { it.yValue }
-    val xAxisLabels = listChartData.map { it.xValue }
-
     val labelListKey = ExtraStore.Key<List<String>>()
     val modelProducer = remember { CartesianChartModelProducer() }
-    LaunchedEffect(yAxisData) {
-        modelProducer.runTransaction {
-            if (columns) {
-                columnSeries { series(yAxisData) }
-            } else {
-                lineSeries { series(yAxisData) }
-            }
-            if (xAxisLabels.all { it.isNotBlank() }) {
-                extras { it[labelListKey] = xAxisLabels }
-            }
-        }
-    }
+
+    val yValues = listChartData.map { it.yValue }
+    val xValues = listChartData.map { it.xValue }
 
     val primaryColor = MaterialTheme.colorScheme.primary
 
-    /**
-     * Material design 3 chart
-     */
-    ProvideVicoTheme(rememberM3VicoTheme()) {
-        CartesianChartHost(
-            chart = rememberCartesianChart(
-                if (columns) rememberColumnCartesianLayer(
-                    columnProvider = ColumnCartesianLayer.ColumnProvider.series(
-                        rememberLineComponent(
-                            fill = fill(MaterialTheme.colorScheme.primary),
-                            thickness = 32.dp,
-                            shape = CorneredShape.rounded(32, 32)
-                        )
-                    ),
-                    columnCollectionSpacing = 64.dp
-                ) else rememberLineCartesianLayer(
-                    lineProvider = LineCartesianLayer.LineProvider.series(
-                        LineCartesianLayer.rememberLine(
-                            fill = LineCartesianLayer.LineFill.single(fill(primaryColor)),
-                            areaFill = LineCartesianLayer.AreaFill.single(
-                                fill(
-                                    ShaderProvider.verticalGradient(
-                                        arrayOf(primaryColor.copy(alpha = 0.4f), Color.Transparent)
+    ElevatedCard {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (yValues.isNotEmpty()) {
+                LaunchedEffect(yValues) {
+                    modelProducer.runTransaction {
+                        if (columns) {
+                            columnSeries { series(yValues) }
+                        } else {
+                            lineSeries { series(yValues) }
+                        }
+                        if (xValues.all { it.isNotBlank() }) {
+                            extras { it[labelListKey] = xValues }
+                        }
+                    }
+                }
+
+                ProvideVicoTheme(rememberM3VicoTheme()) {
+                    CartesianChartHost(
+                        chart = rememberCartesianChart(
+                            if (columns) rememberColumnCartesianLayer(
+                                columnProvider = ColumnCartesianLayer.ColumnProvider.series(
+                                    rememberLineComponent(
+                                        fill = fill(MaterialTheme.colorScheme.primary),
+                                        thickness = 32.dp,
+                                        shape = CorneredShape.rounded(32, 32)
                                     )
+                                ),
+                                columnCollectionSpacing = 64.dp
+                            ) else rememberLineCartesianLayer(
+                                lineProvider = LineCartesianLayer.LineProvider.series(
+                                    LineCartesianLayer.rememberLine(
+                                        fill = LineCartesianLayer.LineFill.single(fill(primaryColor)),
+                                        areaFill = LineCartesianLayer.AreaFill.single(
+                                            fill(
+                                                ShaderProvider.verticalGradient(
+                                                    arrayOf(
+                                                        primaryColor.copy(alpha = 0.4f),
+                                                        Color.Transparent
+                                                    )
+                                                )
+                                            )
+                                        ),
+                                        // Curved line
+                                        pointConnector = LineCartesianLayer.PointConnector.cubic()
+                                    )
+                                ),
+                                pointSpacing = 64.dp
+                            ),
+                            marker = rememberMarker(
+                                valueFormatter = DefaultCartesianMarker.ValueFormatter.default(
+                                    format
                                 )
                             ),
-                            // Curved line
-                            pointConnector = LineCartesianLayer.PointConnector.cubic()
-                        )
-                    ),
-                    pointSpacing = 64.dp
-                ),
-                marker = rememberMarker(
-                    valueFormatter = DefaultCartesianMarker.ValueFormatter.default(format)
-                ),
-                startAxis = VerticalAxis.rememberStart(
-                    valueFormatter = remember(format) { CartesianValueFormatter.decimal(format) }
-                ),
-                bottomAxis = HorizontalAxis.rememberBottom(
-                    valueFormatter = remember(yAxisData, xAxisLabels) {
-                        if (xAxisLabels.all { it.isNotBlank() })
-                            CartesianValueFormatter { context, x, _ ->
-                                context.model.extraStore.getOrNull(labelListKey)?.get(x.toInt())
-                                    ?: xAxisLabels.getOrNull(yAxisData.indexOf(x.toFloat()))
-                                    ?: xAxisLabels.first()
-                            }
-                        else CartesianValueFormatter.decimal()
+                            startAxis = VerticalAxis.rememberStart(
+                                valueFormatter = remember(format) {
+                                    CartesianValueFormatter.decimal(
+                                        format
+                                    )
+                                }
+                            ),
+                            bottomAxis = HorizontalAxis.rememberBottom(
+                                valueFormatter = remember(yValues, xValues) {
+                                    if (xValues.all { it.isNotBlank() })
+                                        CartesianValueFormatter { context, x, _ ->
+                                            context.model.extraStore.getOrNull(labelListKey)
+                                                ?.get(x.toInt())
+                                                ?: xValues.getOrNull(yValues.indexOf(x.toFloat()))
+                                                ?: xValues.first()
+                                        }
+                                    else CartesianValueFormatter.decimal()
+                                }
+                            ),
+                        ),
+                        zoomState = rememberVicoZoomState(
+                            zoomEnabled = false,
+                            minZoom = Zoom.fixed(),
+                            maxZoom = Zoom.fixed()
+                        ),
+                        modelProducer = modelProducer,
+                    ) {
+                        // Shown when loading modelProducer
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                ),
-            ),
-            zoomState = rememberVicoZoomState(
-                zoomEnabled = false,
-                minZoom = Zoom.fixed(),
-                maxZoom = Zoom.fixed()
-            ),
-            modelProducer = modelProducer,
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+
+                }
+            } else {
+                StatsLottie()
+                Text(stringResource(R.string.not_enough_data))
             }
         }
-
     }
 }
 
 @Preview
 @Composable
 private fun CustomCartesianChartPreview() {
-    CustomScaffold {
-        Column(Modifier.padding(it)) {
-            CustomCartesianChart(
-                listChartData = listOf(1f, 2f, -1f).map(::ChartData)
-            )
-        }
+    val emptyChart = true
+    LibreFitTheme(true, true) {
+        CustomCartesianChart(
+            listChartData = if (emptyChart) emptyList() else listOf<Float>(
+                1f,
+                3f,
+                2f,
+                4f,
+                2f,
+                5f
+            ).map(::ChartData),
+            columns = false
+        )
     }
 }
