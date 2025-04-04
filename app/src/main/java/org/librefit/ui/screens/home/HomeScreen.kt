@@ -261,10 +261,7 @@ fun HomeScreenPreview() {
                 navController = rememberNavController(),
                 updateWorkoutId = {},
                 requestPermissionAgain = false,
-                routines = listOf(
-                    Workout(id = 1, title = "Workout 1"),
-                    Workout(id = 2, title = "Workout 2")
-                ),
+                routines = (0..5).map { Workout(id = it.toLong(), title = "Workout $it") },
             )
         }
     }

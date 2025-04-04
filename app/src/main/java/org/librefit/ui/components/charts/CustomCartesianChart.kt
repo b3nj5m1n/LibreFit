@@ -68,6 +68,7 @@ import org.librefit.data.ChartData
 import org.librefit.ui.components.animations.StatsLottie
 import org.librefit.ui.theme.LibreFitTheme
 import java.text.DecimalFormat
+import kotlin.random.Random
 
 /**
  * A custom [com.patrykandpatrick.vico.core.cartesian.CartesianChart]
@@ -202,19 +203,9 @@ fun CustomCartesianChart(
 @Preview
 @Composable
 private fun CustomCartesianChartPreview() {
-    val emptyChart = false
     LibreFitTheme(false, true) {
         CustomCartesianChart(
-            listChartData = if (emptyChart) emptyList() else listOf<Float>(
-                1f,
-                3f,
-                2f,
-                4f,
-                2f,
-                5f,
-                1f,
-                3f
-            ).map(::ChartData),
+            listChartData = (0..10).map { ChartData(Random.nextFloat()) },
             columns = false
         )
     }
