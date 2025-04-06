@@ -23,16 +23,17 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import org.librefit.db.entity.Measurement
 
 @Dao
 interface MeasurementDao {
     @Insert
-    suspend fun insertMeasurement(measurement: Measurement): Long
+    suspend fun insertMeasurement(measurement: Measurement)
 
     @Delete
     suspend fun deleteMeasurement(measurement: Measurement)
 
     @Query("SELECT * FROM measurements ORDER BY date DESC")
-    suspend fun getAllMeasurements(): List<Measurement>
+    fun getAllMeasurements(): Flow<List<Measurement>>
 }

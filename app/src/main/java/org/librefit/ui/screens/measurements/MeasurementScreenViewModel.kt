@@ -19,14 +19,57 @@
 
 package org.librefit.ui.screens.measurements
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import org.librefit.db.dao.MeasurementDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import org.librefit.data.ChartData
+import org.librefit.db.entity.Measurement
+import org.librefit.db.repository.MeasurementRepository
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class MeasurementScreenViewModel @Inject constructor(
-    private val measurementDao: MeasurementDao
+    private val measurementRepository: MeasurementRepository
 ) : ViewModel() {
+
+    val measurements = mutableStateListOf<Measurement>()
+
+    val shortDate: DateTimeFormatter? =
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(
+            Locale.getDefault()
+        )
+
+    fun getListChartData(): List<ChartData> {
+        return measurements.map {
+            ChartData(
+                yValue = it.bodyWeight,
+                xValue = it.date.format(shortDate)
+            )
+        }
+    }
+
+    fun addMeasurementToDB(measurement: Measurement) {
+        viewModelScope.launch(Dispatchers.IO) {
+            measurementRepository.insertMeasurement(measurement)
+        }
+    }
+
+    fun getMeasurementsFromDB() {
+        viewModelScope.launch {
+            measurementRepository.getAllMeasurements()
+                .distinctUntilChanged()
+                .collect {
+                    measurements.clear()
+                    measurements.addAll(it)
+                }
+        }
+    }
 
 }

@@ -19,6 +19,7 @@
 
 package org.librefit.db.repository
 
+import kotlinx.coroutines.flow.Flow
 import org.librefit.db.dao.MeasurementDao
 import org.librefit.db.entity.Measurement
 
@@ -35,15 +36,15 @@ import org.librefit.db.entity.Measurement
  */
 class MeasurementRepository(private val measurementDao: MeasurementDao) {
 
-    suspend fun insertMeasurement(measurement: Measurement): Long {
-        return measurementDao.insertMeasurement(measurement)
+    suspend fun insertMeasurement(measurement: Measurement) {
+        measurementDao.insertMeasurement(measurement)
     }
 
     suspend fun deleteMeasurement(measurement: Measurement) {
         measurementDao.deleteMeasurement(measurement)
     }
 
-    suspend fun getAllMeasurements(): List<Measurement> {
+    fun getAllMeasurements(): Flow<List<Measurement>> {
         return measurementDao.getAllMeasurements()
     }
 }
