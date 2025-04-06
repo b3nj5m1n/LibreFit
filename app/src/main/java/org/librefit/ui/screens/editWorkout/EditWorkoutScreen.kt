@@ -287,12 +287,12 @@ private fun EditWorkoutScreenContent(
                         ExerciseCard(
                             modifier = Modifier.animateItem(),
                             exerciseWithSets = exerciseWithSets,
-                            addSet = { addSetToExercise },
+                            addSet = { addSetToExercise(i) },
                             onDetail = {
                                 selectedExercise = exerciseWithSets.exerciseDC
                                 isModalSheetOpen = true
                             },
-                            onDelete = { deleteExercise },
+                            onDelete = { deleteExercise(i) },
                             updateSet = { set, value, mode ->
                                 updateSet(i, set, value, mode)
                             },
