@@ -32,13 +32,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -53,8 +46,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -127,7 +122,7 @@ private fun HomeScreenContent(
                 //"Start empty workout" button
                 CustomButton(
                     text = stringResource(id = R.string.start_empty_workout),
-                    icon = Icons.Default.PlayArrow,
+                    icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
                     onClick = {
                         checkPermissionsBeforeNavigateToWorkout(
                             requestPermissionAgain = requestPermissionAgain,
@@ -197,14 +192,14 @@ private fun HomeScreenContent(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Info,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                                     contentDescription = stringResource(R.string.info)
                                 )
                             }
                         }
                         CustomButton(
                             text = stringResource(R.string.start_routine),
-                            icon = Icons.Default.PlayArrow,
+                            icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
                             elevated = false
                         ) {
                             checkPermissionsBeforeNavigateToWorkout(
@@ -236,21 +231,31 @@ fun HomeScreenPreview() {
                 append(stringResource(id = R.string.app_name).removeRange(0, 5))
             },
             actions = listOf {},
-            actionsIcons = listOf(Icons.Default.Settings),
+            actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_settings)),
             actionsElevated = listOf(false),
-            fabIcon = Icons.Default.Add,
+            fabIcon = ImageVector.vectorResource(R.drawable.ic_add),
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
                         selected = true,
                         onClick = { },
-                        icon = { Icon(Icons.Default.Home, stringResource(R.string.home)) },
+                        icon = {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_home),
+                                stringResource(R.string.home)
+                            )
+                        },
                         label = { Text(stringResource(R.string.home)) }
                     )
                     NavigationBarItem(
                         selected = false,
                         onClick = { },
-                        icon = { Icon(Icons.Outlined.Person, stringResource(R.string.profile)) },
+                        icon = {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_person),
+                                stringResource(R.string.profile)
+                            )
+                        },
                         label = { Text(stringResource(R.string.profile)) }
                     )
                 }

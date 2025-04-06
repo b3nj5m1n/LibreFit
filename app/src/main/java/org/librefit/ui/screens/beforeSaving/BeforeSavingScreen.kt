@@ -29,11 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
@@ -53,7 +48,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -221,7 +218,7 @@ fun BeforeSavingScreenContent(
                         trailingIcon = {
                             if (isTitleEmpty || isTitleTooLong) {
                                 Icon(
-                                    imageVector = Icons.Default.Warning,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
                                     contentDescription = stringResource(R.string.warning)
                                 )
                             }
@@ -268,7 +265,7 @@ fun BeforeSavingScreenContent(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Info,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                                 contentDescription = stringResource(R.string.info)
                             )
                         }
@@ -309,7 +306,7 @@ fun BeforeSavingScreenContent(
                                     showDatePickerDialog.value = !showDatePickerDialog.value
                                 }) {
                                     Icon(
-                                        imageVector = Icons.Default.DateRange,
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
                                         contentDescription = stringResource(R.string.select_date)
                                     )
                                 }
@@ -393,7 +390,7 @@ fun BeforeSavingScreenContent(
                                     onClick = { showUnlikeRoutineDialog.value = true }
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Delete,
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                                         contentDescription = stringResource(R.string.delete)
                                     )
                                 }

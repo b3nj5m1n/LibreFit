@@ -29,8 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ElevatedCard
@@ -44,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -181,7 +181,10 @@ private fun CalendarScreenContent(
                                         navController.navigate(Route.InfoWorkoutScreen)
                                     },
                                 ) {
-                                    Icon(Icons.Default.Info, stringResource(R.string.about))
+                                    Icon(
+                                        ImageVector.vectorResource(R.drawable.ic_info),
+                                        stringResource(R.string.about)
+                                    )
                                 }
                             }
                         }

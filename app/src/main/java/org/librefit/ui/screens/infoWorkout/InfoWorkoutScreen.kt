@@ -31,10 +31,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -51,7 +47,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -176,7 +174,10 @@ private fun InfoWorkoutScreenContent(
                 showConfirmDialog = true
             }
         ),
-        actionsIcons = listOf(Icons.Default.Edit, Icons.Default.Delete),
+        actionsIcons = listOf(
+            ImageVector.vectorResource(R.drawable.ic_edit),
+            ImageVector.vectorResource(R.drawable.ic_delete)
+        ),
         actionsElevated = listOf(false, false)
     ) { innerPadding ->
         // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
@@ -280,7 +281,7 @@ private fun InfoWorkoutScreenContent(
                                     if (chartMode == it) {
                                         Icon(
                                             modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                            imageVector = Icons.Default.Check,
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                                             contentDescription = null
                                         )
                                     }
@@ -338,7 +339,7 @@ private fun InfoWorkoutScreenContent(
                                     onClick = { showUnlikeRoutineDialog = true }
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Delete,
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                                         contentDescription = stringResource(R.string.delete)
                                     )
                                 }

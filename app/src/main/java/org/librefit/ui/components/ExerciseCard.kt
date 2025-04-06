@@ -40,13 +40,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -168,13 +163,13 @@ fun ExerciseCard(
                 )
                 IconButton(onClick = onDetail) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                         contentDescription = stringResource(R.string.info)
                     )
                 }
                 IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                         contentDescription = stringResource(R.string.delete)
                     )
                 }
@@ -203,7 +198,7 @@ fun ExerciseCard(
                     onClick = { showInfo(InfoMode.REST_TIMER) }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                         contentDescription = stringResource(R.string.info)
                     )
                 }
@@ -251,7 +246,7 @@ fun ExerciseCard(
                         onClick = { showInfo(InfoMode.TYPE_OF_SET) }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Info,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                             contentDescription = stringResource(R.string.info) + ":"
                         )
                     }
@@ -305,7 +300,7 @@ fun ExerciseCard(
                                 trailingIcon = if (exerciseWithSets.exercise.setMode == mode) {
                                     {
                                         Icon(
-                                            imageVector = Icons.Default.CheckCircle,
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                                             contentDescription = stringResource(R.string.checkbox)
                                         )
                                     }
@@ -355,7 +350,7 @@ fun ExerciseCard(
                 }
                 if (workout) {
                     Icon(
-                        imageVector = Icons.Default.Done,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                         contentDescription = stringResource(R.string.done)
                     )
                 }
@@ -376,7 +371,7 @@ fun ExerciseCard(
             //Add set button
             CustomButton(
                 text = stringResource(id = R.string.add_set),
-                icon = Icons.Default.AddCircle,
+                icon = ImageVector.vectorResource(R.drawable.ic_add_circle),
                 onClick = addSet,
                 elevated = false
             )
@@ -436,9 +431,9 @@ private fun Sets(
 
             val size = animateDpAsState(
                 targetValue = if (zoom) {
-                    (Icons.Default.Delete.defaultHeight.value * 1.2f).dp
+                    (ImageVector.vectorResource(R.drawable.ic_delete).defaultHeight.value * 1.2f).dp
                 } else {
-                    Icons.Default.Delete.defaultHeight
+                    ImageVector.vectorResource(R.drawable.ic_delete).defaultHeight
                 }
             )
 
@@ -474,12 +469,12 @@ private fun Sets(
                     ) {
                         Icon(
                             modifier = Modifier.size(size.value),
-                            imageVector = Icons.Default.Delete,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                             contentDescription = stringResource(R.string.delete),
                         )
                         Icon(
                             modifier = Modifier.size(size.value),
-                            imageVector = Icons.Default.Delete,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                             contentDescription = stringResource(R.string.delete),
                         )
                     }
@@ -558,8 +553,10 @@ private fun Sets(
                                     val running = setChronometerIsRunning.value ||
                                             setWithRunningChronometer.value.id == set.id
                                     Icon(
-                                        imageVector = if (!running) Icons.Default.PlayArrow
-                                        else ImageVector.vectorResource(R.drawable.ic_pause),
+                                        imageVector = ImageVector.vectorResource(
+                                            if (running)
+                                                R.drawable.ic_pause else R.drawable.ic_play_arrow
+                                        ),
                                         contentDescription = if (running)
                                             stringResource(R.string.resume) else
                                             stringResource(R.string.pause)

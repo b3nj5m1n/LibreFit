@@ -32,15 +32,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -195,7 +186,7 @@ private fun ProfileScreenContent(
                     }
                     CustomButton(
                         text = stringResource(R.string.explore_exercises),
-                        icon = Icons.Default.Search,
+                        icon = ImageVector.vectorResource(R.drawable.ic_search),
                         modifier = Modifier.weight(0.5f),
                         elevated = false
                     ) {
@@ -219,7 +210,7 @@ private fun ProfileScreenContent(
                     }
                     CustomButton(
                         text = stringResource(R.string.calendar),
-                        icon = Icons.Default.DateRange,
+                        icon = ImageVector.vectorResource(R.drawable.ic_date_range),
                         modifier = Modifier.weight(0.5f),
                         elevated = false
                     ) {
@@ -250,7 +241,7 @@ private fun ProfileScreenContent(
                                 if (chartMode == mode) {
                                     Icon(
                                         modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                        imageVector = Icons.Default.Check,
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                                         contentDescription = null
                                     )
                                 }
@@ -335,7 +326,10 @@ private fun ProfileScreenContent(
                                     navController.navigate(Route.InfoWorkoutScreen)
                                 },
                             ) {
-                                Icon(Icons.Default.Info, stringResource(R.string.about))
+                                Icon(
+                                    ImageVector.vectorResource(R.drawable.ic_info),
+                                    stringResource(R.string.about)
+                                )
                             }
                         }
                     }
@@ -359,21 +353,31 @@ private fun ProfileScreenPreview() {
                 append(stringResource(id = R.string.app_name).removeRange(0, 5))
             },
             actions = listOf {},
-            actionsIcons = listOf(Icons.Default.Settings),
+            actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_settings)),
             actionsElevated = listOf(false),
-            fabIcon = Icons.Default.Add,
+            fabIcon = ImageVector.vectorResource(R.drawable.ic_add),
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
                         selected = false,
                         onClick = { },
-                        icon = { Icon(Icons.Outlined.Home, stringResource(R.string.home)) },
+                        icon = {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_home),
+                                stringResource(R.string.home)
+                            )
+                        },
                         label = { Text(stringResource(R.string.home)) }
                     )
                     NavigationBarItem(
                         selected = true,
                         onClick = { },
-                        icon = { Icon(Icons.Default.Person, stringResource(R.string.profile)) },
+                        icon = {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_person),
+                                stringResource(R.string.profile)
+                            )
+                        },
                         label = { Text(stringResource(R.string.profile)) }
                     )
                 }

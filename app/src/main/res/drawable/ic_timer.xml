@@ -1,26 +1,12 @@
-<!--
-  ~ Copyright (c) 2024-2025. LibreFit
-  ~
-  ~ This file is part of LibreFit
-  ~
-  ~ LibreFit is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ LibreFit is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:tint="#000000"
+    android:viewportHeight="960"
+    android:viewportWidth="960"
+    android:width="24dp">
 
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
-      
-    <path android:fillColor="@android:color/white" android:pathData="M9,1h6v2h-6z"/>
-      
-    <path android:fillColor="@android:color/white" android:pathData="M19.03,7.39l1.42,-1.42c-0.43,-0.51 -0.9,-0.99 -1.41,-1.41l-1.42,1.42C16.07,4.74 14.12,4 12,4c-4.97,0 -9,4.03 -9,9c0,4.97 4.02,9 9,9s9,-4.03 9,-9C21,10.88 20.26,8.93 19.03,7.39zM13,14h-2V8h2V14z"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M360,120L360,40L600,40L600,120L360,120ZM440,560L520,560L520,320L440,320L440,560ZM480,880Q406,880 340.5,851.5Q275,823 226,774Q177,725 148.5,659.5Q120,594 120,520Q120,446 148.5,380.5Q177,315 226,266Q275,217 340.5,188.5Q406,160 480,160Q542,160 599,180Q656,200 706,238L762,182L818,238L762,294Q800,344 820,401Q840,458 840,520Q840,594 811.5,659.5Q783,725 734,774Q685,823 619.5,851.5Q554,880 480,880ZM480,800Q596,800 678,718Q760,636 760,520Q760,404 678,322Q596,240 480,240Q364,240 282,322Q200,404 200,520Q200,636 282,718Q364,800 480,800ZM480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Q480,520 480,520Z" />
     
 </vector>

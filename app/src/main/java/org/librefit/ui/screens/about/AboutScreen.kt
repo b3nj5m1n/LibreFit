@@ -37,9 +37,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -173,7 +170,7 @@ fun AboutScreen(navController: NavHostController) {
 
                 item {
                     AboutItem(
-                        Icons.Default.Favorite,
+                        ImageVector.vectorResource(R.drawable.ic_favorite),
                         text = stringResource(R.string.donate),
                         description = stringResource(R.string.donate_desc),
                         onClick = {},
@@ -267,7 +264,7 @@ fun AboutScreen(navController: NavHostController) {
 
                 item {
                     AboutItem(
-                        Icons.Default.Person,
+                        ImageVector.vectorResource(R.drawable.ic_person),
                         stringResource(R.string.url_IamDg).split("/").last(),
                         stringResource(R.string.founder),
                         onClick = {
@@ -282,7 +279,7 @@ fun AboutScreen(navController: NavHostController) {
 
                 item {
                     AboutItem(
-                        Icons.Default.Person,
+                        ImageVector.vectorResource(R.drawable.ic_person),
                         stringResource(R.string.url_IamDg).split("/").last(),
                         stringResource(R.string.contributed_to) + stringResource(R.string.language_italian),
                         onClick = {

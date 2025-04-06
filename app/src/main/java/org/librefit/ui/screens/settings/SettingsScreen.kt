@@ -38,8 +38,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -174,7 +172,7 @@ private fun SettingsScreenContent(
         title = AnnotatedString(stringResource(id = R.string.settings)),
         navigateBack = { navController.popBackStack() },
         actions = listOf { navController.navigate(Route.AboutScreen) },
-        actionsIcons = listOf(Icons.Default.Info),
+        actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_info)),
         actionsElevated = listOf(false),
     ) { innerPadding ->
         // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.

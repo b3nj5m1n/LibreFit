@@ -20,13 +20,6 @@
 package org.librefit.ui.screens
 
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -68,13 +63,13 @@ fun MainScreen(
             append(stringResource(id = R.string.app_name).removeRange(0, 5))
         },
         actions = listOf { navController.navigate(Route.SettingsScreen) },
-        actionsIcons = listOf(Icons.Default.Settings),
+        actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_settings)),
         actionsElevated = listOf(false),
         fabAction = {
             sharedViewModel.updateWorkoutId(0)
             navController.navigate(Route.EditWorkoutScreen)
         },
-        fabIcon = if (homeSelected) Icons.Default.Add else null,
+        fabIcon = if (homeSelected) ImageVector.vectorResource(R.drawable.ic_add) else null,
         fabDescription = stringResource(R.string.create_routine),
         bottomBar = {
             NavigationBar {
@@ -83,7 +78,7 @@ fun MainScreen(
                     onClick = { homeSelected = true },
                     icon = {
                         Icon(
-                            imageVector = if (homeSelected) Icons.Default.Home else Icons.Outlined.Home,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_home),
                             contentDescription = stringResource(R.string.home)
                         )
                     },
@@ -94,7 +89,7 @@ fun MainScreen(
                     onClick = { homeSelected = false },
                     icon = {
                         Icon(
-                            imageVector = if (!homeSelected) Icons.Default.Person else Icons.Outlined.Person,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_person),
                             contentDescription = stringResource(R.string.profile)
                         )
                     },

@@ -27,9 +27,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -41,7 +40,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
@@ -88,7 +89,7 @@ fun ExerciseCardSmall(
                     onClick = onDetail
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                         contentDescription = stringResource(R.string.info)
                     )
                 }
@@ -135,7 +136,7 @@ fun ExerciseCardSmall(
                     }
                     if (!isRoutine) {
                         Icon(
-                            imageVector = Icons.Default.Check,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                             contentDescription = stringResource(R.string.done)
                         )
                     }

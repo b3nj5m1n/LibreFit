@@ -35,11 +35,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -61,7 +56,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -166,7 +163,7 @@ private fun ExercisesScreenContent(
                 lazyListState.animateScrollToItem(0)
             }
         },
-        fabIcon = Icons.Default.KeyboardArrowUp,
+        fabIcon = ImageVector.vectorResource(R.drawable.ic_keyboard_double_arrow_up),
     ) { innerPadding ->
         // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
         // This prevents the content from stretching too wide on larger (landscape) screens
@@ -194,7 +191,7 @@ private fun ExercisesScreenContent(
                             shape = RoundedCornerShape(40.dp),
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Search,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                                     contentDescription = stringResource(R.string.search_exercise_field)
                                 )
                             },
@@ -202,7 +199,7 @@ private fun ExercisesScreenContent(
                                 if (query.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.updateQuery("") }) {
                                         Icon(
-                                            imageVector = Icons.Default.Close,
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_cancel),
                                             contentDescription = stringResource(R.string.delete)
                                         )
                                     }
@@ -326,7 +323,7 @@ private fun ExercisesScreenContent(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Info,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_info),
                                 contentDescription = stringResource(R.string.details)
                             )
                         }

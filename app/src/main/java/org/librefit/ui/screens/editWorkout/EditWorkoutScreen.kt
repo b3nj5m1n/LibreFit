@@ -29,9 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,7 +43,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -201,7 +200,7 @@ private fun EditWorkoutScreenContent(
             else stringResource(R.string.save)
         ),
         actionsEnabled = listOf(!isTitleEmpty && !isTitleTooLong && exercisesWithSets.isNotEmpty()),
-        fabIcon = Icons.Default.Add,
+        fabIcon = ImageVector.vectorResource(R.drawable.ic_add),
         fabAction = {
             navController.navigate(Route.ExercisesScreen(addExercises = true))
         },
@@ -232,7 +231,7 @@ private fun EditWorkoutScreenContent(
                         trailingIcon = {
                             if (isTitleTooLong || isTitleEmpty) {
                                 Icon(
-                                    imageVector = Icons.Default.Warning,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
                                     contentDescription = stringResource(R.string.warning)
                                 )
                             }

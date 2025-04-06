@@ -31,9 +31,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -115,7 +112,7 @@ fun FiltersCard(
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_drop_down),
                     contentDescription = stringResource(R.string.menu),
                     modifier = Modifier.rotate(iconRotation)
                 )
@@ -239,7 +236,7 @@ private fun ItemFilter(
                         trailingIcon = if (enumFilterValue == enum) {
                             {
                                 Icon(
-                                    imageVector = Icons.Default.CheckCircle,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_check),
                                     contentDescription = stringResource(R.string.checkbox)
                                 )
                             }

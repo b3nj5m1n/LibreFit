@@ -29,8 +29,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -244,8 +242,9 @@ private fun AlternatingImages(exercise: ExerciseDC) {
                 onClick = { isPaused = !isPaused }
             ) {
                 Icon(
-                    imageVector = if (isPaused) Icons.Default.PlayArrow else
-                        ImageVector.vectorResource(id = R.drawable.ic_pause),
+                    imageVector = ImageVector.vectorResource(
+                        if (isPaused) R.drawable.ic_play_arrow else R.drawable.ic_pause
+                    ),
                     contentDescription = stringResource(if (isPaused) R.string.pause else R.string.resume),
                 )
             }

@@ -39,9 +39,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -196,7 +193,7 @@ fun WorkoutScreen(
         },
         actionsEnabled = listOf(!viewModel.isListEmpty()),
         actionsDescription = listOf(stringResource(R.string.done)),
-        fabIcon = Icons.Default.Add,
+        fabIcon = ImageVector.vectorResource(R.drawable.ic_add),
         fabAction = {
             navController.navigate(Route.ExercisesScreen(addExercises = true))
         },
@@ -362,7 +359,7 @@ private fun BottomAppBarContent(viewModel: WorkoutScreenViewModel) {
                         .width(animatedWidth.value.dp)
                 ) {
                     Icon(
-                        imageVector = if (isChronometerPaused) Icons.Default.PlayArrow else
+                        imageVector = if (isChronometerPaused) ImageVector.vectorResource(R.drawable.ic_play_arrow) else
                             ImageVector.vectorResource(id = R.drawable.ic_pause),
                         contentDescription = stringResource(if (isChronometerPaused) R.string.pause else R.string.resume),
                         modifier = Modifier.fillMaxSize(0.7f)

@@ -1,39 +1,12 @@
-<!--
-  ~ Copyright (c) 2024-2025. LibreFit
-  ~
-  ~ This file is part of LibreFit
-  ~
-  ~ LibreFit is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ LibreFit is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
-  -->
-
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="24dp"
     android:tint="#000000"
-    android:viewportHeight="24"
-    android:viewportWidth="24"
+    android:viewportHeight="960"
+    android:viewportWidth="960"
     android:width="24dp">
 
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M18,13c0,3.31 -2.69,6 -6,6s-6,-2.69 -6,-6s2.69,-6 6,-6v4l5,-5l-5,-5v4c-4.42,0 -8,3.58 -8,8c0,4.42 3.58,8 8,8s8,-3.58 8,-8H18z" />
-
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M10.86,15.94l0,-4.27l-0.09,0l-1.77,0.63l0,0.69l1.01,-0.31l0,3.26z" />
-
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M12.25,13.44v0.74c0,1.9 1.31,1.82 1.44,1.82c0.14,0 1.44,0.09 1.44,-1.82v-0.74c0,-1.9 -1.31,-1.82 -1.44,-1.82C13.55,11.62 12.25,11.53 12.25,13.44zM14.29,13.32v0.97c0,0.77 -0.21,1.03 -0.59,1.03c-0.38,0 -0.6,-0.26 -0.6,-1.03v-0.97c0,-0.75 0.22,-1.01 0.59,-1.01C14.07,12.3 14.29,12.57 14.29,13.32z" />
+        android:pathData="M360,640L360,460L300,460L300,400L420,400L420,640L360,640ZM500,640Q483,640 471.5,628.5Q460,617 460,600L460,440Q460,423 471.5,411.5Q483,400 500,400L580,400Q597,400 608.5,411.5Q620,423 620,440L620,600Q620,617 608.5,628.5Q597,640 580,640L500,640ZM520,580L560,580Q560,580 560,580Q560,580 560,580L560,460Q560,460 560,460Q560,460 560,460L520,460Q520,460 520,460Q520,460 520,460L520,580Q520,580 520,580Q520,580 520,580ZM480,880Q405,880 339.5,851.5Q274,823 225.5,774.5Q177,726 148.5,660.5Q120,595 120,520Q120,445 148.5,379.5Q177,314 225.5,265.5Q274,217 339.5,188.5Q405,160 480,160L486,160L424,98L480,40L640,200L480,360L424,302L486,240L480,240Q363,240 281.5,321.5Q200,403 200,520Q200,637 281.5,718.5Q363,800 480,800Q597,800 678.5,718.5Q760,637 760,520L840,520Q840,595 811.5,660.5Q783,726 734.5,774.5Q686,823 620.5,851.5Q555,880 480,880Z" />
 
 </vector>
