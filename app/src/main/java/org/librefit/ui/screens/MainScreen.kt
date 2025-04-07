@@ -62,8 +62,16 @@ fun MainScreen(
             }
             append(stringResource(id = R.string.app_name).removeRange(0, 5))
         },
-        actions = listOf { navController.navigate(Route.SettingsScreen) },
-        actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_settings)),
+        actions = listOf {
+            navController.navigate(
+                if (homeSelected) Route.AboutScreen else Route.SettingsScreen
+            )
+        },
+        actionsIcons = listOf(
+            ImageVector.vectorResource(
+                if (homeSelected) R.drawable.ic_info else R.drawable.ic_settings
+            )
+        ),
         actionsElevated = listOf(false),
         fabAction = {
             sharedViewModel.updateWorkoutId(0)

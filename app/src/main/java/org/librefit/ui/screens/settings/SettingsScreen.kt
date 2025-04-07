@@ -74,7 +74,6 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
-import org.librefit.nav.Route
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
@@ -170,10 +169,7 @@ private fun SettingsScreenContent(
 
     CustomScaffold(
         title = AnnotatedString(stringResource(id = R.string.settings)),
-        navigateBack = { navController.popBackStack() },
-        actions = listOf { navController.navigate(Route.AboutScreen) },
-        actionsIcons = listOf(ImageVector.vectorResource(R.drawable.ic_info)),
-        actionsElevated = listOf(false),
+        navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
         // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
         // This prevents the content from stretching too wide on larger (landscape) screens
