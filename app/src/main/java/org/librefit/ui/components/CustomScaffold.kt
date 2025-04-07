@@ -59,7 +59,8 @@ import org.librefit.R
  * @param actionsElevated A list of booleans that controls the color elevation of the relative action button.
  * The default value is `true`.
  * @param fabAction A callback function executed when the [FloatingActionButton] is clicked.
- * @param fabIcon An optional [ImageVector] representing the icon displayed in the [FloatingActionButton].
+ * @param fabIcon An [ImageVector] representing the icon displayed in the [FloatingActionButton]. It
+ * must be passed in order to show the FAB
  * @param fabDescription An optional string that provides a description of the [fabIcon] and [fabAction]
  * for accessibility purposes. Read mode at [Icon] and [FloatingActionButton]
  * @param bottomBar The bottom bar of the scaffold. By default there's no bottom bar.
