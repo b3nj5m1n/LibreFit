@@ -40,8 +40,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -200,7 +200,7 @@ private fun ItemFilter(
                 .focusRequester(focusRequester)
                 .focusable()
         ) {
-            TextField(
+            OutlinedTextField(
                 readOnly = true,
                 value = stringResource(
                     if (enumFilterValue == null) R.string.any else exerciseEnumToStringId(
@@ -213,7 +213,7 @@ private fun ItemFilter(
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                colors = ExposedDropdownMenuDefaults.textFieldColors()
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
             ExposedDropdownMenu(
                 expanded = expanded,

@@ -59,7 +59,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -258,6 +257,7 @@ fun ExerciseCard(
 
                 val focusRequester = remember { FocusRequester() }
 
+                // Type of set selector
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
@@ -271,7 +271,7 @@ fun ExerciseCard(
                         .focusRequester(focusRequester)
                         .focusable()
                 ) {
-                    TextField(
+                    OutlinedTextField(
                         readOnly = true,
                         value = stringResource(setModeToStringId(exerciseWithSets.exercise.setMode)),
                         onValueChange = {},
@@ -280,7 +280,7 @@ fun ExerciseCard(
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         },
                         modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                        colors = ExposedDropdownMenuDefaults.textFieldColors()
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
