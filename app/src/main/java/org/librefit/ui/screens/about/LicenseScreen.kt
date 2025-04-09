@@ -19,45 +19,33 @@
 
 package org.librefit.ui.screens.about
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import org.librefit.R
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.MarkdownText
+import org.librefit.ui.components.bottomMargin
+import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun LicenseScreen(navigateBack: () -> Unit) {
     val licenseText = rememberSaveable { mutableStateOf("") }
@@ -71,67 +59,34 @@ fun LicenseScreen(navigateBack: () -> Unit) {
     }
 
 
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val url = remember { mutableStateOf("") }
 
-    var showUrlDialog by remember { mutableStateOf(false) }
-
-    var url = stringResource(R.string.url_gpl3)
-
-    if (showUrlDialog) {
-        AlertDialog(
-            onDismissRequest = { showUrlDialog = false },
-            title = { Text(stringResource(R.string.link)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            data = url.toUri()
-                        }
-                        context.startActivity(intent)
-                        showUrlDialog = false
-                    }
-                ) {
-                    Text(stringResource(R.string.open))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        val clip = ClipData.newPlainText("Copied Url", url)
-                        clipboardManager.setPrimaryClip(clip)
-                        showUrlDialog = false
-                    }
-                ) {
-                    Text(stringResource(R.string.copy))
-                }
-            },
-            text = { Text(text = url) }
-        )
-    }
+    UrlActionDialog(url)
 
     CustomScaffold(
         title = AnnotatedString(stringResource(id = R.string.license)),
         navigateBack = navigateBack,
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        LazyColumn(
+            contentPadding = innerPadding,
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(30.dp)
         ) {
-            CustomButton(
-                text = stringResource(R.string.view_online_version),
-                icon = Icons.AutoMirrored.Default.ExitToApp,
-                onClick = { showUrlDialog = true }
-            )
-            HorizontalDivider()
-            Box(
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .verticalScroll(rememberScrollState())
-                    .horizontalScroll(rememberScrollState())
-                    .fillMaxSize(),
-            ) {
-                Text(licenseText.value)
+            item {
+                CustomButton(
+                    text = stringResource(R.string.view_online_version),
+                    icon = Icons.AutoMirrored.Default.ExitToApp,
+                    onClick = {
+                        url.value = context.getString(R.string.url_gpl3)
+                    }
+                )
             }
+
+            item {
+                MarkdownText(licenseText.value)
+            }
+
+            bottomMargin()
         }
     }
 }
