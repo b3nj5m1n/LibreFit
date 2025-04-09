@@ -64,12 +64,12 @@ import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.ChartMode
 import org.librefit.nav.Route
-import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCardSmall
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.CustomCartesianChart
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.theme.LibreFitTheme

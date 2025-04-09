@@ -69,10 +69,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
-import org.librefit.ui.components.ConfirmDialog
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.animations.NoResultLottie
 import org.librefit.ui.components.bottomMargin
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.theme.LibreFitTheme
