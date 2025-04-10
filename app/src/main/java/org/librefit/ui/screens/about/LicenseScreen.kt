@@ -19,18 +19,20 @@
 
 package org.librefit.ui.screens.about
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,7 +47,6 @@ import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun LicenseScreen(navigateBack: () -> Unit) {
     val licenseText = rememberSaveable { mutableStateOf("") }
@@ -67,26 +68,34 @@ fun LicenseScreen(navigateBack: () -> Unit) {
         title = AnnotatedString(stringResource(id = R.string.license)),
         navigateBack = navigateBack,
     ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(30.dp)
+        // This box is used to constrain width in landscape mode
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            item {
-                CustomButton(
-                    text = stringResource(R.string.view_online_version),
-                    icon = Icons.AutoMirrored.Default.ExitToApp,
-                    onClick = {
-                        url.value = context.getString(R.string.url_gpl3)
-                    }
-                )
-            }
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier
+                    .widthIn(max = 600.dp)
+                    .padding(start = 10.dp, end = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(30.dp)
+            ) {
+                item {
+                    CustomButton(
+                        text = stringResource(R.string.view_online_version),
+                        icon = Icons.AutoMirrored.Default.ExitToApp,
+                        onClick = {
+                            url.value = context.getString(R.string.url_gpl3)
+                        }
+                    )
+                }
 
-            item {
-                MarkdownText(licenseText.value)
-            }
+                item {
+                    MarkdownText(licenseText.value)
+                }
 
-            bottomMargin()
+                bottomMargin()
+            }
         }
     }
 }
