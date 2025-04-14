@@ -23,12 +23,15 @@ import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -40,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,13 +56,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.data.ExerciseDC
+import org.librefit.enums.exercise.Category
+import org.librefit.enums.exercise.Equipment
+import org.librefit.enums.exercise.Force
+import org.librefit.enums.exercise.Level
+import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
+import org.librefit.ui.components.CustomButton
+import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
+import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,12 +197,12 @@ private fun MusclesSection(musclesText: String, musclesList: List<Muscle>) {
         text = Formatter.formatDetails(
             boldText = musclesText,
             text = musclesList.joinToString(separator = ", ") {
-                context.resources.getString(Formatter.exerciseEnumToStringId(it))
+                context.getString(Formatter.exerciseEnumToStringId(it))
             }
         )
     )
 
-    //TODO: instead of showing an image for each muscle, show a multiple muscles in a single image
+    //TODO: instead of showing an image for each muscle, show multiple muscles in a single image
     LazyRow {
         items(musclesList) { muscle ->
             Image(
@@ -249,5 +262,49 @@ private fun AlternatingImages(exercise: ExerciseDC) {
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ExerciseDetailModalBottomSheetPreview() {
+    LibreFitTheme(false, true) {
+        var openModalBottomSheet by remember { mutableStateOf(false) }
+
+        if (openModalBottomSheet) {
+            ExerciseDetailModalBottomSheet(
+                exercise = ExerciseDC(
+                    name = "3_4_Sit-Up",
+                    force = Force.PULL,
+                    level = Level.BEGINNER,
+                    mechanic = Mechanic.COMPOUND,
+                    equipment = Equipment.BODY_ONLY,
+                    primaryMuscles = listOf(Muscle.ABDOMINALS),
+                    instructions = listOf(
+                        "Lie down on the floor and secure your feet. Your legs should be bent at the knees.",
+                        "Place your hands behind or to the side of your head. You will begin with your back on the ground. This will be your starting position.",
+                        "Flex your hips and spine to raise your torso toward your knees.",
+                        "At the top of the contraction your torso should be perpendicular to the ground. Reverse the motion, going only ¾ of the way down.",
+                        "Repeat for the recommended amount of repetitions."
+                    ),
+                    category = Category.STRENGTH,
+                    images = listOf("3_4_Sit-Up/0.jpg", "3_4_Sit-Up/1.jpg")
+                )
+            ) { openModalBottomSheet = false }
+        }
+        CustomScaffold {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    CustomButton(text = "Open modal bottom sheet", icon = Icons.Default.Add) {
+                        openModalBottomSheet = true
+                    }
+                }
+            }
+        }
+
     }
 }

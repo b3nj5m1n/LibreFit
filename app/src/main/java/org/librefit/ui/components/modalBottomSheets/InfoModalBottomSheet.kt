@@ -31,12 +31,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.enums.InfoMode
 import org.librefit.ui.components.animations.AlarmLottie
 import org.librefit.ui.components.animations.StatsLottie
 import org.librefit.ui.components.animations.TrainingLottie
+import org.librefit.ui.theme.LibreFitTheme
 
 /** A modal bottom sheet which explains concepts to the user.
  * @param infoMode A [InfoMode] enum holding the info to display. If [infoMode] is equal to
@@ -94,5 +96,13 @@ fun InfoModalBottomSheet(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun InfoModalBottomSheetPreview() {
+    LibreFitTheme(false, true) {
+        InfoModalBottomSheet(InfoMode.BEFORE_SAVING_STATS) { }
     }
 }
