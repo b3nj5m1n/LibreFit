@@ -1,31 +1,29 @@
 [versions]
-agp = "8.9.1"
+agp = "8.9.2"
 datastore = "1.1.4"
 kotlin = "2.0.20"
 junit = "4.13.2"
 espressoCore = "3.6.1"
-composeBom = "2025.04.00"
-roomVersion = "2.6.1"
+composeBom = "2025.04.01"
+roomVersion = "2.7.1"
 appcompat = "1.7.0"
 ksp = "2.0.20-1.0.25"
 accompanistPermissions = "0.37.2"
 lottieCompose = "6.6.2"
 coreSplashscreen = "1.0.1"
 composeM3 = "2.0.2"
-hiltAndroidPlugin = "2.55"
-hiltAndroidVersion = "2.55"
-hiltAndroidCompiler = "2.56.1"
+hiltAndroid = "2.56.1"
 hiltNavigationCompose = "1.2.0"
 moshi = "1.15.2"
 moshiKotlinCodegen = "1.15.2"
 aboutLibraries = "12.0.0-a04"
-aboutlibrariesComposeM3 = "11.6.3"
+aboutlibrariesComposeM3 = "12.0.0"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.15.0" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.16.0" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version = "2.6.1" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version = "2.7.1" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version = "1.2.1" }
@@ -40,16 +38,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.8" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.9" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.8.1" }
-androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version = "1.1.4" }
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version = "datastore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "composeM3" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroidVersion" }
-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
@@ -61,5 +59,5 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidPlugin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
