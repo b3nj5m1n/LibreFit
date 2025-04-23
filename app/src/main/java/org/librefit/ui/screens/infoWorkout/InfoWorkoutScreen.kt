@@ -62,7 +62,7 @@ import org.librefit.data.ExerciseDC
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
-import org.librefit.enums.WorkoutChart
+import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCardSmall

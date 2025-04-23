@@ -32,7 +32,7 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
-import org.librefit.enums.WorkoutChart
+import org.librefit.enums.chart.WorkoutChart
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale

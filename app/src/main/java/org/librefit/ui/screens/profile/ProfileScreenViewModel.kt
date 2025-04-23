@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import org.librefit.data.ChartData
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
-import org.librefit.enums.WorkoutChart
+import org.librefit.enums.chart.WorkoutChart
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
