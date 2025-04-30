@@ -120,6 +120,7 @@
     <string name="lean_mass">Lean mass</string>
     <string name="past_measurement">Past measurement</string>
     <string name="new_measurement">New measurement</string>
+    <string name="edit_measurement">Edit measurement</string>
 
 
     <!--Permission request screen-->

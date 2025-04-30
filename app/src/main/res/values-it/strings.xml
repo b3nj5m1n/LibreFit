@@ -167,6 +167,7 @@
     <string name="lean_mass">Massa magra</string>
     <string name="past_measurement">Misurazioni passate</string>
     <string name="new_measurement">Nuova misurazione</string>
+    <string name="edit_measurement">Modifica misurazione</string>
     <string name="before_starting_the_workout">Prima di iniziare l\'allenamento</string>
     <string name="best_experience_permissions">Per la migliore esperienza in LibreFit, deve essere concesso il seguente permesso:</string>
     <string name="notifications_permission_desc">Consente di inviare notifiche sugli allenamenti in corso e sugli intervalli di riposo.</string>

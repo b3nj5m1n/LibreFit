@@ -20,6 +20,7 @@
 package org.librefit.ui.screens.measurements
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 import org.librefit.data.ChartData
 import org.librefit.db.entity.Measurement
 import org.librefit.db.repository.MeasurementRepository
+import org.librefit.enums.chart.MeasurementChart
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -47,17 +49,35 @@ class MeasurementScreenViewModel @Inject constructor(
         )
 
     fun getListChartData(): List<ChartData> {
-        return measurements.map {
-            ChartData(
-                yValue = it.bodyWeight,
-                xValue = it.date.format(shortDate)
-            )
+        return measurements
+            .filter {
+                when (measurementChart.value) {
+                    MeasurementChart.BODY_WEIGHT -> it.bodyWeight != 0f
+                    MeasurementChart.FAT_MASS -> it.bodyFatPercentage != 0f
+                    MeasurementChart.LEAN_MASS -> it.muscleMassPercentage != 0f
+                }
+            }
+            .map {
+                ChartData(
+                    yValue = when (measurementChart.value) {
+                        MeasurementChart.BODY_WEIGHT -> it.bodyWeight
+                        MeasurementChart.FAT_MASS -> it.bodyFatPercentage
+                        MeasurementChart.LEAN_MASS -> it.muscleMassPercentage
+                    },
+                    xValue = it.date.format(shortDate)
+                )
+            }
+    }
+
+    fun upsertMeasurementToDB(measurement: Measurement) {
+        viewModelScope.launch(Dispatchers.IO) {
+            measurementRepository.upsertMeasurement(measurement)
         }
     }
 
-    fun addMeasurementToDB(measurement: Measurement) {
+    fun deleteMeasurementById(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            measurementRepository.insertMeasurement(measurement)
+            measurementRepository.deleteById(id)
         }
     }
 
@@ -70,6 +90,17 @@ class MeasurementScreenViewModel @Inject constructor(
                     measurements.addAll(it)
                 }
         }
+    }
+
+
+    private var measurementChart = mutableStateOf(MeasurementChart.BODY_WEIGHT)
+
+    fun updateMeasurementChart(newMeasurementChart: MeasurementChart) {
+        measurementChart.value = newMeasurementChart
+    }
+
+    fun getMeasurementChart(): MeasurementChart {
+        return measurementChart.value
     }
 
 }

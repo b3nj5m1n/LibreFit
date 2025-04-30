@@ -19,6 +19,7 @@
 
 package org.librefit.ui.screens.measurements
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,14 +27,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,10 +51,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -63,13 +74,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import org.librefit.R
 import org.librefit.data.ChartData
 import org.librefit.db.entity.Measurement
+import org.librefit.enums.chart.MeasurementChart
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.CustomCartesianChart
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.theme.LibreFitTheme
+import java.text.DecimalFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -125,25 +139,53 @@ fun MeasurementScreen(
         }
     }
 
+    // When 0, the measurement is new otherwise is already present
+    val idMeasurement = rememberSaveable { mutableLongStateOf(0L) }
+
+    val showConfirmDialog = remember { mutableStateOf(false) }
+
+    if (showConfirmDialog.value) {
+        ConfirmDialog(
+            title = stringResource(R.string.delete),
+            text = stringResource(R.string.confirm_delete),
+            onConfirm = {
+                viewModel.deleteMeasurementById(idMeasurement.longValue)
+                idMeasurement.longValue = 0L
+                showConfirmDialog.value = false
+            },
+            onDismiss = {
+                showConfirmDialog.value = false
+            }
+        )
+    }
+
     MeasurementScreenContent(
-        navigateBack = navigateBack,
         measurements = viewModel.measurements,
         listChartData = viewModel.getListChartData(),
-        addMeasurement = viewModel::addMeasurementToDB,
+        idMeasurement = idMeasurement,
         date = date,
-        showDatePickerDialog = showDatePickerDialog
+        showDatePickerDialog = showDatePickerDialog,
+        showConfirmDialog = showConfirmDialog,
+        upsertMeasurement = viewModel::upsertMeasurementToDB,
+        updateChartMode = viewModel::updateMeasurementChart,
+        measurementChart = viewModel.getMeasurementChart(),
+        navigateBack = navigateBack
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MeasurementScreenContent(
-    navigateBack: () -> Unit,
     measurements: List<Measurement>,
     listChartData: List<ChartData>,
-    addMeasurement: (Measurement) -> Unit,
+    idMeasurement: MutableLongState,
     date: MutableState<LocalDateTime>,
+    measurementChart: MeasurementChart,
     showDatePickerDialog: MutableState<Boolean>,
+    showConfirmDialog: MutableState<Boolean>,
+    upsertMeasurement: (Measurement) -> Unit,
+    updateChartMode: (MeasurementChart) -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val fullDate: DateTimeFormatter? = DateTimeFormatter
         .ofLocalizedDate(FormatStyle.FULL)
@@ -154,11 +196,21 @@ private fun MeasurementScreenContent(
         .withLocale(Locale.getDefault())
 
 
-    val notes = rememberSaveable { mutableStateOf("") }
-    val bodyWeight = rememberSaveable { mutableStateOf("") }
-    val fatMass = rememberSaveable { mutableStateOf("") }
-    val leanMass = rememberSaveable { mutableStateOf("") }
+    var bodyWeight by rememberSaveable { mutableStateOf("") }
+    var fatMass by rememberSaveable { mutableStateOf("") }
+    var leanMass by rememberSaveable { mutableStateOf("") }
+    var notes by rememberSaveable { mutableStateOf("") }
 
+    LaunchedEffect(idMeasurement.longValue) {
+        // Triggered when a measurement is deleted or when edit is dismissed
+        if (idMeasurement.longValue == 0L && !showConfirmDialog.value) {
+            bodyWeight = ""
+            fatMass = ""
+            leanMass = ""
+            notes = ""
+            date.value = LocalDateTime.now()
+        }
+    }
 
 
     CustomScaffold(
@@ -178,12 +230,52 @@ private fun MeasurementScreenContent(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item {
-                    CustomCartesianChart(listChartData = listChartData)
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(MeasurementChart.entries) { mode ->
+                            FilterChip(
+                                selected = measurementChart == mode,
+                                onClick = { updateChartMode(mode) },
+                                label = {
+                                    Text(
+                                        stringResource(
+                                            when (mode) {
+                                                MeasurementChart.BODY_WEIGHT -> R.string.body_weight
+                                                MeasurementChart.FAT_MASS -> R.string.fat_mass
+                                                MeasurementChart.LEAN_MASS -> R.string.lean_mass
+                                            }
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    if (measurementChart == mode) {
+                                        Icon(
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    CustomCartesianChart(
+                        format = when (measurementChart) {
+                            MeasurementChart.BODY_WEIGHT -> DecimalFormat("# " + stringResource(R.string.kg))
+                            MeasurementChart.FAT_MASS -> DecimalFormat("# %")
+                            MeasurementChart.LEAN_MASS -> DecimalFormat("# %")
+                        },
+                        listChartData = listChartData
+                    )
                 }
 
 
-                // Add new measurement button
+                // Add new measurement card
                 item {
+                    var isExpanded by rememberSaveable { mutableStateOf(false) }
+
                     OutlinedCard {
                         Column(
                             modifier = Modifier
@@ -191,122 +283,163 @@ private fun MeasurementScreenContent(
                                 .padding(15.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Text(
-                                text = "New measurement",
-                                style = MaterialTheme.typography.headlineSmall
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(
+                                        if (idMeasurement.longValue == 0L) R.string.new_measurement
+                                        else R.string.edit_measurement
+                                    ),
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+
+                                IconButton(
+                                    onClick = {
+                                        isExpanded = !isExpanded
+                                    }
+                                ) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                                }
+                            }
 
                             OutlinedTextField(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = notes.value,
-                                label = { Text(stringResource(R.string.notes)) },
-                                onValueChange = { notes.value = it }
+                                value = bodyWeight,
+                                label = { Text(text = stringResource(R.string.body_weight) + " *") },
+                                suffix = { Text(stringResource(R.string.kg)) },
+                                isError = bodyWeight.isBlank(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                onValueChange = {
+                                    bodyWeight = processFloatValue(it, 0f, 200f)
+                                }
                             )
+                            AnimatedVisibility(visible = isExpanded) {
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-                                OutlinedTextField(
-                                    modifier = Modifier.weight(0.5f),
-                                    value = bodyWeight.value,
-                                    label = { Text(text = "Body weight *") },
-                                    suffix = { Text("kg") },
-                                    isError = bodyWeight.value.isBlank(),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    onValueChange = {
-                                        bodyWeight.value = processFloatValue(it, 20f, 200f)
-                                    }
-                                )
-                                OutlinedTextField(
-                                    modifier = Modifier.weight(0.6f),
-                                    value = fatMass.value,
-                                    trailingIcon = {
-                                        IconButton(
-                                            onClick = { fatMass.value = "" }
-                                        ) {
-                                            Icon(
-                                                ImageVector.vectorResource(R.drawable.ic_cancel),
-                                                null
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        value = fatMass,
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = { fatMass = "" }
+                                            ) {
+                                                Icon(
+                                                    ImageVector.vectorResource(R.drawable.ic_cancel),
+                                                    null
+                                                )
+                                            }
+                                        },
+                                        label = {
+                                            Text(
+                                                text = stringResource(R.string.fat_mass),
+                                                overflow = TextOverflow.Ellipsis
                                             )
+                                        },
+                                        suffix = { Text("%") },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        onValueChange = {
+                                            fatMass = processFloatValue(it, 0f, 100f)
                                         }
-                                    },
-                                    label = { Text("Fat mass", overflow = TextOverflow.Ellipsis) },
-                                    suffix = { Text("%") },
-                                    singleLine = true,
-                                    isError = leanMass.value.ifEmpty { "0" }.toFloat()
-                                            + fatMass.value.ifEmpty { "0" }.toFloat() > 100,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    onValueChange = {
-                                        fatMass.value = processFloatValue(it, 0f, 80f)
-                                    }
-                                )
-                            }
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-                                OutlinedTextField(
-                                    modifier = Modifier.weight(0.5f),
-                                    value = date.value.format(shortDate),
-                                    onValueChange = {},
-                                    label = { Text(stringResource(R.string.label_when)) },
-                                    readOnly = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            showDatePickerDialog.value = true
-                                        }) {
-                                            Icon(
-                                                imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
-                                                contentDescription = stringResource(R.string.select_date)
-                                            )
-                                        }
-                                    }
-                                )
-                                OutlinedTextField(
-                                    modifier = Modifier.weight(0.6f),
-                                    value = leanMass.value,
-                                    trailingIcon = {
-                                        IconButton(
-                                            onClick = { leanMass.value = "" }
-                                        ) {
-                                            Icon(
-                                                ImageVector.vectorResource(R.drawable.ic_cancel),
-                                                null
-                                            )
-                                        }
-                                    },
-                                    label = { Text("Lean mass") },
-                                    suffix = { Text("%") },
-                                    isError = leanMass.value.ifEmpty { "0" }.toFloat()
-                                            + fatMass.value.ifEmpty { "0" }.toFloat() < 100,
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    onValueChange = {
-                                        leanMass.value = processFloatValue(it, 20f, 80f)
-                                    }
-                                )
-                            }
-
-                            CustomButton(
-                                text = stringResource(R.string.add),
-                                icon = ImageVector.vectorResource(R.drawable.ic_add),
-                                enabled = bodyWeight.value.isNotBlank() &&
-                                        (leanMass.value.toFloat() + fatMass.value.toFloat() > 100)
-                            ) {
-                                addMeasurement(
-                                    Measurement(
-                                        bodyWeight = bodyWeight.value.toFloat(),
-                                        bodyFatPercentage = fatMass.value.ifEmpty { "0" }.toFloat(),
-                                        muscleMassPercentage = leanMass.value.ifEmpty { "0" }
-                                            .toFloat(),
-                                        date = date.value,
-                                        notes = notes.value
                                     )
-                                )
+
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        value = leanMass,
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = { leanMass = "" }
+                                            ) {
+                                                Icon(
+                                                    ImageVector.vectorResource(R.drawable.ic_cancel),
+                                                    null
+                                                )
+                                            }
+                                        },
+                                        label = { Text(stringResource(R.string.lean_mass)) },
+                                        suffix = { Text("%") },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        onValueChange = {
+                                            leanMass = processFloatValue(it, 0f, 100f)
+                                        }
+                                    )
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        value = date.value.format(shortDate),
+                                        onValueChange = {},
+                                        label = { Text(stringResource(R.string.label_when)) },
+                                        readOnly = true,
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        trailingIcon = {
+                                            IconButton(onClick = {
+                                                showDatePickerDialog.value = true
+                                            }) {
+                                                Icon(
+                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
+                                                    contentDescription = stringResource(R.string.select_date)
+                                                )
+                                            }
+                                        }
+                                    )
+
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        value = notes,
+                                        label = { Text(stringResource(R.string.notes)) },
+                                        onValueChange = { notes = it }
+                                    )
+                                }
+                            }
+
+                            Row {
+                                CustomButton(
+                                    modifier = Modifier.weight(1f),
+                                    text = stringResource(
+                                        if (idMeasurement.longValue == 0L) R.string.add
+                                        else R.string.save
+                                    ),
+                                    icon = ImageVector.vectorResource(
+                                        if (idMeasurement.longValue == 0L) R.drawable.ic_add
+                                        else R.drawable.ic_edit
+                                    ),
+                                    enabled = bodyWeight.isNotBlank()
+                                ) {
+                                    upsertMeasurement(
+                                        Measurement(
+                                            id = idMeasurement.longValue,
+                                            bodyWeight = bodyWeight.toFloat(),
+                                            bodyFatPercentage = fatMass.ifBlank { "0" }.toFloat(),
+                                            muscleMassPercentage = leanMass.ifBlank { "0" }
+                                                .toFloat(),
+                                            date = date.value,
+                                            notes = notes
+                                        )
+                                    )
+                                    // Reset state of Add Measurement card (see the launched effect above)
+                                    idMeasurement.longValue = 0L
+                                }
+                                AnimatedVisibility(idMeasurement.longValue != 0L) {
+                                    IconButton(
+                                        modifier = Modifier.weight(1f),
+                                        onClick = {
+                                            // Reset state of Add Measurement card (see the launched effect above)
+                                            idMeasurement.longValue = 0L
+                                        }
+                                    ) {
+                                        Icon(ImageVector.vectorResource(R.drawable.ic_cancel), null)
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
 
-                item { HeadlineText("Past measurements") }
+                item { HeadlineText(stringResource(R.string.past_measurement)) }
 
                 if (measurements.isEmpty()) {
                     item {
@@ -326,23 +459,85 @@ private fun MeasurementScreenContent(
                 }
 
                 items(measurements, key = { it.id }) {
+                    var isExpanded by rememberSaveable { mutableStateOf(false) }
+
                     ElevatedCard {
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(
-                                verticalArrangement = Arrangement.Center
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Text("${it.date.format(fullDate)}")
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Text(
+                                        text = it.date.format(fullDate)
+                                            .replaceFirstChar { it.uppercase() },
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                    Text(
+                                        text = "${it.bodyWeight} " + stringResource(R.string.kg),
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { isExpanded = !isExpanded }
+                                ) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                                }
                             }
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info),
-                                    contentDescription = null
-                                )
+                            AnimatedVisibility(visible = isExpanded) {
+                                Column {
+                                    HorizontalDivider(Modifier.padding(top = 10.dp, bottom = 10.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            if (it.muscleMassPercentage != 0f) {
+                                                Text(stringResource(R.string.lean_mass) + ": ${it.muscleMassPercentage} %")
+                                            }
+                                            if (it.bodyFatPercentage != 0f) {
+                                                Text(stringResource(R.string.fat_mass) + ": ${it.bodyFatPercentage} %")
+                                            }
+                                        }
+                                        Row {
+                                            IconButton(
+                                                onClick = {
+                                                    idMeasurement.longValue = it.id
+                                                    bodyWeight = it.bodyWeight.toString()
+                                                    leanMass = it.muscleMassPercentage.toString()
+                                                    fatMass = it.bodyFatPercentage.toString()
+                                                    notes = it.notes
+                                                    date.value = it.date
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
+                                                    contentDescription = null
+                                                )
+                                            }
+                                            IconButton(
+                                                onClick = {
+                                                    showConfirmDialog.value = true
+                                                    idMeasurement.longValue = it.id
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -384,7 +579,7 @@ private fun processFloatValue(string: String, min: Float, max: Float): String {
     return value.toFloat().coerceIn(min, max).toString()
 }
 
-@Preview
+@Preview(locale = "it")
 @Composable
 private fun MeasurementScreenPreview() {
     val shortDate: DateTimeFormatter? = DateTimeFormatter
@@ -403,7 +598,9 @@ private fun MeasurementScreenPreview() {
         .map {
             Measurement(
                 id = it.toLong(),
-                bodyWeight = Random.nextFloat(),
+                bodyWeight = Random.nextLong(60, 80).toFloat(),
+                bodyFatPercentage = Random.nextLong(10, 80).toFloat() / 100,
+                muscleMassPercentage = Random.nextLong(20, 80).toFloat() / 100,
                 date = LocalDateTime.ofEpochSecond(
                     Random.nextLong(fromEpochSecond, toEpochSecond),
                     0,
@@ -413,16 +610,29 @@ private fun MeasurementScreenPreview() {
         }
         .sortedByDescending { it.date }
 
+    val measurementChart = MeasurementChart.entries.random()
+
     LibreFitTheme(false, true) {
         MeasurementScreenContent(
-            navigateBack = {},
             measurements = measurements,
             listChartData = measurements.map {
-                ChartData(yValue = it.bodyWeight, xValue = it.date.format(shortDate))
+                ChartData(
+                    yValue = when (measurementChart) {
+                        MeasurementChart.BODY_WEIGHT -> it.bodyWeight
+                        MeasurementChart.FAT_MASS -> it.bodyFatPercentage
+                        MeasurementChart.LEAN_MASS -> it.muscleMassPercentage
+                    },
+                    xValue = it.date.format(shortDate)
+                )
             },
-            addMeasurement = {},
+            idMeasurement = remember { mutableLongStateOf(0L) },
+            date = remember { mutableStateOf(LocalDateTime.now()) },
+            measurementChart = measurementChart,
             showDatePickerDialog = remember { mutableStateOf(false) },
-            date = remember { mutableStateOf(LocalDateTime.now()) }
+            showConfirmDialog = remember { mutableStateOf(false) },
+            upsertMeasurement = {},
+            updateChartMode = {},
+            navigateBack = {}
         )
     }
 }
