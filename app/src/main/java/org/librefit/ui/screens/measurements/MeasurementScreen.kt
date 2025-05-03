@@ -290,8 +290,8 @@ private fun MeasurementScreenContent(
                             ) {
                                 Text(
                                     text = stringResource(
-                                        if (idMeasurement.longValue == 0L) R.string.new_measurement
-                                        else R.string.edit_measurement
+                                        if (idMeasurement.longValue == 0L || bodyWeight == "")
+                                            R.string.new_measurement else R.string.edit_measurement
                                     ),
                                     style = MaterialTheme.typography.headlineSmall
                                 )
@@ -399,12 +399,12 @@ private fun MeasurementScreenContent(
                                 CustomButton(
                                     modifier = Modifier.weight(1f),
                                     text = stringResource(
-                                        if (idMeasurement.longValue == 0L) R.string.add
-                                        else R.string.save
+                                        if (idMeasurement.longValue == 0L || bodyWeight == "")
+                                            R.string.add else R.string.save
                                     ),
                                     icon = ImageVector.vectorResource(
-                                        if (idMeasurement.longValue == 0L) R.drawable.ic_add
-                                        else R.drawable.ic_edit
+                                        if (idMeasurement.longValue == 0L || bodyWeight == "")
+                                            R.drawable.ic_add else R.drawable.ic_edit
                                     ),
                                     enabled = bodyWeight.isNotBlank()
                                 ) {
@@ -422,7 +422,7 @@ private fun MeasurementScreenContent(
                                     // Reset state of Add Measurement card (see the launched effect above)
                                     idMeasurement.longValue = 0L
                                 }
-                                AnimatedVisibility(idMeasurement.longValue != 0L) {
+                                AnimatedVisibility(idMeasurement.longValue != 0L && bodyWeight != "") {
                                     IconButton(
                                         modifier = Modifier.weight(1f),
                                         onClick = {
