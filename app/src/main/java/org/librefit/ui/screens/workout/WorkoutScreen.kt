@@ -213,7 +213,8 @@ fun WorkoutScreen(
                 modifier = Modifier
                     .padding(start = 15.dp, end = 15.dp)
                     .widthIn(max = 600.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                verticalArrangement = Arrangement.spacedBy(15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (viewModel.isListEmpty()) {
                     item {
