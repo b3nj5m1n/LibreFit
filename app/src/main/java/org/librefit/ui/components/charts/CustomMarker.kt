@@ -142,6 +142,7 @@ fun rememberMarker(
 
                         LabelPosition.Bottom -> bottomMargin += label.getHeight(context) + tickSizeDp.pixels
                         LabelPosition.AroundPoint -> {}
+                        LabelPosition.BelowPoint -> bottomMargin += label.getHeight(context) + tickSizeDp.pixels
                     }
                     layerMargins.ensureValuesAtLeast(top = topMargin, bottom = bottomMargin)
                 }
