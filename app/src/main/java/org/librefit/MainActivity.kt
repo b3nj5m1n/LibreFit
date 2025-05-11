@@ -19,7 +19,6 @@
 
 package org.librefit
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,9 +29,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import org.librefit.data.DataStoreManager
 import org.librefit.enums.ThemeMode
-import org.librefit.enums.WorkoutServiceActions
 import org.librefit.nav.NavigationHost
-import org.librefit.services.WorkoutService
+import org.librefit.services.WorkoutServiceManager
 import org.librefit.ui.theme.LibreFitTheme
 import javax.inject.Inject
 
@@ -40,6 +38,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var userPreferences: DataStoreManager
+
+    @Inject
+    lateinit var workoutServiceManager: WorkoutServiceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -68,9 +69,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val workoutService = Intent(this, WorkoutService::class.java).apply {
-            action = WorkoutServiceActions.STOP_SERVICE.string
+        if (!isChangingConfigurations) {
+            workoutServiceManager.stopService()
         }
-        startService(workoutService)
     }
 }

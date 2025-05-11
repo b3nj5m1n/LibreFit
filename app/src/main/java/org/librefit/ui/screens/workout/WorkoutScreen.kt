@@ -137,6 +137,7 @@ fun WorkoutScreen(
             title = stringResource(R.string.exit),
             text = stringResource(id = R.string.exit_workout),
             onConfirm = {
+                viewModel.stopWorkoutService()
                 navController.popBackStack()
                 showExitDialog = false
             },
@@ -150,8 +151,13 @@ fun WorkoutScreen(
     InfoModalBottomSheet(infoMode) { infoMode = InfoMode.DISMISS }
 
 
-    BackHandler(enabled = !showExitDialog && !viewModel.isListEmpty()) {
-        showExitDialog = true
+    BackHandler {
+        if (!showExitDialog && !viewModel.isListEmpty()) {
+            showExitDialog = true
+        } else {
+            viewModel.stopWorkoutService()
+            navController.popBackStack()
+        }
     }
 
 

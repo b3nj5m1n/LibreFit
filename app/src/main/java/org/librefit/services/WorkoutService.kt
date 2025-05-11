@@ -32,6 +32,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.librefit.enums.WorkoutServiceActions
 import org.librefit.helpers.NotificationHelper
+import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
+import org.librefit.services.WorkoutService.Companion.EXTRA_INITIAL_REST_TIME
+import org.librefit.services.WorkoutService.Companion.EXTRA_IS_FOCUSED
+import org.librefit.services.WorkoutService.Companion.isChronometerPaused
+import org.librefit.services.WorkoutService.Companion.restTime
+import org.librefit.services.WorkoutService.Companion.timeElapsed
 import javax.inject.Inject
 
 /**
@@ -92,6 +98,9 @@ class WorkoutService : Service() {
     private var initialRestTime = 0
     private var isFocused = true
 
+    @Inject
+    lateinit var notificationHelper: NotificationHelper
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -123,6 +132,12 @@ class WorkoutService : Service() {
 
             WorkoutServiceActions.STOP_SERVICE -> stopService()
         }
+
+        startForeground(
+            NotificationHelper.WORKOUT_NOTIFICATION_ID,
+            notificationHelper.createWorkoutNotification()
+        )
+
         return START_STICKY
     }
 
@@ -136,17 +151,11 @@ class WorkoutService : Service() {
         stopSelf()
     }
 
-    @Inject
-    lateinit var notificationHelper: NotificationHelper
 
 
     private var chronometerJob: Job? = null
 
     private fun startChronometer() {
-        startForeground(
-            NotificationHelper.WORKOUT_NOTIFICATION_ID,
-            notificationHelper.createWorkoutNotification()
-        )
 
         _isChronometerPaused.value = false
 

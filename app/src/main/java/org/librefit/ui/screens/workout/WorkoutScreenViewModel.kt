@@ -20,7 +20,6 @@
 package org.librefit.ui.screens.workout
 
 import android.content.Context
-import android.content.Intent
 import android.media.MediaPlayer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,17 +37,15 @@ import org.librefit.data.DataStoreManager
 import org.librefit.db.entity.Set
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.SetMode
-import org.librefit.enums.WorkoutServiceActions
 import org.librefit.services.WorkoutService
-import org.librefit.services.WorkoutService.Companion.EXTRA_ADD_TEN_SECONDS
-import org.librefit.services.WorkoutService.Companion.EXTRA_INITIAL_REST_TIME
-import org.librefit.services.WorkoutService.Companion.EXTRA_IS_FOCUSED
+import org.librefit.services.WorkoutServiceManager
 import javax.inject.Inject
 
 @HiltViewModel
 class WorkoutScreenViewModel @Inject constructor(
-    @ApplicationContext context: Context,
-    userPreferences: DataStoreManager
+    @ApplicationContext private val context: Context,
+    userPreferences: DataStoreManager,
+    private val workoutServiceManager: WorkoutServiceManager
 ) : ViewModel() {
     // Used by set chronometer, it's allowed only one timer at a time
     var setChronometerIsRunning = mutableStateOf(false)
@@ -209,23 +206,12 @@ class WorkoutScreenViewModel @Inject constructor(
     private var initialRestTime = 1
     private var isFocused = true
 
-    private var appContext = context.applicationContext
-    private var workoutServiceIntent = Intent(appContext, WorkoutService::class.java)
-
 
     init {
         startChronometer()
         observeChanges()
     }
 
-
-    override fun onCleared() {
-        super.onCleared()
-        val serviceIntent = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.STOP_SERVICE.string
-        }
-        appContext.startService(serviceIntent)
-    }
 
     private fun observeChanges() {
         viewModelScope.launch(Dispatchers.Main) {
@@ -234,7 +220,7 @@ class WorkoutScreenViewModel @Inject constructor(
 
                 // When timer is over and screen is visible, it plays alert sound
                 if (initialRestTime != 1 && restTime == 0 && isFocused) {
-                    val mediaPlayer = MediaPlayer.create(appContext, R.raw.alert_notification)
+                    val mediaPlayer = MediaPlayer.create(context, R.raw.alert_notification)
                     mediaPlayer.setOnCompletionListener {
                         it.release()
                     }
@@ -246,17 +232,11 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
     fun startChronometer() {
-        val service = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.START_CHRONOMETER.string
-        }
-        appContext.startForegroundService(service)
+        workoutServiceManager.startChronometer()
     }
 
     fun pauseChronometer() {
-        val service = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.PAUSE_CHRONOMETER.string
-        }
-        appContext.startForegroundService(service)
+        workoutServiceManager.pauseChronometer()
     }
 
     /**
@@ -265,34 +245,25 @@ class WorkoutScreenViewModel @Inject constructor(
      */
     fun updateFocus(isFocused: Boolean) {
         this.isFocused = isFocused
-
-        val serviceIntent = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.WORKOUT_FOCUS.string
-            putExtra(EXTRA_IS_FOCUSED, isFocused)
-        }
-        appContext.startForegroundService(serviceIntent)
+        workoutServiceManager.updateFocus(isFocused)
     }
 
 
     fun startRestTimer(initialValue: Int) {
         initialRestTime = initialValue
-        val serviceIntent = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.START_REST_TIMER.string
-            putExtra(EXTRA_INITIAL_REST_TIME, initialValue)
-        }
-        appContext.startForegroundService(serviceIntent)
+        workoutServiceManager.startRestTimer(initialValue)
     }
 
     fun modifyRestTime(addTenSeconds: Boolean) {
-        val serviceIntent = workoutServiceIntent.apply {
-            action = WorkoutServiceActions.MODIFY_REST_TIMER.string
-            putExtra(EXTRA_ADD_TEN_SECONDS, addTenSeconds)
-        }
-        appContext.startForegroundService(serviceIntent)
+        workoutServiceManager.modifyRestTime(addTenSeconds)
     }
 
     fun getRestTimeProgress(): Float {
         return restTime.toFloat() / initialRestTime
+    }
+
+    fun stopWorkoutService() {
+        workoutServiceManager.stopService()
     }
 
 
