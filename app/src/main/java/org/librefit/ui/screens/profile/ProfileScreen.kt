@@ -24,12 +24,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
@@ -72,6 +69,7 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomButton
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
@@ -123,220 +121,207 @@ private fun ProfileScreenContent(
     updateWorkoutId: (Long) -> Unit
 ) {
 
-    // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-    // This prevents the content from stretching too wide on larger (landscape) screens
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp)
-                .widthIn(max = 600.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            item {
-                var clicks = rememberSaveable { mutableIntStateOf(0) }
+    CustomLazyColumn(innerPadding) {
+        item {
+            var clicks = rememberSaveable { mutableIntStateOf(0) }
 
-                LaunchedEffect(Unit) {
-                    while (true) {
-                        delay(500)
-                        clicks.intValue = clicks.intValue.dec().coerceAtLeast(0)
+            LaunchedEffect(Unit) {
+                while (true) {
+                    delay(500)
+                    clicks.intValue = clicks.intValue.dec().coerceAtLeast(0)
+                }
+            }
+            OutlinedCard(
+                onClick = {
+                    clicks.intValue++
+                }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(modifier = Modifier.weight(0.25f)) {
+                        StreakLottie(weekStreak + clicks.intValue)
+                    }
+                    Column(
+                        modifier = Modifier.weight(0.75f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.week_streak) + " " + weekStreak,
+                            style = MaterialTheme.typography.titleLarge
+                        )
                     }
                 }
-                OutlinedCard(
-                    onClick = {
-                        clicks.intValue++
-                    }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomButton(
+                    text = stringResource(R.string.statistics),
+                    icon = ImageVector.vectorResource(R.drawable.ic_chart),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    //TODO: statistics view
+                }
+                CustomButton(
+                    text = stringResource(R.string.explore_exercises),
+                    icon = ImageVector.vectorResource(R.drawable.ic_search),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    navController.navigate(Route.ExercisesScreen(addExercises = false))
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomButton(
+                    text = stringResource(R.string.measurements),
+                    icon = ImageVector.vectorResource(R.drawable.ic_monitor),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    navController.navigate(Route.MeasurementScreen)
+                }
+                CustomButton(
+                    text = stringResource(R.string.calendar),
+                    icon = ImageVector.vectorResource(R.drawable.ic_date_range),
+                    modifier = Modifier.weight(0.5f),
+                    elevated = false
+                ) {
+                    navController.navigate(Route.CalendarScreen)
+                }
+            }
+        }
+
+        item { HeadlineText(stringResource(R.string.overview)) }
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                items(WorkoutChart.entries) { mode ->
+                    FilterChip(
+                        selected = workoutChart == mode && listChartData.isNotEmpty(),
+                        onClick = { updateChartMode(mode) },
+                        label = {
+                            Text(
+                                stringResource(
+                                    when (mode) {
+                                        WorkoutChart.DURATION -> R.string.duration
+                                        WorkoutChart.VOLUME -> R.string.volume
+                                        WorkoutChart.REPS -> R.string.reps
+                                    }
+                                )
+                            )
+                        },
+                        leadingIcon = {
+                            if (workoutChart == mode && listChartData.isNotEmpty()) {
+                                Icon(
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        enabled = listChartData.isNotEmpty()
+                    )
+                }
+            }
+        }
+
+        item {
+            CustomCartesianChart(
+                format = when (workoutChart) {
+                    WorkoutChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                    WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                    WorkoutChart.REPS -> DecimalFormat()
+                },
+                listChartData = listChartData,
+                columns = true
+            )
+        }
+
+        item { HeadlineText(stringResource(R.string.your_workouts)) }
+        if (workoutsWithExercises.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    EmptyLottie()
+                    Text(
+                        text = stringResource(R.string.nothing_to_show),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        items(
+            items = workoutsWithExercises.map { it.workout },
+            key = { it.id }
+        ) { workout ->
+            ElevatedCard {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(modifier = Modifier.weight(0.25f)) {
-                            StreakLottie(weekStreak + clicks.intValue)
-                        }
-                        Column(
-                            modifier = Modifier.weight(0.75f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = stringResource(R.string.week_streak) + " " + weekStreak,
-                                style = MaterialTheme.typography.titleLarge
+                                text = workout.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                text = stringResource(R.string.finished_on) + ": "
+                                        + workout.completed.format(
+                                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                                        .withLocale(
+                                            Locale.getDefault()
+                                        )
+                                ),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = stringResource(R.string.duration) + ": "
+                                        + formatTime(workout.timeElapsed),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                updateWorkoutId(workout.id)
+                                navController.navigate(Route.InfoWorkoutScreen)
+                            },
+                        ) {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_info),
+                                stringResource(R.string.about)
                             )
                         }
                     }
                 }
             }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    CustomButton(
-                        text = stringResource(R.string.statistics),
-                        icon = ImageVector.vectorResource(R.drawable.ic_chart),
-                        modifier = Modifier.weight(0.5f),
-                        elevated = false
-                    ) {
-                        //TODO: statistics view
-                    }
-                    CustomButton(
-                        text = stringResource(R.string.explore_exercises),
-                        icon = ImageVector.vectorResource(R.drawable.ic_search),
-                        modifier = Modifier.weight(0.5f),
-                        elevated = false
-                    ) {
-                        navController.navigate(Route.ExercisesScreen(addExercises = false))
-                    }
-                }
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    CustomButton(
-                        text = stringResource(R.string.measurements),
-                        icon = ImageVector.vectorResource(R.drawable.ic_monitor),
-                        modifier = Modifier.weight(0.5f),
-                        elevated = false
-                    ) {
-                        navController.navigate(Route.MeasurementScreen)
-                    }
-                    CustomButton(
-                        text = stringResource(R.string.calendar),
-                        icon = ImageVector.vectorResource(R.drawable.ic_date_range),
-                        modifier = Modifier.weight(0.5f),
-                        elevated = false
-                    ) {
-                        navController.navigate(Route.CalendarScreen)
-                    }
-                }
-            }
-
-            item { HeadlineText(stringResource(R.string.overview)) }
-            item {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(WorkoutChart.entries) { mode ->
-                        FilterChip(
-                            selected = workoutChart == mode && listChartData.isNotEmpty(),
-                            onClick = { updateChartMode(mode) },
-                            label = {
-                                Text(
-                                    stringResource(
-                                        when (mode) {
-                                            WorkoutChart.DURATION -> R.string.duration
-                                            WorkoutChart.VOLUME -> R.string.volume
-                                            WorkoutChart.REPS -> R.string.reps
-                                        }
-                                    )
-                                )
-                            },
-                            leadingIcon = {
-                                if (workoutChart == mode && listChartData.isNotEmpty()) {
-                                    Icon(
-                                        modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_check),
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            enabled = listChartData.isNotEmpty()
-                        )
-                    }
-                }
-            }
-
-            item {
-                CustomCartesianChart(
-                    format = when (workoutChart) {
-                        WorkoutChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
-                        WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
-                        WorkoutChart.REPS -> DecimalFormat()
-                    },
-                    listChartData = listChartData,
-                    columns = true
-                )
-            }
-
-            item { HeadlineText(stringResource(R.string.your_workouts)) }
-            if (workoutsWithExercises.isEmpty()) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        EmptyLottie()
-                        Text(
-                            text = stringResource(R.string.nothing_to_show),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-
-            items(
-                items = workoutsWithExercises.map { it.workout },
-                key = { it.id }
-            ) { workout ->
-                ElevatedCard {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = workout.title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    text = stringResource(R.string.finished_on) + ": "
-                                            + workout.completed.format(
-                                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                                            .withLocale(
-                                                Locale.getDefault()
-                                            )
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = stringResource(R.string.duration) + ": "
-                                            + formatTime(workout.timeElapsed),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                            IconButton(
-                                onClick = {
-                                    updateWorkoutId(workout.id)
-                                    navController.navigate(Route.InfoWorkoutScreen)
-                                },
-                            ) {
-                                Icon(
-                                    ImageVector.vectorResource(R.drawable.ic_info),
-                                    stringResource(R.string.about)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            bottomMargin()
         }
+        bottomMargin()
     }
 }
 

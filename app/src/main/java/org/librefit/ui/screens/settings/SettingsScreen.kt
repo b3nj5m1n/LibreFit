@@ -28,14 +28,11 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -74,6 +71,7 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
@@ -171,228 +169,217 @@ private fun SettingsScreenContent(
         title = AnnotatedString(stringResource(id = R.string.settings)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier.widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                val iconPaddingModifier = Modifier.padding(start = 20.dp, end = 20.dp)
+        CustomLazyColumn(innerPadding) {
+            val iconPaddingModifier = Modifier.padding(start = 20.dp, end = 20.dp)
 
-                item { HeadlineText(text = stringResource(id = R.string.appearance)) }
+            item { HeadlineText(text = stringResource(id = R.string.appearance)) }
 
-                item {
-                    Column {
-                        Row {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_dark_mode),
-                                contentDescription = stringResource(R.string.theme),
-                                modifier = iconPaddingModifier
-                            )
-                            Text(
-                                text = stringResource(id = R.string.theme),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                        }
+            item {
+                Column {
+                    Row {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_dark_mode),
+                            contentDescription = stringResource(R.string.theme),
+                            modifier = iconPaddingModifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.theme),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            SingleChoiceSegmentedButtonRow {
-                                ThemeMode.entries.forEachIndexed { index, mode ->
-                                    SegmentedButton(
-                                        selected = selectedTheme == mode,
-                                        onClick = {
-                                            view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
-                                            savePreference(0, index)
-                                        },
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                            index = index,
-                                            count = ThemeMode.entries.size
-                                        )
-                                    ) { Text(stringResource(id = themeModeToId(mode))) }
-                                }
-
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        SingleChoiceSegmentedButtonRow {
+                            ThemeMode.entries.forEachIndexed { index, mode ->
+                                SegmentedButton(
+                                    selected = selectedTheme == mode,
+                                    onClick = {
+                                        view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
+                                        savePreference(0, index)
+                                    },
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = ThemeMode.entries.size
+                                    )
+                                ) { Text(stringResource(id = themeModeToId(mode))) }
                             }
+
                         }
                     }
                 }
+            }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_material),
-                                    contentDescription = stringResource(R.string.material_you),
-                                    modifier = iconPaddingModifier
-                                )
-                                Column(verticalArrangement = Arrangement.Center) {
-                                    Text(
-                                        text = stringResource(id = R.string.material_you),
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        text = stringResource(
-                                            id = if (materialModeOn) R.string.dynamic_color_enabled else R.string.dynamic_color_disabled
-                                        ),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-                            Switch(
-                                modifier = iconPaddingModifier,
-                                checked = materialModeOn,
-                                onCheckedChange = {
-                                    view.performHapticFeedback(
-                                        if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
-                                        else HapticFeedbackConstantsCompat.TOGGLE_OFF
-                                    )
-                                    savePreference(1, if (it) 1 else 0)
-                                }
-                            )
-                        }
-                    }
-                }
-
-
-                item { HeadlineText(text = stringResource(id = R.string.settings_general)) }
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 item {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showPreferenceDialog.value = true },
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_material),
+                                contentDescription = stringResource(R.string.material_you),
+                                modifier = iconPaddingModifier
+                            )
+                            Column(verticalArrangement = Arrangement.Center) {
+                                Text(
+                                    text = stringResource(id = R.string.material_you),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = stringResource(
+                                        id = if (materialModeOn) R.string.dynamic_color_enabled else R.string.dynamic_color_disabled
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+                        Switch(
+                            modifier = iconPaddingModifier,
+                            checked = materialModeOn,
+                            onCheckedChange = {
+                                view.performHapticFeedback(
+                                    if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                    else HapticFeedbackConstantsCompat.TOGGLE_OFF
+                                )
+                                savePreference(1, if (it) 1 else 0)
+                            }
+                        )
+                    }
+                }
+            }
+
+
+            item { HeadlineText(text = stringResource(id = R.string.settings_general)) }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showPreferenceDialog.value = true },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_translate),
+                        contentDescription = stringResource(R.string.translate),
+                        modifier = iconPaddingModifier
+                    )
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.language),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stringResource(id = languageCodeToId(selectedLanguage)),
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_translate),
-                            contentDescription = stringResource(R.string.translate),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_keep),
+                            contentDescription = stringResource(R.string.keep_screen_on),
                             modifier = iconPaddingModifier
                         )
-                        Column {
+                        Column(Modifier.weight(1f)) {
                             Text(
-                                text = stringResource(id = R.string.language),
-                                style = MaterialTheme.typography.titleMedium
+                                text = stringResource(id = R.string.keep_screen_on),
+                                style = MaterialTheme.typography.titleMedium,
                             )
                             Text(
-                                text = stringResource(id = languageCodeToId(selectedLanguage)),
+                                text = stringResource(
+                                    id = if (keepWorkoutScreenOn) R.string.screen_on_desc else R.string.screen_off_desc
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_keep),
-                                contentDescription = stringResource(R.string.keep_screen_on),
-                                modifier = iconPaddingModifier
+                    Switch(
+                        modifier = iconPaddingModifier,
+                        checked = keepWorkoutScreenOn,
+                        onCheckedChange = {
+                            view.performHapticFeedback(
+                                if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                else HapticFeedbackConstantsCompat.TOGGLE_OFF
                             )
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(id = R.string.keep_screen_on),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                Text(
-                                    text = stringResource(
-                                        id = if (keepWorkoutScreenOn) R.string.screen_on_desc else R.string.screen_off_desc
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
+                            savePreference(2, if (it) 1 else 0)
                         }
-                        Switch(
-                            modifier = iconPaddingModifier,
-                            checked = keepWorkoutScreenOn,
-                            onCheckedChange = {
-                                view.performHapticFeedback(
-                                    if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
-                                    else HapticFeedbackConstantsCompat.TOGGLE_OFF
-                                )
-                                savePreference(2, if (it) 1 else 0)
-                            }
-                        )
-                    }
+                    )
                 }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_speed),
-                                contentDescription = stringResource(R.string.background_usage),
-                                modifier = iconPaddingModifier
-                            )
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(id = R.string.background_usage),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                Text(
-                                    text = stringResource(
-                                        id = R.string.background_usage_desc
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
-                        }
-                        Switch(
-                            modifier = iconPaddingModifier,
-                            checked = isIgnoringBatteryOptimization,
-                            onCheckedChange = {
-                                view.performHapticFeedback(
-                                    if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
-                                    else HapticFeedbackConstantsCompat.TOGGLE_OFF
-                                )
-
-                                var intent: Intent
-                                if (!isIgnoringBatteryOptimization) {
-                                    intent =
-                                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                                            data = "package:${context.packageName}".toUri()
-                                        }
-                                } else {
-                                    intent =
-                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                }
-                                context.startActivity(intent)
-                            }
-                        )
-                    }
-                }
-                bottomMargin()
-                //TODO: toggle to enable/disable rest timer sound
             }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_speed),
+                            contentDescription = stringResource(R.string.background_usage),
+                            modifier = iconPaddingModifier
+                        )
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(id = R.string.background_usage),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = stringResource(
+                                    id = R.string.background_usage_desc
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                    Switch(
+                        modifier = iconPaddingModifier,
+                        checked = isIgnoringBatteryOptimization,
+                        onCheckedChange = {
+                            view.performHapticFeedback(
+                                if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
+                                else HapticFeedbackConstantsCompat.TOGGLE_OFF
+                            )
+
+                            var intent: Intent
+                            if (!isIgnoringBatteryOptimization) {
+                                intent =
+                                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                        data = "package:${context.packageName}".toUri()
+                                    }
+                            } else {
+                                intent =
+                                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                            }
+                            context.startActivity(intent)
+                        }
+                    )
+                }
+            }
+            bottomMargin()
+            //TODO: toggle to enable/disable rest timer sound
         }
     }
 }

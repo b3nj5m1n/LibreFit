@@ -20,14 +20,8 @@
 package org.librefit.ui.screens.editWorkout
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -49,7 +43,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -63,6 +56,7 @@ import org.librefit.enums.InfoMode
 import org.librefit.enums.SetMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.animations.DumbbellLottie
@@ -211,108 +205,94 @@ private fun EditWorkoutScreenContent(
         },
         fabDescription = stringResource(R.string.add_exercise)
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    OutlinedTextField(
-                        value = workout.title,
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        onValueChange = { newTitle ->
-                            updateTitle(newTitle)
-                        },
-                        trailingIcon = {
-                            if (isTitleTooLong || isTitleEmpty) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
-                                    contentDescription = stringResource(R.string.warning)
-                                )
-                            }
-                        },
-                        isError = isTitleTooLong || isTitleEmpty,
-                        label = { Text(text = stringResource(id = R.string.title)) },
-                        supportingText = {
-                            when {
-                                isTitleTooLong -> {
-                                    Text(stringResource(R.string.title_length_exceeded_30))
-                                }
-
-                                isTitleEmpty -> {
-                                    Text(stringResource(R.string.title_cannot_be_empty))
-                                }
-                            }
-                        }
-                    )
-                }
-                item {
-                    OutlinedTextField(
-                        value = workout.notes,
-                        modifier = Modifier.fillMaxWidth(),
-                        onValueChange = { newNotes ->
-                            updateNotes(newNotes)
-                        },
-                        label = { Text(text = stringResource(id = R.string.notes)) },
-                    )
-                }
-                item {
-                    HorizontalDivider()
-                }
-                if (exercisesWithSets.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            DumbbellLottie()
-                            Text(
-                                text = stringResource(id = R.string.start_adding_exercises),
-                                color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
+        CustomLazyColumn(innerPadding) {
+            item {
+                OutlinedTextField(
+                    value = workout.title,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    onValueChange = { newTitle ->
+                        updateTitle(newTitle)
+                    },
+                    trailingIcon = {
+                        if (isTitleTooLong || isTitleEmpty) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
+                                contentDescription = stringResource(R.string.warning)
                             )
                         }
+                    },
+                    isError = isTitleTooLong || isTitleEmpty,
+                    label = { Text(text = stringResource(id = R.string.title)) },
+                    supportingText = {
+                        when {
+                            isTitleTooLong -> {
+                                Text(stringResource(R.string.title_length_exceeded_30))
+                            }
+
+                            isTitleEmpty -> {
+                                Text(stringResource(R.string.title_cannot_be_empty))
+                            }
+                        }
                     }
-                } else {
-                    itemsIndexed(
-                        items = exercisesWithSets,
-                        key = { i, e -> e.exercise.id }
-                    ) { i, exerciseWithSets ->
-                        ExerciseCard(
-                            modifier = Modifier.animateItem(),
-                            exerciseWithSets = exerciseWithSets,
-                            addSet = { addSetToExercise(i) },
-                            onDetail = {
-                                selectedExercise = exerciseWithSets.exerciseDC
-                                isModalSheetOpen = true
-                            },
-                            onDelete = { deleteExercise(i) },
-                            updateSet = { set, value, mode ->
-                                updateSet(i, set, value, mode)
-                            },
-                            deleteSet = { set ->
-                                deleteSet(i, set)
-                            },
-                            updateExercise = { value, mode ->
-                                updateExercise(i, value, mode)
-                            },
-                            showInfo = { infoMode = it },
-                            workout = typeOfEdit == false
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = workout.notes,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { newNotes ->
+                        updateNotes(newNotes)
+                    },
+                    label = { Text(text = stringResource(id = R.string.notes)) },
+                )
+            }
+            item {
+                HorizontalDivider()
+            }
+            if (exercisesWithSets.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        DumbbellLottie()
+                        Text(
+                            text = stringResource(id = R.string.start_adding_exercises),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
-                bottomMargin()
+            } else {
+                itemsIndexed(
+                    items = exercisesWithSets,
+                    key = { i, e -> e.exercise.id }
+                ) { i, exerciseWithSets ->
+                    ExerciseCard(
+                        modifier = Modifier.animateItem(),
+                        exerciseWithSets = exerciseWithSets,
+                        addSet = { addSetToExercise(i) },
+                        onDetail = {
+                            selectedExercise = exerciseWithSets.exerciseDC
+                            isModalSheetOpen = true
+                        },
+                        onDelete = { deleteExercise(i) },
+                        updateSet = { set, value, mode ->
+                            updateSet(i, set, value, mode)
+                        },
+                        deleteSet = { set ->
+                            deleteSet(i, set)
+                        },
+                        updateExercise = { value, mode ->
+                            updateExercise(i, value, mode)
+                        },
+                        showInfo = { infoMode = it },
+                        workout = typeOfEdit == false
+                    )
+                }
             }
+            bottomMargin()
         }
     }
 }

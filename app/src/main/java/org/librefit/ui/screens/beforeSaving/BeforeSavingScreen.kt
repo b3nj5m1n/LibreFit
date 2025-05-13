@@ -20,14 +20,10 @@
 package org.librefit.ui.screens.beforeSaving
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -64,6 +60,7 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
@@ -186,231 +183,218 @@ fun BeforeSavingScreenContent(
         actionsDescription = listOf(stringResource(R.string.save)),
         actionsEnabled = listOf(!isTitleEmpty && !isTitleTooLong)
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                item {
+        CustomLazyColumn(innerPadding) {
+            item {
+                OutlinedTextField(
+                    value = workoutTitle,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    onValueChange = updateWorkoutTitle,
+                    trailingIcon = {
+                        if (isTitleEmpty || isTitleTooLong) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
+                                contentDescription = stringResource(R.string.warning)
+                            )
+                        }
+                    },
+                    isError = isTitleEmpty || isTitleTooLong,
+                    label = { Text(text = stringResource(id = R.string.title)) },
+                    supportingText = {
+                        when {
+                            isTitleTooLong -> {
+                                Text(stringResource(R.string.title_length_exceeded_30))
+                            }
+
+                            isTitleEmpty -> {
+                                Text(stringResource(R.string.title_cannot_be_empty))
+                            }
+                        }
+                    }
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = workoutNotes,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = updateWorkoutNotes,
+                    label = { Text(text = stringResource(id = R.string.notes)) },
+                )
+            }
+            item {
+                HeadlineText(stringResource(R.string.statistics), InfoMode.BEFORE_SAVING_STATS)
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+
                     OutlinedTextField(
-                        value = workoutTitle,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.weight(0.5f),
+                        value = formatTime(timeElapsed),
+                        label = { Text(stringResource(R.string.elapsed_time)) },
+                        onValueChange = { string ->
+                            val stringValue = string.filter { it.isDigit() }.takeLast(6)
+
+                            val seconds = stringValue.toInt() % 100
+                            val minutes = (stringValue.toInt() % 10000 - seconds) / 100
+                            val hours =
+                                (stringValue.toInt() - stringValue.toInt() % 10000) / 10000
+
+                            setTimeElapsed(hours * 3600 + minutes * 60 + seconds)
+                        },
                         singleLine = true,
-                        onValueChange = updateWorkoutTitle,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.weight(0.5f),
+                        value = completedDate,
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.label_when)) },
+                        readOnly = true,
                         trailingIcon = {
-                            if (isTitleEmpty || isTitleTooLong) {
+                            IconButton(onClick = {
+                                showDatePickerDialog.value = !showDatePickerDialog.value
+                            }) {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
-                                    contentDescription = stringResource(R.string.warning)
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
+                                    contentDescription = stringResource(R.string.select_date)
                                 )
                             }
-                        },
-                        isError = isTitleEmpty || isTitleTooLong,
-                        label = { Text(text = stringResource(id = R.string.title)) },
-                        supportingText = {
-                            when {
-                                isTitleTooLong -> {
-                                    Text(stringResource(R.string.title_length_exceeded_30))
-                                }
-
-                                isTitleEmpty -> {
-                                    Text(stringResource(R.string.title_cannot_be_empty))
-                                }
-                            }
                         }
                     )
                 }
-                item {
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
                     OutlinedTextField(
-                        value = workoutNotes,
-                        modifier = Modifier.fillMaxWidth(),
-                        onValueChange = updateWorkoutNotes,
-                        label = { Text(text = stringResource(id = R.string.notes)) },
+                        modifier = Modifier.weight(0.5f),
+                        value = volumeExercises,
+                        label = { Text(stringResource(R.string.volume)) },
+                        suffix = { Text(stringResource(R.string.kg)) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.weight(0.5f),
+                        value = "${exercises.size}",
+                        label = { Text(stringResource(R.string.exercises)) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
                     )
                 }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier.weight(0.5f),
+                        value = "$totalSets",
+                        label = { Text(stringResource(R.string.total_sets)) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.weight(0.5f),
+                        value = "$completedSets",
+                        label = { Text(stringResource(R.string.completed_sets)) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                    )
+                }
+            }
+
+            if (routineTitle != "") {
                 item {
-                    HeadlineText(stringResource(R.string.statistics), InfoMode.BEFORE_SAVING_STATS)
+                    HeadlineText(stringResource(R.string.routine))
                 }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = formatTime(timeElapsed),
-                            label = { Text(stringResource(R.string.elapsed_time)) },
-                            onValueChange = { string ->
-                                val stringValue = string.filter { it.isDigit() }.takeLast(6)
-
-                                val seconds = stringValue.toInt() % 100
-                                val minutes = (stringValue.toInt() % 10000 - seconds) / 100
-                                val hours =
-                                    (stringValue.toInt() - stringValue.toInt() % 10000) / 10000
-
-                                setTimeElapsed(hours * 3600 + minutes * 60 + seconds)
-                            },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = completedDate,
-                            onValueChange = {},
-                            label = { Text(stringResource(R.string.label_when)) },
-                            readOnly = true,
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    showDatePickerDialog.value = !showDatePickerDialog.value
-                                }) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
-                                        contentDescription = stringResource(R.string.select_date)
-                                    )
-                                }
-                            }
-                        )
-                    }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = volumeExercises,
-                            label = { Text(stringResource(R.string.volume)) },
-                            suffix = { Text(stringResource(R.string.kg)) },
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = "${exercises.size}",
-                            label = { Text(stringResource(R.string.exercises)) },
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                        )
-                    }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = "$totalSets",
-                            label = { Text(stringResource(R.string.total_sets)) },
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier.weight(0.5f),
-                            value = "$completedSets",
-                            label = { Text(stringResource(R.string.completed_sets)) },
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = true,
-                        )
-                    }
-                }
-
-                if (routineTitle != "") {
-                    item {
-                        HeadlineText(stringResource(R.string.routine))
-                    }
-                    item {
-                        ElevatedCard {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.title) + " : " + routineTitle,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(stringResource(R.string.creation_date) + " : " + routineDate)
-                                }
-                                IconButton(
-                                    onClick = { showUnlikeRoutineDialog.value = true }
-                                ) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-                                        contentDescription = stringResource(R.string.delete)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                item {
-                    HeadlineText(stringResource(R.string.exercises))
-                }
-
                 item {
                     ElevatedCard {
-                        Column(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = stringResource(R.string.completed_sets),
-                                    style = MaterialTheme.typography.bodySmall
+                                    text = stringResource(R.string.title) + " : " + routineTitle,
+                                    style = MaterialTheme.typography.titleMedium
                                 )
+                                Text(stringResource(R.string.creation_date) + " : " + routineDate)
                             }
-                            exercises.forEachIndexed { index, exercise ->
-                                if (index != 0) {
-                                    HorizontalDivider()
-                                }
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = exercise.exerciseDC.name,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text("${exercise.sets.filter { it.completed }.size} / ${exercise.sets.size}")
-                                }
+                            IconButton(
+                                onClick = { showUnlikeRoutineDialog.value = true }
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+                                    contentDescription = stringResource(R.string.delete)
+                                )
                             }
                         }
                     }
                 }
-
-                bottomMargin()
             }
+
+
+            item {
+                HeadlineText(stringResource(R.string.exercises))
+            }
+
+            item {
+                ElevatedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(
+                                text = stringResource(R.string.completed_sets),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        exercises.forEachIndexed { index, exercise ->
+                            if (index != 0) {
+                                HorizontalDivider()
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = exercise.exerciseDC.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text("${exercise.sets.filter { it.completed }.size} / ${exercise.sets.size}")
+                            }
+                        }
+                    }
+                }
+            }
+
+            bottomMargin()
         }
     }
 }

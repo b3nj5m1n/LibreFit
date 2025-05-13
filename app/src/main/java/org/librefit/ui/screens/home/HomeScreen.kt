@@ -21,16 +21,12 @@ package org.librefit.ui.screens.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -65,6 +61,7 @@ import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomButton
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.bottomMargin
@@ -104,118 +101,104 @@ private fun HomeScreenContent(
 ) {
     val context = LocalContext.current
 
-    // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-    // This prevents the content from stretching too wide on larger (landscape) screens
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier
-                .padding(start = 15.dp, end = 15.dp)
-                .widthIn(max = 600.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
+    CustomLazyColumn(innerPadding) {
+        item {
+            //"Start empty workout" button
+            CustomButton(
+                text = stringResource(id = R.string.start_empty_workout),
+                icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
+                onClick = {
+                    checkPermissionsBeforeNavigateToWorkout(
+                        requestPermissionAgain = requestPermissionAgain,
+                        navController = navController,
+                        appContext = context.applicationContext
+                    )
+                    updateWorkoutId(0)
+                },
+            )
+        }
 
+
+        item {
+            HeadlineText(stringResource(id = R.string.your_routines))
+        }
+
+        if (routines.isEmpty()) {
             item {
-                //"Start empty workout" button
-                CustomButton(
-                    text = stringResource(id = R.string.start_empty_workout),
-                    icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
-                    onClick = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.start_creating_routine),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
+        //TODO: implement a default routine
+
+        items(routines, key = { it.id }) { routine ->
+            ElevatedCard(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .clip(CardDefaults.elevatedShape)
+                    .clickable {
+                        updateWorkoutId(routine.id)
+                        navController.navigate(Route.InfoWorkoutScreen)
+                    }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = routine.title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        IconButton(
+                            onClick = {
+                                updateWorkoutId(routine.id)
+                                navController.navigate(Route.InfoWorkoutScreen)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_info),
+                                contentDescription = stringResource(R.string.info)
+                            )
+                        }
+                    }
+                    CustomButton(
+                        text = stringResource(R.string.start_routine),
+                        icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
+                        elevated = false
+                    ) {
                         checkPermissionsBeforeNavigateToWorkout(
                             requestPermissionAgain = requestPermissionAgain,
                             navController = navController,
                             appContext = context.applicationContext
                         )
-                        updateWorkoutId(0)
-                    },
-                )
-            }
-
-
-            item {
-                HeadlineText(stringResource(id = R.string.your_routines))
-            }
-
-            if (routines.isEmpty()) {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.start_creating_routine),
-                            textAlign = TextAlign.Center
-                        )
+                        updateWorkoutId(routine.id)
                     }
                 }
             }
-
-            //TODO: implement a default routine
-
-            items(routines, key = { it.id }) { routine ->
-                ElevatedCard(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .clip(CardDefaults.elevatedShape)
-                        .clickable {
-                            updateWorkoutId(routine.id)
-                            navController.navigate(Route.InfoWorkoutScreen)
-                        }
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = routine.title,
-                                style = MaterialTheme.typography.headlineMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            IconButton(
-                                onClick = {
-                                    updateWorkoutId(routine.id)
-                                    navController.navigate(Route.InfoWorkoutScreen)
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info),
-                                    contentDescription = stringResource(R.string.info)
-                                )
-                            }
-                        }
-                        CustomButton(
-                            text = stringResource(R.string.start_routine),
-                            icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
-                            elevated = false
-                        ) {
-                            checkPermissionsBeforeNavigateToWorkout(
-                                requestPermissionAgain = requestPermissionAgain,
-                                navController = navController,
-                                appContext = context.applicationContext
-                            )
-                            updateWorkoutId(routine.id)
-                        }
-                    }
-                }
-            }
-
-
-            bottomMargin()
         }
+
+
+        bottomMargin()
     }
 }
 

@@ -21,15 +21,11 @@ package org.librefit.ui.screens.measurements
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -78,6 +74,7 @@ import org.librefit.db.entity.Measurement
 import org.librefit.enums.MeasurementCardState
 import org.librefit.enums.chart.MeasurementChart
 import org.librefit.ui.components.CustomButton
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
@@ -226,338 +223,326 @@ private fun MeasurementScreenContent(
         title = AnnotatedString(stringResource(R.string.measurements)),
         navigateBack = navigateBack
     ) { innerPadding ->
-        // This box is used to constrain width in landscape mode
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(MeasurementChart.entries) { mode ->
-                            FilterChip(
-                                selected = measurementChart == mode,
-                                onClick = { updateChartMode(mode) },
-                                label = {
-                                    Text(
-                                        stringResource(
-                                            when (mode) {
-                                                MeasurementChart.BODY_WEIGHT -> R.string.body_weight
-                                                MeasurementChart.FAT_MASS -> R.string.fat_mass
-                                                MeasurementChart.LEAN_MASS -> R.string.lean_mass
-                                            }
-                                        )
+        CustomLazyColumn(innerPadding) {
+            item {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    items(MeasurementChart.entries) { mode ->
+                        FilterChip(
+                            selected = measurementChart == mode,
+                            onClick = { updateChartMode(mode) },
+                            label = {
+                                Text(
+                                    stringResource(
+                                        when (mode) {
+                                            MeasurementChart.BODY_WEIGHT -> R.string.body_weight
+                                            MeasurementChart.FAT_MASS -> R.string.fat_mass
+                                            MeasurementChart.LEAN_MASS -> R.string.lean_mass
+                                        }
                                     )
-                                },
-                                leadingIcon = {
-                                    if (measurementChart == mode) {
-                                        Icon(
-                                            modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
-                                            contentDescription = null
-                                        )
-                                    }
+                                )
+                            },
+                            leadingIcon = {
+                                if (measurementChart == mode) {
+                                    Icon(
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                                        contentDescription = null
+                                    )
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
+            }
 
-                item {
-                    CustomCartesianChart(
-                        format = when (measurementChart) {
-                            MeasurementChart.BODY_WEIGHT -> DecimalFormat("# " + stringResource(R.string.kg))
-                            MeasurementChart.FAT_MASS -> DecimalFormat("0' %'")
-                            MeasurementChart.LEAN_MASS -> DecimalFormat("0' %'")
-                        },
-                        listChartData = listChartData
-                    )
-                }
+            item {
+                CustomCartesianChart(
+                    format = when (measurementChart) {
+                        MeasurementChart.BODY_WEIGHT -> DecimalFormat("# " + stringResource(R.string.kg))
+                        MeasurementChart.FAT_MASS -> DecimalFormat("0' %'")
+                        MeasurementChart.LEAN_MASS -> DecimalFormat("0' %'")
+                    },
+                    listChartData = listChartData
+                )
+            }
 
 
-                // Add new measurement card
-                item {
-                    var isExpanded by rememberSaveable { mutableStateOf(false) }
+            // Add new measurement card
+            item {
+                var isExpanded by rememberSaveable { mutableStateOf(false) }
 
-                    OutlinedCard {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                OutlinedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            Text(
+                                text = stringResource(
+                                    if (measurementCardState.value == MeasurementCardState.NEW)
+                                        R.string.new_measurement else R.string.edit_measurement
+                                ),
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    isExpanded = !isExpanded
+                                }
                             ) {
-                                Text(
-                                    text = stringResource(
-                                        if (measurementCardState.value == MeasurementCardState.NEW)
-                                            R.string.new_measurement else R.string.edit_measurement
-                                    ),
-                                    style = MaterialTheme.typography.headlineSmall
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                            }
+                        }
+
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = bodyWeight,
+                            label = { Text(text = stringResource(R.string.body_weight) + " *") },
+                            suffix = { Text(stringResource(R.string.kg)) },
+                            isError = bodyWeight.isBlank(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            onValueChange = {
+                                bodyWeight = processFloatValue(it, 0f, 200f)
+                            }
+                        )
+                        AnimatedVisibility(visible = isExpanded) {
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = fatMass,
+                                    trailingIcon = {
+                                        IconButton(
+                                            onClick = { fatMass = "" }
+                                        ) {
+                                            Icon(
+                                                ImageVector.vectorResource(R.drawable.ic_cancel),
+                                                null
+                                            )
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            text = stringResource(R.string.fat_mass),
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    },
+                                    suffix = { Text("%") },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    onValueChange = {
+                                        fatMass = processFloatValue(it, 0f, 100f)
+                                    }
                                 )
 
-                                IconButton(
-                                    onClick = {
-                                        isExpanded = !isExpanded
-                                    }
-                                ) {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                                }
-                            }
-
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = bodyWeight,
-                                label = { Text(text = stringResource(R.string.body_weight) + " *") },
-                                suffix = { Text(stringResource(R.string.kg)) },
-                                isError = bodyWeight.isBlank(),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                onValueChange = {
-                                    bodyWeight = processFloatValue(it, 0f, 200f)
-                                }
-                            )
-                            AnimatedVisibility(visible = isExpanded) {
-                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
-                                    OutlinedTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = fatMass,
-                                        trailingIcon = {
-                                            IconButton(
-                                                onClick = { fatMass = "" }
-                                            ) {
-                                                Icon(
-                                                    ImageVector.vectorResource(R.drawable.ic_cancel),
-                                                    null
-                                                )
-                                            }
-                                        },
-                                        label = {
-                                            Text(
-                                                text = stringResource(R.string.fat_mass),
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        },
-                                        suffix = { Text("%") },
-                                        singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = {
-                                            fatMass = processFloatValue(it, 0f, 100f)
-                                        }
-                                    )
-
-                                    OutlinedTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = leanMass,
-                                        trailingIcon = {
-                                            IconButton(
-                                                onClick = { leanMass = "" }
-                                            ) {
-                                                Icon(
-                                                    ImageVector.vectorResource(R.drawable.ic_cancel),
-                                                    null
-                                                )
-                                            }
-                                        },
-                                        label = { Text(stringResource(R.string.lean_mass)) },
-                                        suffix = { Text("%") },
-                                        singleLine = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = {
-                                            leanMass = processFloatValue(it, 0f, 100f)
-                                        }
-                                    )
-                                    OutlinedTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = date.value.format(shortDate),
-                                        onValueChange = {},
-                                        label = { Text(stringResource(R.string.label_when)) },
-                                        readOnly = true,
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        trailingIcon = {
-                                            IconButton(onClick = {
-                                                showDatePickerDialog.value = true
-                                            }) {
-                                                Icon(
-                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
-                                                    contentDescription = stringResource(R.string.select_date)
-                                                )
-                                            }
-                                        }
-                                    )
-
-                                    OutlinedTextField(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        value = notes,
-                                        label = { Text(stringResource(R.string.notes)) },
-                                        onValueChange = { notes = it }
-                                    )
-                                }
-                            }
-
-                            Row {
-                                CustomButton(
-                                    modifier = Modifier.weight(1f),
-                                    text = stringResource(
-                                        if (measurementCardState.value == MeasurementCardState.NEW)
-                                            R.string.add else R.string.save
-                                    ),
-                                    icon = ImageVector.vectorResource(
-                                        if (measurementCardState.value == MeasurementCardState.NEW)
-                                            R.drawable.ic_add else R.drawable.ic_edit
-                                    ),
-                                    enabled = bodyWeight.isNotBlank()
-                                ) {
-                                    upsertMeasurement(
-                                        Measurement(
-                                            id = idMeasurement.longValue,
-                                            bodyWeight = bodyWeight.toFloat(),
-                                            bodyFatPercentage = fatMass.ifBlank { "0" }.toFloat(),
-                                            muscleMassPercentage = leanMass.ifBlank { "0" }
-                                                .toFloat(),
-                                            date = date.value,
-                                            notes = notes
-                                        )
-                                    )
-
-                                    measurementCardState.value = MeasurementCardState.NEW
-
-                                    trigger++
-                                }
-                                AnimatedVisibility(measurementCardState.value == MeasurementCardState.EDIT) {
-                                    IconButton(
-                                        modifier = Modifier.weight(1f),
-                                        onClick = {
-                                            measurementCardState.value = MeasurementCardState.NEW
-                                        }
-                                    ) {
-                                        Icon(ImageVector.vectorResource(R.drawable.ic_cancel), null)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                item { HeadlineText(stringResource(R.string.past_measurement)) }
-
-                if (measurements.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            EmptyLottie()
-                            Text(
-                                text = stringResource(R.string.nothing_to_show),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
-
-                items(measurements, key = { it.id }) {
-                    var isExpanded by rememberSaveable { mutableStateOf(false) }
-
-                    ElevatedCard(Modifier.animateItem()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Text(
-                                        text = it.date.format(fullDate)
-                                            .replaceFirstChar { it.uppercase() },
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                    Text(
-                                        text = "${it.bodyWeight} " + stringResource(R.string.kg),
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                }
-                                IconButton(
-                                    onClick = { isExpanded = !isExpanded }
-                                ) {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                                }
-                            }
-                            AnimatedVisibility(visible = isExpanded) {
-                                Column {
-                                    HorizontalDivider(Modifier.padding(top = 10.dp, bottom = 10.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Column(
-                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = leanMass,
+                                    trailingIcon = {
+                                        IconButton(
+                                            onClick = { leanMass = "" }
                                         ) {
-                                            if (it.muscleMassPercentage != 0f) {
-                                                Text(stringResource(R.string.lean_mass) + ": ${it.muscleMassPercentage} %")
-                                            }
-                                            if (it.bodyFatPercentage != 0f) {
-                                                Text(stringResource(R.string.fat_mass) + ": ${it.bodyFatPercentage} %")
-                                            }
+                                            Icon(
+                                                ImageVector.vectorResource(R.drawable.ic_cancel),
+                                                null
+                                            )
                                         }
-                                        Row {
-                                            IconButton(
-                                                onClick = {
-                                                    idMeasurement.longValue = it.id
-                                                    bodyWeight = it.bodyWeight.toString()
-                                                    leanMass = it.muscleMassPercentage
-                                                        .toString().takeIf { it != "0.0" } ?: ""
-                                                    fatMass = it.bodyFatPercentage
-                                                        .toString().takeIf { it != "0.0" } ?: ""
-                                                    notes = it.notes
-                                                    date.value = it.date
-                                                    measurementCardState.value =
-                                                        MeasurementCardState.EDIT
-                                                }
-                                            ) {
-                                                Icon(
-                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
-                                                    contentDescription = null
-                                                )
-                                            }
-                                            IconButton(
-                                                onClick = {
-                                                    showConfirmDialog.value = true
-                                                    idMeasurement.longValue = it.id
-                                                }
-                                            ) {
-                                                Icon(
-                                                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-                                                    contentDescription = null
-                                                )
-                                            }
+                                    },
+                                    label = { Text(stringResource(R.string.lean_mass)) },
+                                    suffix = { Text("%") },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    onValueChange = {
+                                        leanMass = processFloatValue(it, 0f, 100f)
+                                    }
+                                )
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = date.value.format(shortDate),
+                                    onValueChange = {},
+                                    label = { Text(stringResource(R.string.label_when)) },
+                                    readOnly = true,
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    trailingIcon = {
+                                        IconButton(onClick = {
+                                            showDatePickerDialog.value = true
+                                        }) {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
+                                                contentDescription = stringResource(R.string.select_date)
+                                            )
                                         }
                                     }
+                                )
 
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = notes,
+                                    label = { Text(stringResource(R.string.notes)) },
+                                    onValueChange = { notes = it }
+                                )
+                            }
+                        }
+
+                        Row {
+                            CustomButton(
+                                modifier = Modifier.weight(1f),
+                                text = stringResource(
+                                    if (measurementCardState.value == MeasurementCardState.NEW)
+                                        R.string.add else R.string.save
+                                ),
+                                icon = ImageVector.vectorResource(
+                                    if (measurementCardState.value == MeasurementCardState.NEW)
+                                        R.drawable.ic_add else R.drawable.ic_edit
+                                ),
+                                enabled = bodyWeight.isNotBlank()
+                            ) {
+                                upsertMeasurement(
+                                    Measurement(
+                                        id = idMeasurement.longValue,
+                                        bodyWeight = bodyWeight.toFloat(),
+                                        bodyFatPercentage = fatMass.ifBlank { "0" }.toFloat(),
+                                        muscleMassPercentage = leanMass.ifBlank { "0" }
+                                            .toFloat(),
+                                        date = date.value,
+                                        notes = notes
+                                    )
+                                )
+
+                                measurementCardState.value = MeasurementCardState.NEW
+
+                                trigger++
+                            }
+                            AnimatedVisibility(measurementCardState.value == MeasurementCardState.EDIT) {
+                                IconButton(
+                                    modifier = Modifier.weight(1f),
+                                    onClick = {
+                                        measurementCardState.value = MeasurementCardState.NEW
+                                    }
+                                ) {
+                                    Icon(ImageVector.vectorResource(R.drawable.ic_cancel), null)
                                 }
                             }
                         }
                     }
                 }
-                bottomMargin()
             }
+
+
+            item { HeadlineText(stringResource(R.string.past_measurement)) }
+
+            if (measurements.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        EmptyLottie()
+                        Text(
+                            text = stringResource(R.string.nothing_to_show),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+
+            items(measurements, key = { it.id }) {
+                var isExpanded by rememberSaveable { mutableStateOf(false) }
+
+                ElevatedCard(Modifier.animateItem()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Text(
+                                    text = it.date.format(fullDate)
+                                        .replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                                Text(
+                                    text = "${it.bodyWeight} " + stringResource(R.string.kg),
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                            }
+                            IconButton(
+                                onClick = { isExpanded = !isExpanded }
+                            ) {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+                            }
+                        }
+                        AnimatedVisibility(visible = isExpanded) {
+                            Column {
+                                HorizontalDivider(Modifier.padding(top = 10.dp, bottom = 10.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        if (it.muscleMassPercentage != 0f) {
+                                            Text(stringResource(R.string.lean_mass) + ": ${it.muscleMassPercentage} %")
+                                        }
+                                        if (it.bodyFatPercentage != 0f) {
+                                            Text(stringResource(R.string.fat_mass) + ": ${it.bodyFatPercentage} %")
+                                        }
+                                    }
+                                    Row {
+                                        IconButton(
+                                            onClick = {
+                                                idMeasurement.longValue = it.id
+                                                bodyWeight = it.bodyWeight.toString()
+                                                leanMass = it.muscleMassPercentage
+                                                    .toString().takeIf { it != "0.0" } ?: ""
+                                                fatMass = it.bodyFatPercentage
+                                                    .toString().takeIf { it != "0.0" } ?: ""
+                                                notes = it.notes
+                                                date.value = it.date
+                                                measurementCardState.value =
+                                                    MeasurementCardState.EDIT
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.ic_edit),
+                                                contentDescription = null
+                                            )
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                showConfirmDialog.value = true
+                                                idMeasurement.longValue = it.id
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            bottomMargin()
         }
     }
 }

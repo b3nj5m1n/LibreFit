@@ -22,15 +22,11 @@ package org.librefit.ui.screens.exercises
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -69,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.animations.NoResultLottie
 import org.librefit.ui.components.bottomMargin
@@ -166,174 +163,163 @@ private fun ExercisesScreenContent(
         },
         fabIcon = ImageVector.vectorResource(R.drawable.ic_keyboard_double_arrow_up),
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier.widthIn(max = 600.dp),
-                state = lazyListState
-            ) {
-                // Search bar
-                item {
-                    Row(
+        CustomLazyColumn(innerPadding) {
+            // Search bar
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    TextField(
+                        value = query,
                         modifier = Modifier
                             .fillMaxWidth()
-                    ) {
-                        TextField(
-                            value = query,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, end = 10.dp),
-                            onValueChange = viewModel::updateQuery,
-                            shape = RoundedCornerShape(40.dp),
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
-                                    contentDescription = stringResource(R.string.search_exercise_field)
-                                )
-                            },
-                            trailingIcon = {
-                                if (query.isNotEmpty()) {
-                                    IconButton(onClick = { viewModel.updateQuery("") }) {
-                                        Icon(
-                                            imageVector = ImageVector.vectorResource(R.drawable.ic_cancel),
-                                            contentDescription = stringResource(R.string.delete)
-                                        )
-                                    }
-                                }
-                            },
-                            label = { Text(text = stringResource(id = R.string.search_exercise_field)) },
-                            singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
+                            .padding(start = 10.dp, end = 10.dp),
+                        onValueChange = viewModel::updateQuery,
+                        shape = RoundedCornerShape(40.dp),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                                contentDescription = stringResource(R.string.search_exercise_field)
                             )
+                        },
+                        trailingIcon = {
+                            if (query.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.updateQuery("") }) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_cancel),
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
+                                }
+                            }
+                        },
+                        label = { Text(text = stringResource(id = R.string.search_exercise_field)) },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+
+            // Card to let the user filter the exercises list
+            item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
+
+            if (
+                !exerciseList.fastAny {
+                    viewModel.fuzzySearch(
+                        it.name,
+                        query
+                    ) > 60 && viewModel.isExerciseEligible(it)
+                }
+            ) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        NoResultLottie()
+                        Text(
+                            text = stringResource(id = R.string.no_exercise_found),
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
+            }
 
-                // Card to let the user filter the exercises list
-                item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
-
-                if (
-                    !exerciseList.fastAny {
-                        viewModel.fuzzySearch(
-                            it.name,
+            //Filtered list of exercises sorted by matching score
+            itemsIndexed(
+                items = exerciseList
+                    .fastMap { exercise ->
+                        exercise to viewModel.fuzzySearch(
+                            exercise.name,
                             query
-                        ) > 60 && viewModel.isExerciseEligible(it)
+                        )
                     }
-                ) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            NoResultLottie()
-                            Text(
-                                text = stringResource(id = R.string.no_exercise_found),
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
+                    .fastFilter { (exercise, score) ->
+                        score > 60 && viewModel.isExerciseEligible(
+                            exercise
+                        )
                     }
+                    .sortedByDescending { (_, score) -> score }
+                    .fastMap { (exercise, _) -> exercise },
+                key = { index, exercise -> exercise.id }
+            ) { index, exercise ->
+                if (index == 0) {
+                    HorizontalDivider(Modifier.animateItem())
                 }
 
-                //Filtered list of exercises sorted by matching score
-                itemsIndexed(
-                    items = exerciseList
-                        .fastMap { exercise ->
-                            exercise to viewModel.fuzzySearch(
-                                exercise.name,
-                                query
-                            )
-                        }
-                        .fastFilter { (exercise, score) ->
-                            score > 60 && viewModel.isExerciseEligible(
-                                exercise
-                            )
-                        }
-                        .sortedByDescending { (_, score) -> score }
-                        .fastMap { (exercise, _) -> exercise },
-                    key = { index, exercise -> exercise.id }
-                ) { index, exercise ->
-                    if (index == 0) {
-                        HorizontalDivider(Modifier.animateItem())
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItem()
-                            .height(100.dp)
-                            .clickable(
-                                enabled = addExercises
-                            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem()
+                        .height(100.dp)
+                        .clickable(
+                            enabled = addExercises
+                        ) {
+                            if (selectedExercisesList.contains(exercise)) {
+                                selectedExercisesList.remove(exercise)
+                            } else {
+                                selectedExercisesList.add(exercise)
+                            }
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (addExercises) {
+                        Checkbox(
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                            checked = selectedExercisesList.contains(exercise),
+                            onCheckedChange = {
                                 if (selectedExercisesList.contains(exercise)) {
                                     selectedExercisesList.remove(exercise)
                                 } else {
                                     selectedExercisesList.add(exercise)
                                 }
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
+                            }
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = if (addExercises) 0.dp else 20.dp),
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        if (addExercises) {
-                            Checkbox(
-                                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                                checked = selectedExercisesList.contains(exercise),
-                                onCheckedChange = {
-                                    if (selectedExercisesList.contains(exercise)) {
-                                        selectedExercisesList.remove(exercise)
-                                    } else {
-                                        selectedExercisesList.add(exercise)
-                                    }
-                                }
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = if (addExercises) 0.dp else 20.dp),
-                            verticalArrangement = Arrangement.Center
-                        ) {
+                        Text(
+                            text = exercise.name,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = stringResource(exerciseEnumToStringId(exercise.category)),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        if (exercise.equipment != null) {
                             Text(
-                                text = exercise.name,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                text = stringResource(exerciseEnumToStringId(exercise.category)),
+                                text = stringResource(exerciseEnumToStringId(exercise.equipment)),
                                 style = MaterialTheme.typography.bodyMedium
-                            )
-                            if (exercise.equipment != null) {
-                                Text(
-                                    text = stringResource(exerciseEnumToStringId(exercise.equipment)),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                        IconButton(
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                            onClick = {
-                                selectedExercise = exercise
-                                isModalSheetOpen = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_info),
-                                contentDescription = stringResource(R.string.details)
                             )
                         }
                     }
-                    HorizontalDivider(Modifier.animateItem())
-
+                    IconButton(
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                        onClick = {
+                            selectedExercise = exercise
+                            isModalSheetOpen = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_info),
+                            contentDescription = stringResource(R.string.details)
+                        )
+                    }
                 }
-                bottomMargin()
+                HorizontalDivider(Modifier.animateItem())
+
             }
+            bottomMargin()
         }
     }
 

@@ -22,16 +22,12 @@ package org.librefit.ui.screens.requestPermission
 import android.Manifest
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +52,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.librefit.R
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.animations.PreferencesLottie
 import org.librefit.ui.theme.LibreFitTheme
@@ -102,135 +99,122 @@ private fun RequestPermissionsScreenContent(
     CustomScaffold(
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(40.dp)
-            ) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        PreferencesLottie()
-                        Text(
-                            text = stringResource(R.string.before_starting_the_workout),
-                            style = MaterialTheme.typography.displaySmall,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                item {
+        CustomLazyColumn(innerPadding, 40.dp) {
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    PreferencesLottie()
                     Text(
-                        text = stringResource(R.string.best_experience_permissions),
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = stringResource(R.string.before_starting_the_workout),
+                        style = MaterialTheme.typography.displaySmall,
                         textAlign = TextAlign.Center
                     )
                 }
+            }
 
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+            item {
+                Text(
+                    text = stringResource(R.string.best_experience_permissions),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(0.9f)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(0.9f)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.notifications_permission),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = stringResource(R.string.notifications_permission_desc),
-                                style = MaterialTheme.typography.bodyMedium
+                        Text(
+                            text = stringResource(R.string.notifications_permission),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stringResource(R.string.notifications_permission_desc),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Checkbox(
+                        modifier = Modifier
+                            .weight(0.1f)
+                            .padding(start = 10.dp),
+                        checked = notificationPermissionState?.status?.isGranted != false,
+                        onCheckedChange = {
+                            notificationPermissionState?.launchPermissionRequest()
+                        }
+                    )
+                }
+            }
+
+
+            item {
+                Text(
+                    text = stringResource(R.string.app_works_without_permission),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        enabled = notificationPermissionState?.status?.isGranted == false,
+                        checked = !requestPermissionAgain,
+                        onCheckedChange = {
+                            saveRequestPermissionAgainPreference(!it)
+                        }
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        text = stringResource(R.string.dont_ask_again),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(
+                        onClick = {
+                            saveRequestPermissionAgainPreference(true)
+                            checkPermissionsBeforeNavigateToWorkout(
+                                navController = navController,
+                                appContext = context.applicationContext
                             )
                         }
-                        Checkbox(
-                            modifier = Modifier
-                                .weight(0.1f)
-                                .padding(start = 10.dp),
-                            checked = notificationPermissionState?.status?.isGranted != false,
-                            onCheckedChange = {
-                                notificationPermissionState?.launchPermissionRequest()
-                            }
-                        )
-                    }
-                }
-
-
-                item {
-                    Text(
-                        text = stringResource(R.string.app_works_without_permission),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(
-                            enabled = notificationPermissionState?.status?.isGranted == false,
-                            checked = !requestPermissionAgain,
-                            onCheckedChange = {
-                                saveRequestPermissionAgainPreference(!it)
-                            }
-                        )
-                        Spacer(Modifier.width(10.dp))
                         Text(
-                            text = stringResource(R.string.dont_ask_again),
+                            text = stringResource(R.string.skip_for_now),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    TextButton(
+                        enabled = notificationPermissionState?.status?.isGranted != false
+                                || !requestPermissionAgain,
+                        colors = ButtonDefaults.buttonColors(),
+                        onClick = {
+                            checkPermissionsBeforeNavigateToWorkout(
+                                navController = navController,
+                                appContext = context.applicationContext
+                            )
+                        }
                     ) {
-                        TextButton(
-                            onClick = {
-                                saveRequestPermissionAgainPreference(true)
-                                checkPermissionsBeforeNavigateToWorkout(
-                                    navController = navController,
-                                    appContext = context.applicationContext
-                                )
-                            }
-                        ) {
-                            Text(
-                                text = stringResource(R.string.skip_for_now),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        TextButton(
-                            enabled = notificationPermissionState?.status?.isGranted != false
-                                    || !requestPermissionAgain,
-                            colors = ButtonDefaults.buttonColors(),
-                            onClick = {
-                                checkPermissionsBeforeNavigateToWorkout(
-                                    navController = navController,
-                                    appContext = context.applicationContext
-                                )
-                            }
-                        ) {
-                            Text(
-                                text = stringResource(R.string.label_continue),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                        Text(
+                            text = stringResource(R.string.label_continue),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
             }

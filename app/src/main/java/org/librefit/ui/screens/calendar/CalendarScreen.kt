@@ -20,14 +20,10 @@
 package org.librefit.ui.screens.calendar
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
@@ -56,6 +52,7 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.animations.EmptyLottie
@@ -100,99 +97,86 @@ private fun CalendarScreenContent(
         title = AnnotatedString(stringResource(R.string.calendar)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+        CustomLazyColumn(innerPadding) {
+            item {
+                DatePicker(
+                    modifier = Modifier.clip(MaterialTheme.shapes.large),
+                    state = datePickerState,
+                    showModeToggle = false,
+                )
+            }
+
+            item { HeadlineText(stringResource(R.string.your_workouts)) }
+
+            if (getWorkoutsFromDate(datePickerState.selectedDateMillis).isEmpty()) {
                 item {
-                    DatePicker(
-                        modifier = Modifier.clip(MaterialTheme.shapes.large),
-                        state = datePickerState,
-                        showModeToggle = false,
-                    )
-                }
-
-                item { HeadlineText(stringResource(R.string.your_workouts)) }
-
-                if (getWorkoutsFromDate(datePickerState.selectedDateMillis).isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            EmptyLottie()
-                            Text(
-                                text = stringResource(R.string.nothing_to_show),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        EmptyLottie()
+                        Text(
+                            text = stringResource(R.string.nothing_to_show),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
+            }
 
-                items(getWorkoutsFromDate(datePickerState.selectedDateMillis)) { workout ->
-                    ElevatedCard {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp)
+            items(getWorkoutsFromDate(datePickerState.selectedDateMillis)) { workout ->
+                ElevatedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(15.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = workout.title,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.duration) + ": "
-                                                + formatTime(workout.timeElapsed),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = workout.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    text = stringResource(R.string.duration) + ": "
+                                            + formatTime(workout.timeElapsed),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
 
-                                    Text(
-                                        text = stringResource(R.string.label_when) + ": "
-                                                + getTimeFromLocalDateTime(workout.completed),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        updateWorkoutId(workout.id)
-                                        navController.navigate(Route.InfoWorkoutScreen)
-                                    },
-                                ) {
-                                    Icon(
-                                        ImageVector.vectorResource(R.drawable.ic_info),
-                                        stringResource(R.string.about)
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.label_when) + ": "
+                                            + getTimeFromLocalDateTime(workout.completed),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    updateWorkoutId(workout.id)
+                                    navController.navigate(Route.InfoWorkoutScreen)
+                                },
+                            ) {
+                                Icon(
+                                    ImageVector.vectorResource(R.drawable.ic_info),
+                                    stringResource(R.string.about)
+                                )
                             }
                         }
                     }
                 }
-
-                bottomMargin()
             }
+
+            bottomMargin()
         }
     }
 }

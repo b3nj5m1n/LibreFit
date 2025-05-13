@@ -20,15 +20,11 @@
 package org.librefit.ui.screens.infoWorkout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
@@ -64,6 +60,7 @@ import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCardSmall
 import org.librefit.ui.components.HeadlineText
@@ -188,185 +185,172 @@ private fun InfoWorkoutScreenContent(
         ),
         actionsElevated = listOf(false, false)
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                item {
-                    OutlinedCard {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(20.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            if (workout.notes.isNotBlank()) {
-                                Text(
-                                    formatDetails(
-                                        stringResource(R.string.notes),
-                                        workout.notes
-                                    )
-                                )
-                            }
-
-                            if (!workout.routine) {
-                                Text(
-                                    formatDetails(
-                                        stringResource(R.string.duration),
-                                        formatTime(workout.timeElapsed)
-                                    )
-                                )
-                            }
-
+        CustomLazyColumn(innerPadding) {
+            item {
+                OutlinedCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        if (workout.notes.isNotBlank()) {
                             Text(
                                 formatDetails(
-                                    if (workout.routine) stringResource(R.string.creation_date)
-                                    else stringResource(R.string.label_when),
-                                    workoutDate
-                                )
-                            )
-                            Text(
-                                formatDetails(
-                                    stringResource(R.string.exercises),
-                                    exercises.size.toString()
-                                )
-                            )
-                            Text(
-                                formatDetails(
-                                    stringResource(R.string.total_sets),
-                                    exercises.sumOf { it.sets.size }.toString()
-                                )
-                            )
-                            if (!workout.routine) {
-                                Text(
-                                    formatDetails(
-                                        stringResource(R.string.completed_sets),
-                                        exercises.sumOf {
-                                            it.sets.filter { it.completed == true }.size
-                                        }.toString()
-                                    )
-                                )
-                            }
-                            Text(
-                                formatDetails(
-                                    stringResource(R.string.volume),
-                                    volumeExercises + " " + stringResource(R.string.kg)
+                                    stringResource(R.string.notes),
+                                    workout.notes
                                 )
                             )
                         }
-                    }
-                }
 
-                if (workout.routine) {
-                    item { HeadlineText(stringResource(R.string.past_workouts)) }
-
-                    item {
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            items(WorkoutChart.entries) {
-                                FilterChip(
-                                    selected = workoutChart == it && listChartData.isNotEmpty(),
-                                    onClick = { updateChartMode(it) },
-                                    label = {
-                                        Text(
-                                            stringResource(
-                                                id = when (it) {
-                                                    WorkoutChart.DURATION -> R.string.duration
-                                                    WorkoutChart.VOLUME -> R.string.volume
-                                                    WorkoutChart.REPS -> R.string.reps
-                                                }
-                                            )
-                                        )
-                                    },
-                                    leadingIcon = {
-                                        if (workoutChart == it && listChartData.isNotEmpty()) {
-                                            Icon(
-                                                modifier = Modifier.size(FilterChipDefaults.IconSize),
-                                                imageVector = ImageVector.vectorResource(R.drawable.ic_check),
-                                                contentDescription = null
-                                            )
-                                        }
-                                    },
-                                    enabled = listChartData.isNotEmpty()
+                        if (!workout.routine) {
+                            Text(
+                                formatDetails(
+                                    stringResource(R.string.duration),
+                                    formatTime(workout.timeElapsed)
                                 )
-                            }
+                            )
                         }
-                    }
-                    item {
-                        CustomCartesianChart(
-                            format = when (workoutChart) {
-                                WorkoutChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
-                                WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
-                                WorkoutChart.REPS -> DecimalFormat()
-                            },
-                            listChartData = listChartData
+
+                        Text(
+                            formatDetails(
+                                if (workout.routine) stringResource(R.string.creation_date)
+                                else stringResource(R.string.label_when),
+                                workoutDate
+                            )
+                        )
+                        Text(
+                            formatDetails(
+                                stringResource(R.string.exercises),
+                                exercises.size.toString()
+                            )
+                        )
+                        Text(
+                            formatDetails(
+                                stringResource(R.string.total_sets),
+                                exercises.sumOf { it.sets.size }.toString()
+                            )
+                        )
+                        if (!workout.routine) {
+                            Text(
+                                formatDetails(
+                                    stringResource(R.string.completed_sets),
+                                    exercises.sumOf {
+                                        it.sets.filter { it.completed == true }.size
+                                    }.toString()
+                                )
+                            )
+                        }
+                        Text(
+                            formatDetails(
+                                stringResource(R.string.volume),
+                                volumeExercises + " " + stringResource(R.string.kg)
+                            )
                         )
                     }
                 }
+            }
 
+            if (workout.routine) {
+                item { HeadlineText(stringResource(R.string.past_workouts)) }
 
-                if (routine.title != "" && !workout.routine) {
-                    item {
-                        HeadlineText(stringResource(R.string.routine))
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(WorkoutChart.entries) {
+                            FilterChip(
+                                selected = workoutChart == it && listChartData.isNotEmpty(),
+                                onClick = { updateChartMode(it) },
+                                label = {
+                                    Text(
+                                        stringResource(
+                                            id = when (it) {
+                                                WorkoutChart.DURATION -> R.string.duration
+                                                WorkoutChart.VOLUME -> R.string.volume
+                                                WorkoutChart.REPS -> R.string.reps
+                                            }
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    if (workoutChart == it && listChartData.isNotEmpty()) {
+                                        Icon(
+                                            modifier = Modifier.size(FilterChipDefaults.IconSize),
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                enabled = listChartData.isNotEmpty()
+                            )
+                        }
                     }
+                }
+                item {
+                    CustomCartesianChart(
+                        format = when (workoutChart) {
+                            WorkoutChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                            WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                            WorkoutChart.REPS -> DecimalFormat()
+                        },
+                        listChartData = listChartData
+                    )
+                }
+            }
 
-                    item {
-                        ElevatedCard {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically
+
+            if (routine.title != "" && !workout.routine) {
+                item {
+                    HeadlineText(stringResource(R.string.routine))
+                }
+
+                item {
+                    ElevatedCard {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.title) + " : " + routine.title,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        stringResource(R.string.creation_date) + " : " +
-                                                routine.created.format(
-                                                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                                                        .withLocale(
-                                                            Locale.getDefault()
-                                                        )
-                                                )
-                                    )
-                                }
-                                IconButton(
-                                    onClick = { showUnlikeRoutineDialog = true }
-                                ) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-                                        contentDescription = stringResource(R.string.delete)
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.title) + " : " + routine.title,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    stringResource(R.string.creation_date) + " : " +
+                                            routine.created.format(
+                                                DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                                                    .withLocale(
+                                                        Locale.getDefault()
+                                                    )
+                                            )
+                                )
+                            }
+                            IconButton(
+                                onClick = { showUnlikeRoutineDialog = true }
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+                                    contentDescription = stringResource(R.string.delete)
+                                )
                             }
                         }
                     }
                 }
-
-
-                item { HeadlineText(stringResource(R.string.exercises)) }
-                items(exercises) { exercise ->
-                    ExerciseCardSmall(exercise, workout.routine) {
-                        selectedExercise = exercise.exerciseDC
-                        isModalSheetOpen = true
-                    }
-                }
-                bottomMargin()
             }
+
+
+            item { HeadlineText(stringResource(R.string.exercises)) }
+            items(exercises) { exercise ->
+                ExerciseCardSmall(exercise, workout.routine) {
+                    selectedExercise = exercise.exerciseDC
+                    isModalSheetOpen = true
+                }
+            }
+            bottomMargin()
         }
     }
     // Opened by info icon next to exercise name, it shows the details of an exercise

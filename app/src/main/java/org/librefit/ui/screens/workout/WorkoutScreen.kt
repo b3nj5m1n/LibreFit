@@ -36,8 +36,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -77,6 +75,7 @@ import org.librefit.db.entity.Exercise
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.InfoMode
 import org.librefit.nav.Route
+import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.animations.DumbbellLottie
@@ -209,83 +208,69 @@ fun WorkoutScreen(
             }
         }
     ) { innerPadding ->
-        // Centers the LazyColumn on the screen and restricts its maximum width to 600.dp.
-        // This prevents the content from stretching too wide on larger (landscape) screens
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            LazyColumn(
-                contentPadding = innerPadding,
-                modifier = Modifier
-                    .padding(start = 15.dp, end = 15.dp)
-                    .widthIn(max = 600.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (viewModel.isListEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            DumbbellLottie()
-                            Text(
-                                text = stringResource(id = R.string.add_to_empty_workout),
-                                color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                } else {
-                    itemsIndexed(
-                        items = viewModel.exercisesWithSets,
-                        key = { i, exercise -> exercise.exercise.id }
-                    ) { i, exerciseWithSets ->
-                        ExerciseCard(
-                            modifier = Modifier.animateItem(),
-                            exerciseWithSets = exerciseWithSets,
-                            addSet = {
-                                viewModel.addSetToExercise(i)
-                            },
-                            onDetail = {
-                                selectedExercise = exerciseWithSets.exerciseDC
-                                isExerciseDetailsOpen = true
-                            },
-                            onDelete = {
-                                viewModel.deleteExercise(i)
-                            },
-                            updateSet = { set, value, mode ->
-                                viewModel.updateSet(
-                                    index = i,
-                                    set = set,
-                                    value = value,
-                                    mode = mode
-                                )
-                            },
-                            deleteSet = { set ->
-                                viewModel.deleteSet(
-                                    index = i,
-                                    set = set
-                                )
-                            },
-                            updateExercise = { value, mode ->
-                                viewModel.updateExercise(
-                                    index = i,
-                                    value = value,
-                                    mode = mode
-                                )
-                            },
-                            showInfo = { infoMode = it },
-                            setChronometerIsRunning = viewModel.setChronometerIsRunning,
-                            setWithRunningChronometer = viewModel.setWithRunningChronometer,
-                            workout = true
+        CustomLazyColumn(innerPadding) {
+            if (viewModel.isListEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        DumbbellLottie()
+                        Text(
+                            text = stringResource(id = R.string.add_to_empty_workout),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
-
-                bottomMargin()
+            } else {
+                itemsIndexed(
+                    items = viewModel.exercisesWithSets,
+                    key = { i, exercise -> exercise.exercise.id }
+                ) { i, exerciseWithSets ->
+                    ExerciseCard(
+                        modifier = Modifier.animateItem(),
+                        exerciseWithSets = exerciseWithSets,
+                        addSet = {
+                            viewModel.addSetToExercise(i)
+                        },
+                        onDetail = {
+                            selectedExercise = exerciseWithSets.exerciseDC
+                            isExerciseDetailsOpen = true
+                        },
+                        onDelete = {
+                            viewModel.deleteExercise(i)
+                        },
+                        updateSet = { set, value, mode ->
+                            viewModel.updateSet(
+                                index = i,
+                                set = set,
+                                value = value,
+                                mode = mode
+                            )
+                        },
+                        deleteSet = { set ->
+                            viewModel.deleteSet(
+                                index = i,
+                                set = set
+                            )
+                        },
+                        updateExercise = { value, mode ->
+                            viewModel.updateExercise(
+                                index = i,
+                                value = value,
+                                mode = mode
+                            )
+                        },
+                        showInfo = { infoMode = it },
+                        setChronometerIsRunning = viewModel.setChronometerIsRunning,
+                        setWithRunningChronometer = viewModel.setWithRunningChronometer,
+                        workout = true
+                    )
+                }
             }
+
+            bottomMargin()
         }
     }
 
