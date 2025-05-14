@@ -169,7 +169,7 @@ private fun SettingsScreenContent(
         title = AnnotatedString(stringResource(id = R.string.settings)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        CustomLazyColumn(innerPadding, 20.dp, 0.dp) {
             val iconPaddingModifier = Modifier.padding(start = 20.dp, end = 20.dp)
 
             item { HeadlineText(text = stringResource(id = R.string.appearance)) }
