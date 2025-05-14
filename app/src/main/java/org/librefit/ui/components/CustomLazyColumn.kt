@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +49,7 @@ import androidx.compose.ui.unit.dp
  * @param innerPadding Padding values to be applied around the content. It usually comes from [CustomScaffold]
  * @param verticalSpacing The spacing applied between the items in [LazyColumn]
  * @param startEndPadding The padding applied in the start and in the end of [LazyColumn]
+ * @param lazyListState A [LazyListState] to manage the list scroll
  * @param content A lambda with receiver of type [LazyListScope] used to populate the lazy list.
  */
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -55,6 +58,7 @@ fun CustomLazyColumn(
     innerPadding: PaddingValues = PaddingValues(),
     verticalSpacing: Dp = 10.dp,
     startEndPadding: Dp = 15.dp,
+    lazyListState: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit
 ) {
     BoxWithConstraints(
@@ -73,7 +77,8 @@ fun CustomLazyColumn(
                 bottom = innerPadding.calculateBottomPadding()
             ),
             verticalArrangement = Arrangement.spacedBy(verticalSpacing),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = lazyListState
         ) {
             content()
         }
