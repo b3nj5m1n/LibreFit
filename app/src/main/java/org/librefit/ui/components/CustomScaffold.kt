@@ -19,6 +19,12 @@
 
 package org.librefit.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,9 +64,10 @@ import org.librefit.R
  * It should not be passed along with a description from [actionsDescription].
  * @param actionsElevated A list of booleans that controls the color elevation of the relative action button.
  * The default value is `true`.
- * @param fabAction A callback function executed when the [FloatingActionButton] is clicked.
+ * @param fabAction A callback function executed when the [FloatingActionButton] is clicked. It
+ * must be passed in order to show the FAB.
  * @param fabIcon An [ImageVector] representing the icon displayed in the [FloatingActionButton]. It
- * must be passed in order to show the FAB
+ * must be passed in order to show the FAB.
  * @param fabDescription An optional string that provides a description of the [fabIcon] and [fabAction]
  * for accessibility purposes. Read mode at [Icon] and [FloatingActionButton]
  * @param bottomBar The bottom bar of the scaffold. By default there's no bottom bar.
@@ -76,7 +83,7 @@ fun CustomScaffold(
     actionsDescription: List<String?> = listOf(),
     actionsIcons: List<ImageVector> = listOf(),
     actionsElevated: List<Boolean> = listOf(),
-    fabAction: () -> Unit = {},
+    fabAction: (() -> Unit)? = null,
     fabIcon: ImageVector? = null,
     fabDescription: String? = null,
     bottomBar: @Composable (() -> Unit)? = null,
@@ -157,13 +164,19 @@ fun CustomScaffold(
         },
         floatingActionButton = {
             if (fabIcon != null) {
-                FloatingActionButton(
-                    onClick = fabAction
+                AnimatedVisibility(
+                    visible = fabAction != null,
+                    enter = fadeIn(tween(300)) + slideInVertically(initialOffsetY = { it }),
+                    exit = fadeOut(tween(300)) + slideOutVertically(targetOffsetY = { it })
                 ) {
-                    Icon(
-                        imageVector = fabIcon,
-                        contentDescription = fabDescription
-                    )
+                    FloatingActionButton(
+                        onClick = { fabAction?.invoke() }
+                    ) {
+                        Icon(
+                            imageVector = fabIcon,
+                            contentDescription = fabDescription
+                        )
+                    }
                 }
             }
         },
