@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -478,7 +479,9 @@ private fun MeasurementScreenContent(
                                 )
                                 Text(
                                     text = "${it.bodyWeight} " + stringResource(R.string.kg),
-                                    style = MaterialTheme.typography.displaySmall
+                                    style = MaterialTheme.typography.displaySmall,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                             Row {
