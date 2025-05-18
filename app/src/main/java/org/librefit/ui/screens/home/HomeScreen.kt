@@ -60,8 +60,8 @@ import org.librefit.R
 import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
-import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
@@ -104,7 +104,7 @@ private fun HomeScreenContent(
     LibreFitLazyColumn(innerPadding) {
         item {
             //"Start empty workout" button
-            CustomButton(
+            LibreFitButton(
                 text = stringResource(id = R.string.start_empty_workout),
                 icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
                 onClick = {
@@ -181,7 +181,7 @@ private fun HomeScreenContent(
                             )
                         }
                     }
-                    CustomButton(
+                    LibreFitButton(
                         text = stringResource(R.string.start_routine),
                         icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
                         elevated = false

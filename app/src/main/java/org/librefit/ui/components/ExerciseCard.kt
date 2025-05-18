@@ -367,7 +367,7 @@ fun ExerciseCard(
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
 
             //Add set button
-            CustomButton(
+            LibreFitButton(
                 text = stringResource(id = R.string.add_set),
                 icon = ImageVector.vectorResource(R.drawable.ic_add_circle),
                 onClick = addSet,

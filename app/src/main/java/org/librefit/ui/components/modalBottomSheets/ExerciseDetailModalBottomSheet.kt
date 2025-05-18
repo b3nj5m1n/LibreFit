@@ -65,8 +65,8 @@ import org.librefit.enums.exercise.Force
 import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
-import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.theme.LibreFitTheme
@@ -297,7 +297,7 @@ private fun ExerciseDetailModalBottomSheetPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    CustomButton(
+                    LibreFitButton(
                         text = "Open modal bottom sheet",
                         icon = ImageVector.vectorResource(R.drawable.ic_add)
                     ) {

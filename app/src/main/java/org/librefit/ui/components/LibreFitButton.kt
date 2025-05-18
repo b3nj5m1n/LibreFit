@@ -43,7 +43,7 @@ import org.librefit.R
 import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
-fun CustomButton(
+fun LibreFitButton(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
@@ -85,9 +85,9 @@ fun CustomButton(
 
 @Preview
 @Composable
-fun CustomTextButtonPreview() {
+fun LibreFitButtonPreview() {
     LibreFitTheme(false, true) {
-        CustomButton(
+        LibreFitButton(
             text = stringResource(R.string.start_routine),
             icon = ImageVector.vectorResource(R.drawable.ic_play_arrow)
         ) { }

@@ -68,8 +68,8 @@ import org.librefit.db.entity.Workout
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
@@ -162,7 +162,7 @@ private fun ProfileScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                CustomButton(
+                LibreFitButton(
                     text = stringResource(R.string.statistics),
                     icon = ImageVector.vectorResource(R.drawable.ic_chart),
                     modifier = Modifier.weight(0.5f),
@@ -170,7 +170,7 @@ private fun ProfileScreenContent(
                 ) {
                     //TODO: statistics view
                 }
-                CustomButton(
+                LibreFitButton(
                     text = stringResource(R.string.explore_exercises),
                     icon = ImageVector.vectorResource(R.drawable.ic_search),
                     modifier = Modifier.weight(0.5f),
@@ -186,7 +186,7 @@ private fun ProfileScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                CustomButton(
+                LibreFitButton(
                     text = stringResource(R.string.measurements),
                     icon = ImageVector.vectorResource(R.drawable.ic_monitor),
                     modifier = Modifier.weight(0.5f),
@@ -194,7 +194,7 @@ private fun ProfileScreenContent(
                 ) {
                     navController.navigate(Route.MeasurementScreen)
                 }
-                CustomButton(
+                LibreFitButton(
                     text = stringResource(R.string.calendar),
                     icon = ImageVector.vectorResource(R.drawable.ic_date_range),
                     modifier = Modifier.weight(0.5f),
