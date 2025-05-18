@@ -71,8 +71,8 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.theme.LibreFitTheme
@@ -169,7 +169,7 @@ private fun SettingsScreenContent(
         title = AnnotatedString(stringResource(id = R.string.settings)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding, 20.dp, 0.dp) {
+        LibreFitLazyColumn(innerPadding, 20.dp, 0.dp) {
             val iconPaddingModifier = Modifier.padding(start = 20.dp, end = 20.dp)
 
             item { HeadlineText(text = stringResource(id = R.string.appearance)) }

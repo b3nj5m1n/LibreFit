@@ -60,9 +60,9 @@ import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.ExerciseCardSmall
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.CustomCartesianChart
@@ -185,7 +185,7 @@ private fun InfoWorkoutScreenContent(
         ),
         actionsElevated = listOf(false, false)
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 OutlinedCard {
                     Column(

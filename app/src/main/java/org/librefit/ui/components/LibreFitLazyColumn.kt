@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
  */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CustomLazyColumn(
+fun LibreFitLazyColumn(
     innerPadding: PaddingValues = PaddingValues(),
     verticalSpacing: Dp = 10.dp,
     startEndPadding: Dp = 15.dp,

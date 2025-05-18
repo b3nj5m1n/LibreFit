@@ -75,8 +75,8 @@ import org.librefit.db.entity.Measurement
 import org.librefit.enums.MeasurementCardState
 import org.librefit.enums.chart.MeasurementChart
 import org.librefit.ui.components.CustomButton
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
@@ -225,7 +225,7 @@ private fun MeasurementScreenContent(
         title = AnnotatedString(stringResource(R.string.measurements)),
         navigateBack = navigateBack
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(MeasurementChart.entries) { mode ->

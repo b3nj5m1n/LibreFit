@@ -60,8 +60,8 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
@@ -183,7 +183,7 @@ fun BeforeSavingScreenContent(
         actionsDescription = listOf(stringResource(R.string.save)),
         actionsEnabled = listOf(!isTitleEmpty && !isTitleTooLong)
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 OutlinedTextField(
                     value = workoutTitle,

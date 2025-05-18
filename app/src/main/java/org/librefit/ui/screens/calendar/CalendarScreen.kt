@@ -52,8 +52,8 @@ import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
@@ -97,7 +97,7 @@ private fun CalendarScreenContent(
         title = AnnotatedString(stringResource(R.string.calendar)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 DatePicker(
                     modifier = Modifier.clip(MaterialTheme.shapes.large),

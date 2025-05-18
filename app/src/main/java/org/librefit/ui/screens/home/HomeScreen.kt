@@ -61,8 +61,8 @@ import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomButton
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.screens.shared.SharedViewModel
@@ -101,7 +101,7 @@ private fun HomeScreenContent(
 ) {
     val context = LocalContext.current
 
-    CustomLazyColumn(innerPadding) {
+    LibreFitLazyColumn(innerPadding) {
         item {
             //"Start empty workout" button
             CustomButton(

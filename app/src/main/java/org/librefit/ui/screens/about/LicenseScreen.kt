@@ -32,7 +32,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import org.librefit.R
 import org.librefit.ui.components.CustomButton
-import org.librefit.ui.components.CustomLazyColumn
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.MarkdownText
 import org.librefit.ui.components.bottomMargin
@@ -61,7 +61,7 @@ fun LicenseScreen(navigateBack: () -> Unit) {
         navigateBack = navigateBack,
     ) { innerPadding ->
         // This box is used to constrain width in landscape mode
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 CustomButton(
                     text = stringResource(R.string.view_online_version),

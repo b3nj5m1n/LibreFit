@@ -52,8 +52,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.UrlActionDialog
@@ -73,7 +73,7 @@ fun AboutScreen(navController: NavHostController) {
         title = AnnotatedString(stringResource(id = R.string.about)),
         navigateBack = { navController.popBackStack() },
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 val logoSize = 170.dp
                 Image(

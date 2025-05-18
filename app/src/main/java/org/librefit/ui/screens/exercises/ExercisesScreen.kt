@@ -65,7 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
-import org.librefit.ui.components.CustomLazyColumn
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.NoResultLottie
 import org.librefit.ui.components.bottomMargin
@@ -169,7 +169,7 @@ private fun ExercisesScreenContent(
         fabAction = if (isAtTop) null else scrollToTop,
         fabIcon = ImageVector.vectorResource(R.drawable.ic_keyboard_double_arrow_up),
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding, 0.dp, 0.dp, lazyListState) {
+        LibreFitLazyColumn(innerPadding, 0.dp, 0.dp, lazyListState) {
             // Search bar
             item {
                 Row(

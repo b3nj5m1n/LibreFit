@@ -69,8 +69,8 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomButton
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.animations.StreakLottie
@@ -121,7 +121,7 @@ private fun ProfileScreenContent(
     updateWorkoutId: (Long) -> Unit
 ) {
 
-    CustomLazyColumn(innerPadding) {
+    LibreFitLazyColumn(innerPadding) {
         item {
             var clicks = rememberSaveable { mutableIntStateOf(0) }
 

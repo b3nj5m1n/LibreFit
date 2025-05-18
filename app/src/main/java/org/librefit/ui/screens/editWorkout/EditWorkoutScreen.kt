@@ -56,8 +56,8 @@ import org.librefit.enums.InfoMode
 import org.librefit.enums.SetMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomLazyColumn
 import org.librefit.ui.components.ExerciseCard
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.DumbbellLottie
 import org.librefit.ui.components.bottomMargin
@@ -205,7 +205,7 @@ private fun EditWorkoutScreenContent(
         },
         fabDescription = stringResource(R.string.add_exercise)
     ) { innerPadding ->
-        CustomLazyColumn(innerPadding) {
+        LibreFitLazyColumn(innerPadding) {
             item {
                 OutlinedTextField(
                     value = workout.title,
