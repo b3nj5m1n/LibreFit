@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
  *
  * The lambda [content] supplies the content of the list using the [LazyListScope].
  *
- * @param innerPadding Padding values to be applied around the content. It usually comes from [CustomScaffold]
+ * @param innerPadding Padding values to be applied around the content. It usually comes from [LibreFitScaffold]
  * @param verticalSpacing The spacing applied between the items in [LazyColumn]
  * @param startEndPadding The padding applied in the start and in the end of [LazyColumn]
  * @param lazyListState A [LazyListState] to manage the list scroll

@@ -76,8 +76,8 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.InfoMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.DumbbellLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
@@ -174,7 +174,7 @@ fun WorkoutScreen(
         }
     }
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.workout)),
         navigateBack = {
             if (viewModel.isListEmpty()) {

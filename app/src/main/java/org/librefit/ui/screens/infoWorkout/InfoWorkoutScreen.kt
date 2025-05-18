@@ -61,9 +61,9 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCardSmall
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.CustomCartesianChart
 import org.librefit.ui.components.dialogs.ConfirmDialog
@@ -168,7 +168,7 @@ private fun InfoWorkoutScreenContent(
 
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(workout.title),
         navigateBack = { navController.popBackStack() },
         actions = listOf(

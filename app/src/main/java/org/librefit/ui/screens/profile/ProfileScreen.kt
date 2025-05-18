@@ -70,8 +70,8 @@ import org.librefit.enums.chart.WorkoutChart
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.animations.StreakLottie
 import org.librefit.ui.components.bottomMargin
@@ -330,7 +330,7 @@ private fun ProfileScreenContent(
 @Composable
 private fun ProfileScreenPreview() {
     LibreFitTheme(false, true) {
-        CustomScaffold(
+        LibreFitScaffold(
             title = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                     append(stringResource(id = R.string.app_name).removeRange(5, 8))

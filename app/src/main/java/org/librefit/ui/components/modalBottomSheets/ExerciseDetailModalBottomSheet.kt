@@ -66,8 +66,8 @@ import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
 import org.librefit.ui.components.CustomButton
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
@@ -290,7 +290,7 @@ private fun ExerciseDetailModalBottomSheetPreview() {
                 )
             ) { openModalBottomSheet = false }
         }
-        CustomScaffold {
+        LibreFitScaffold {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,

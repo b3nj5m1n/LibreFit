@@ -96,7 +96,7 @@ fun HeadlineText(
 @Composable
 private fun HeadlineTextPreview() {
     LibreFitTheme(false, true) {
-        CustomScaffold(title = AnnotatedString("HeadlineText showcase")) {
+        LibreFitScaffold(title = AnnotatedString("HeadlineText showcase")) {
             LazyColumn(
                 contentPadding = it,
                 verticalArrangement = Arrangement.spacedBy(10.dp)

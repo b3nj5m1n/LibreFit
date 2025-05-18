@@ -57,8 +57,8 @@ import org.librefit.enums.SetMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.ExerciseCard
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.DumbbellLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
@@ -168,7 +168,7 @@ private fun EditWorkoutScreenContent(
 
     InfoModalBottomSheet(infoMode) { infoMode = InfoMode.DISMISS }
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(
             when (typeOfEdit) {
                 null -> stringResource(R.string.create_routine)

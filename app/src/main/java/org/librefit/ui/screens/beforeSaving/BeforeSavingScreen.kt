@@ -61,8 +61,8 @@ import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.screens.shared.SharedViewModel
@@ -171,7 +171,7 @@ fun BeforeSavingScreenContent(
     saveExercisesWithWorkout: () -> Unit,
     setTimeElapsed: (Int) -> Unit
 ) {
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.overview)),
         navigateBack = { navController.popBackStack() },
         actions = listOf {

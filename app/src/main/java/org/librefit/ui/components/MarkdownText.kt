@@ -280,7 +280,7 @@ private fun MarkdownTextPreview() {
 
 
     LibreFitTheme(false, true) {
-        CustomScaffold {
+        LibreFitScaffold {
             LazyColumn(
                 contentPadding = it,
                 modifier = Modifier.padding(10.dp)

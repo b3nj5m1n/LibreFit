@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.librefit.R
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.MarkdownText
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.UrlActionDialog
@@ -56,7 +56,7 @@ fun LicenseScreen(navigateBack: () -> Unit) {
 
     UrlActionDialog(url)
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(id = R.string.license)),
         navigateBack = navigateBack,
     ) { innerPadding ->

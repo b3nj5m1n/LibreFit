@@ -53,7 +53,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import org.librefit.R
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.PreferencesLottie
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -96,7 +96,7 @@ private fun RequestPermissionsScreenContent(
     val context = LocalContext.current
 
 
-    CustomScaffold(
+    LibreFitScaffold(
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->
         CustomLazyColumn(innerPadding, 40.dp) {

@@ -76,8 +76,8 @@ import org.librefit.enums.MeasurementCardState
 import org.librefit.enums.chart.MeasurementChart
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.CustomCartesianChart
@@ -221,7 +221,7 @@ private fun MeasurementScreenContent(
     }
 
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.measurements)),
         navigateBack = navigateBack
     ) { innerPadding ->

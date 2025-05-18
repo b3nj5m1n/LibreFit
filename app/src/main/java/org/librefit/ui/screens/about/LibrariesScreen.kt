@@ -27,12 +27,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import org.librefit.R
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
 fun LibrariesScreen(navigateBack: () -> Unit) {
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.libraries)),
         navigateBack = navigateBack
     ) {

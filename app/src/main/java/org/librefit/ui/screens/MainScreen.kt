@@ -40,7 +40,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.nav.Route
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.screens.home.HomeScreen
 import org.librefit.ui.screens.profile.ProfileScreen
 import org.librefit.ui.screens.shared.SharedViewModel
@@ -55,7 +55,7 @@ fun MainScreen(
     var homeSelected by rememberSaveable { mutableStateOf(true) }
 
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = buildAnnotatedString {
             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                 append(stringResource(id = R.string.app_name).removeRange(5, 8))

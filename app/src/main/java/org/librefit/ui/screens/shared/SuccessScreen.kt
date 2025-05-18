@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.min
 import org.librefit.R
 import org.librefit.enums.SuccessMessage
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.SuccessLottie
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -54,7 +54,7 @@ fun SuccessScreen(
     message: SuccessMessage,
     navigateBack: () -> Unit
 ) {
-    CustomScaffold { innerPadding ->
+    LibreFitScaffold { innerPadding ->
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
         ) {

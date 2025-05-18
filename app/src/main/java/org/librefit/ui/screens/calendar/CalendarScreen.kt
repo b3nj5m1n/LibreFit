@@ -53,8 +53,8 @@ import org.librefit.R
 import org.librefit.db.entity.Workout
 import org.librefit.nav.Route
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.screens.shared.SharedViewModel
@@ -93,7 +93,7 @@ private fun CalendarScreenContent(
     updateWorkoutId: (Long) -> Unit,
     getTimeFromLocalDateTime: (LocalDateTime) -> String
 ) {
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.calendar)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->

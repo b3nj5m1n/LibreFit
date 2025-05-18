@@ -75,7 +75,7 @@ import org.librefit.R
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomScaffold(
+fun LibreFitScaffold(
     title: AnnotatedString? = null,
     navigateBack: (() -> Unit)? = null,
     actions: List<() -> Unit> = listOf(),

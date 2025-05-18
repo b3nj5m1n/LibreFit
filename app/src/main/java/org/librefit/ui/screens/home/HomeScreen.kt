@@ -62,8 +62,8 @@ import org.librefit.nav.Route
 import org.librefit.nav.checkPermissionsBeforeNavigateToWorkout
 import org.librefit.ui.components.CustomButton
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.theme.LibreFitTheme
@@ -206,7 +206,7 @@ private fun HomeScreenContent(
 @Composable
 fun HomeScreenPreview() {
     LibreFitTheme(false, true) {
-        CustomScaffold(
+        LibreFitScaffold(
             title = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                     append(stringResource(id = R.string.app_name).removeRange(5, 8))

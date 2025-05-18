@@ -72,8 +72,8 @@ import org.librefit.R
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -165,7 +165,7 @@ private fun SettingsScreenContent(
 
     val view = LocalView.current
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(id = R.string.settings)),
         navigateBack = { navController.popBackStack() }
     ) { innerPadding ->

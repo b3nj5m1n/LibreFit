@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.ui.components.CustomLazyColumn
-import org.librefit.ui.components.CustomScaffold
+import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.NoResultLottie
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
@@ -160,7 +160,7 @@ private fun ExercisesScreenContent(
      */
     val query by viewModel.query.collectAsState()
 
-    CustomScaffold(
+    LibreFitScaffold(
         title = AnnotatedString(stringResource(id = R.string.exercises)),
         navigateBack = navigateBack,
         actions = actions,
