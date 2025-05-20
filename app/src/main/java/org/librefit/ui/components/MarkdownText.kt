@@ -230,8 +230,9 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
             }
 
             TokenType.LIST -> {
-                val listItem = token.groups[0]
-                builder.append("• $listItem\n")
+                builder.append("• ")
+                builder.append(parseMarkdownToAnnotatedString(token.groups[0]))
+                builder.append("\n")
             }
         }
         currentIndex = token.end
