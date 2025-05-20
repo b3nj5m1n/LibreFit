@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.enums.InfoMode
+import org.librefit.ui.components.MarkdownText
 import org.librefit.ui.components.animations.AlarmLottie
 import org.librefit.ui.components.animations.StatsLottie
 import org.librefit.ui.components.animations.TrainingLottie
@@ -84,7 +85,7 @@ fun InfoModalBottomSheet(
                     HorizontalDivider()
                 }
                 item {
-                    Text(text)
+                    MarkdownText(text)
                 }
                 item {
                     when (infoMode) {
