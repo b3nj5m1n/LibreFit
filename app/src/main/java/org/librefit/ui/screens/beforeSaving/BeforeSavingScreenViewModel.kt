@@ -31,6 +31,7 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
+import org.librefit.services.WorkoutServiceManager
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -41,7 +42,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BeforeSavingScreenViewModel @Inject constructor(
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val workoutServiceManager: WorkoutServiceManager
 ) : ViewModel() {
 
     private var exercises = mutableStateListOf<ExerciseWithSets>()
@@ -106,10 +108,6 @@ class BeforeSavingScreenViewModel @Inject constructor(
 
     fun isTitleTooLong(): Boolean {
         return workout.value.title.length >= 30
-    }
-
-    fun isTitleAllowed(): Boolean {
-        return !isTitleEmpty() && !isTitleTooLong()
     }
 
     fun updateWorkoutNotes(newNotes: String) {
@@ -177,6 +175,8 @@ class BeforeSavingScreenViewModel @Inject constructor(
                 }
             })
         }
+
+        workoutServiceManager.stopService()
 
         viewModelScope.launch(Dispatchers.IO) {
             workoutRepository.addWorkoutWithExercisesAndSets(
