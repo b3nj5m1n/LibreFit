@@ -164,7 +164,7 @@ class NotificationHelper(context: Context) {
         if (isChronometerPaused) {
             builder
                 .addAction(
-                    android.R.drawable.ic_media_play,
+                    R.drawable.ic_play_arrow,
                     appContext.getString(R.string.resume),
                     createWorkoutServiceIntent(WorkoutServiceActions.START_CHRONOMETER.string)
                 )
