@@ -19,6 +19,7 @@
 
 package org.librefit.ui.screens.calendar
 
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.runtime.mutableStateListOf
@@ -26,6 +27,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.librefit.db.entity.Workout
@@ -40,7 +42,7 @@ import javax.inject.Inject
 class CalendarScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
-    val workoutList = mutableStateListOf<Workout>()
+    private val workoutList = mutableStateListOf<Workout>()
 
     init {
         getWorkoutListFromDB()
@@ -77,6 +79,19 @@ class CalendarScreenViewModel @Inject constructor(
                     workoutList.clear()
                     workoutList.addAll(workouts)
                 }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    suspend fun getWorkoutsYearRange(): IntRange {
+        // Waits workout list update
+        delay(100)
+        return if (workoutList.isEmpty()) {
+            DatePickerDefaults.YearRange
+        } else {
+            val maxYear = workoutList.maxOf { it.completed.toLocalDate().year }
+            val minYear = workoutList.minOf { it.completed.toLocalDate().year }
+            (minYear..maxYear)
         }
     }
 }

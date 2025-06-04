@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +36,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -70,18 +75,28 @@ fun CalendarScreen(
 ) {
     val viewModel: CalendarScreenViewModel = hiltViewModel()
 
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis(),
-        selectableDates = viewModel.getSelectableDatesFromWorkouts()
-    )
+    val yearRange = remember { mutableStateOf(DatePickerDefaults.YearRange) }
 
-    CalendarScreenContent(
-        navController = navController,
-        datePickerState = datePickerState,
-        getWorkoutsFromDate = viewModel::getWorkoutsFromDate,
-        updateWorkoutId = sharedViewModel::updateWorkoutId,
-        getTimeFromLocalDateTime = viewModel::getTimeFromLocalDateTime
-    )
+    LaunchedEffect(Unit) {
+        yearRange.value = viewModel.getWorkoutsYearRange()
+    }
+
+    key(yearRange.value) {
+
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = System.currentTimeMillis(),
+            selectableDates = viewModel.getSelectableDatesFromWorkouts(),
+            yearRange = yearRange.value
+        )
+
+        CalendarScreenContent(
+            navController = navController,
+            datePickerState = datePickerState,
+            getWorkoutsFromDate = viewModel::getWorkoutsFromDate,
+            updateWorkoutId = sharedViewModel::updateWorkoutId,
+            getTimeFromLocalDateTime = viewModel::getTimeFromLocalDateTime
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
