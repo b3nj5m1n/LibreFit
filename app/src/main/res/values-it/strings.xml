@@ -39,7 +39,7 @@
     <string name="translate">Traduci</string>
     <string name="translate_desc">I traduttori assicurano che LibreFit sia accessibile a tutti, indipendentemente dalla loro lingua.</string>
     <string name="info">Info</string>
-    <string name="privacy_policy_desc">LibreFit funziona completamente offline. Ciò significa che nessun dato dell\'utente viene raccolto o condiviso in alcun momento.</string>
+    <string name="privacy_policy_desc">LibreFit non può accedere a Internet. Ciò significa che i dati dell\'utente non lasciano mai il dispositivo.</string>
     <string name="website">Sito web</string>
     <string name="source_code">Codice sorgente</string>
     <string name="privacy_policy">Informativa sulla privacy</string>
@@ -220,7 +220,7 @@
     <string name="start_creating_routine">Inizia creando una nuova routine</string>
     <string name="privacy">Privacy</string>
     <string name="privacy_notice">Nota sulla privacy</string>
-    <string name="privacy_notice_summary">LibreFit è stato progettato tenendo conto della privacy come priorità assoluta. **Non è richiesta alcuna connessione a internet**. Le autorizzazioni sono facoltative e nessuna è in grado di raccogliere dati.</string>
+    <string name="privacy_notice_summary">LibreFit garantisce la **massima privacy** in quanto **non può accedere a Internet**. Inoltre, tutte le autorizzazioni sono **facoltative** e non permettono la raccolta di dati.</string>
     <string name="privacy_notice_optional_perm">Autorizzazioni opzionali</string>
     <string name="privacy_notice_notification_perm">**Notifiche**: Questa autorizzazione consente all\'app di inviare notifiche sulle le sessioni di allenamento in corso e avvisi al termine dei periodi di riposo.</string>
     <string name="privacy_notice_battery_perm">**Ignora l\'ottimizzazione della batteria**: Questa autorizzazione permette all\'app di essere più resiliente a politiche di risparmio energetico aggressive, che potrebbero causare la chiusura forzata della stessa durante un allenamento.</string>
