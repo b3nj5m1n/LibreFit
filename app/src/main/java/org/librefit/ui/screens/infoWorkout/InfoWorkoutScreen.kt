@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -197,6 +198,8 @@ private fun InfoWorkoutScreenContent(
                                     workout.notes
                                 )
                             )
+
+                            HorizontalDivider()
                         }
 
                         if (!workout.routine) {
@@ -215,6 +218,9 @@ private fun InfoWorkoutScreenContent(
                                 workoutDate
                             )
                         )
+
+                        HorizontalDivider()
+
                         Text(
                             formatDetails(
                                 stringResource(R.string.exercises),
@@ -275,7 +281,7 @@ private fun InfoWorkoutScreenContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
+                                .padding(15.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(
