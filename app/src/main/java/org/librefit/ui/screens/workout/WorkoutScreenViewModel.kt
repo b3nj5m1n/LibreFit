@@ -73,7 +73,9 @@ class WorkoutScreenViewModel @Inject constructor(
 
     fun addSetToExercise(index: Int) {
         val exercise = exercisesWithSets[index]
-        val newSet = exercise.sets.last().copy(id = Random.Default.nextLong())
+        val newSet = exercise.sets
+            .lastOrNull()?.copy(id = Random.Default.nextLong())
+            ?: Set(id = Random.Default.nextLong())
         exercisesWithSets[index] = exercise.copy(sets = exercise.sets + newSet)
     }
 
