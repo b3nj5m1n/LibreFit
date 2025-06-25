@@ -44,7 +44,7 @@ import kotlin.random.Random
 
 @HiltViewModel
 class WorkoutScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     userPreferences: DataStoreManager,
     private val workoutServiceManager: WorkoutServiceManager
 ) : ViewModel() {
