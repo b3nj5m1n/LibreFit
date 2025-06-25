@@ -22,5 +22,5 @@ package org.librefit.enums
 enum class SetMode {
     LOAD_ONLY,
     REPS,
-    TIME
+    DURATION
 }

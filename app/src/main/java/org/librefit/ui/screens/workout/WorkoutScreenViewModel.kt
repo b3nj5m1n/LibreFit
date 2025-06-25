@@ -153,7 +153,7 @@ class WorkoutScreenViewModel @Inject constructor(
      *
      * Note: When updating [org.librefit.db.entity.Exercise.setMode], the [value] should be one of the following string representations:
      *  - [SetMode.LOAD_ONLY].name
-     *  - [SetMode.TIME].name
+     *  - [SetMode.DURATION].name
      *  - [SetMode.REPS].name;
      * If an invalid string is provided, the default value [SetMode.LOAD_ONLY] will be assigned.
      */
@@ -165,7 +165,7 @@ class WorkoutScreenViewModel @Inject constructor(
                 exercise = exerciseWithSets.exercise.copy(
                     setMode = when (value) {
                         SetMode.LOAD_ONLY.name -> SetMode.LOAD_ONLY
-                        SetMode.TIME.name -> SetMode.TIME
+                        SetMode.DURATION.name -> SetMode.DURATION
                         SetMode.REPS.name -> SetMode.REPS
                         else -> SetMode.LOAD_ONLY
                     }

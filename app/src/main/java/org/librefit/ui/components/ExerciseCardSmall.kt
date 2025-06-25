@@ -120,7 +120,7 @@ fun ExerciseCardSmall(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(stringResource(R.string.set))
-                    if (setMode == SetMode.TIME) {
+                    if (setMode == SetMode.DURATION) {
                         Text(stringResource(R.string.time))
                     } else {
                         Text(stringResource(R.string.reps))
@@ -166,7 +166,7 @@ fun ExerciseCardSmall(
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             Text("${index + 1}")
-                            if (setMode == SetMode.TIME) {
+                            if (setMode == SetMode.DURATION) {
                                 Text(formatTime(set.elapsedTime).substring(3))
                             } else {
                                 Text("${set.reps}")

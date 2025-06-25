@@ -169,7 +169,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
             exercise.copy(sets = exercise.sets.map {
                 // This keeps only relevant data on the actual type of set
                 when (exercise.exercise.setMode) {
-                    SetMode.TIME -> it.copy(reps = 0, load = 0f)
+                    SetMode.DURATION -> it.copy(reps = 0, load = 0f)
                     SetMode.REPS -> it.copy(elapsedTime = 0, load = 0f)
                     SetMode.LOAD_ONLY -> it.copy(elapsedTime = 0)
                 }

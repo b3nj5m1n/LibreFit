@@ -75,7 +75,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -153,7 +152,6 @@ fun ExerciseCard(
                 Text(
                     text = exerciseWithSets.exerciseDC.name,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -328,7 +326,7 @@ fun ExerciseCard(
                     text = stringResource(id = R.string.set),
                     color = MaterialTheme.colorScheme.secondary
                 )
-                if (exerciseWithSets.exercise.setMode == SetMode.TIME) {
+                if (exerciseWithSets.exercise.setMode == SetMode.DURATION) {
                     Text(
                         text = stringResource(R.string.time),
                         color = MaterialTheme.colorScheme.secondary
@@ -506,7 +504,7 @@ private fun Sets(
                         modifier = Modifier.padding(start = 20.dp, end = 10.dp)
                     )
 
-                    if (exerciseWithSets.exercise.setMode == SetMode.TIME) {
+                    if (exerciseWithSets.exercise.setMode == SetMode.DURATION) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (workout) {
                                 IconButton(
@@ -684,7 +682,7 @@ private fun setModeToStringId(setMode: SetMode): Int {
     return when (setMode) {
         SetMode.LOAD_ONLY -> R.string.load_only
         SetMode.REPS -> R.string.reps
-        SetMode.TIME -> R.string.time
+        SetMode.DURATION -> R.string.duration
     }
 }
 
@@ -694,14 +692,14 @@ private fun ExerciseCardPreview() {
     val timerRunning = remember { mutableStateOf(false) }
     val set = remember { mutableStateOf(Set()) }
 
-    LibreFitTheme(false, true) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
         ExerciseCard(
             Modifier,
             ExerciseWithSets(
                 exercise = Exercise(
                     notes = "This is a note!",
                     restTime = 90,
-                    setMode = SetMode.TIME
+                    setMode = SetMode.DURATION
                 ),
                 sets = listOf(Set(completed = true), Set(elapsedTime = 100)),
                 exerciseDC = ExerciseDC(name = "Exercise name")
