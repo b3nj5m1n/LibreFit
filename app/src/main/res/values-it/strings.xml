@@ -185,7 +185,7 @@
     <string name="quit_workout_text">Sei sicuro di voler abbandonare? Il tuo allenamento non sarà salvato</string>
     <string name="resume">Riprendi</string>
     <string name="pause">Pausa</string>
-    <string name="title_length_exceeded_30">"Il titolo "</string>
+    <string name="title_length_exceeded_30">"Il titolo non può superare i 30 caratteri"</string>
     <string name="title_cannot_be_empty">Il titolo non può essere vuoto</string>
     <string name="language_english">Inglese</string>
     <string name="start_routine">Inizia routine</string>
