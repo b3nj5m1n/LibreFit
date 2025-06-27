@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,8 +92,14 @@ fun InfoWorkoutScreen(
 
     val exercises = viewModel.exercises.collectAsState()
 
+    val volume = rememberSaveable { mutableStateOf("") }
+
     LaunchedEffect(Unit, viewModel.getChartMode(), exercises.value) {
         viewModel.fetchListChartData()
+    }
+
+    LaunchedEffect(exercises.value) {
+        volume.value = viewModel.getVolumeExercises()
     }
 
     LaunchedEffect(Unit) {
@@ -108,7 +115,7 @@ fun InfoWorkoutScreen(
         workout = workout.value,
         routine = routine.value,
         workoutDate = viewModel.getDate(),
-        volumeExercises = viewModel.getVolumeExercises(),
+        volumeExercises = volume.value,
         workoutChart = viewModel.getChartMode(),
         exercises = exercises.value,
         listChartData = listChartData.value,
@@ -250,8 +257,8 @@ private fun InfoWorkoutScreenContent(
                             Text(
                                 formatDetails(
                                     stringResource(R.string.completed_sets),
-                                    exercises.sumOf {
-                                        it.sets.filter { it.completed == true }.size
+                                    exercises.sumOf { exe ->
+                                        exe.sets.filter { it.completed }.size
                                     }.toString()
                                 )
                             )
@@ -352,7 +359,7 @@ private fun InfoWorkoutScreenContent(
 private fun InfoRoutineScreenPreview() {
     var routine by remember { mutableStateOf(Workout(title = "Title routine")) }
 
-    LibreFitTheme(false, true) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
         InfoWorkoutScreenContent(
             navController = rememberNavController(),
             deleteWorkout = {},

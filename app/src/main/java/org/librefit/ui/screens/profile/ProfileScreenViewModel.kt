@@ -30,7 +30,7 @@ import org.librefit.data.ChartData
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.WorkoutChart
-import org.librefit.helpers.ChartDataHelper
+import org.librefit.helpers.DataHelper
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -49,11 +49,11 @@ class ProfileScreenViewModel @Inject constructor(
     val listChartData = _listChartData.asStateFlow()
 
     @Inject
-    lateinit var chartDataHelper: ChartDataHelper
+    lateinit var dataHelper: DataHelper
 
     suspend fun fetchListChartData() = coroutineScope {
         _listChartData.value =
-            chartDataHelper.fetchListChartData(workoutChart.value, workoutsWithExercises.value)
+            dataHelper.fetchListChartData(workoutChart.value, workoutsWithExercises.value)
     }
 
     fun updateChartMode(value: WorkoutChart) {

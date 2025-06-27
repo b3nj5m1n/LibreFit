@@ -32,7 +32,7 @@ import java.time.format.FormatStyle
 import java.util.Locale
 import javax.inject.Inject
 
-class ChartDataHelper @Inject constructor(
+class DataHelper @Inject constructor(
     private val measurementRepository: MeasurementRepository
 ) {
     val shortFormatter: DateTimeFormatter? =
@@ -97,5 +97,28 @@ class ChartDataHelper @Inject constructor(
             }
             .awaitAll()
 
+    }
+
+    suspend fun fetchVolumeFromWorkout(
+        workout: WorkoutWithExercisesAndSets
+    ): Float {
+        val isRoutine = workout.workout.routine
+
+        val bodyWeight = measurementRepository.getLastMeasurementByCutoff(
+            if (isRoutine) workout.workout.created else workout.workout.completed
+        )?.bodyWeight ?: 0f
+
+        return workout.exercisesWithSets.sumOf { exe ->
+            exe.sets.sumOf { set ->
+                val volumeForEachRep = when (exe.exercise.setMode) {
+                    SetMode.LOAD_ONLY -> if (isRoutine || set.completed) set.load else 0f
+                    SetMode.REPS -> if (isRoutine || set.completed) bodyWeight else 0f
+                    SetMode.LOAD_AND_BODY_WEIGHT -> (if (isRoutine || set.completed) set.load else 0f) + bodyWeight
+                    SetMode.DURATION -> 0f
+                }
+
+                (volumeForEachRep * set.reps).toDouble()
+            }
+        }.toFloat()
     }
 }

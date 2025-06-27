@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -77,6 +78,12 @@ fun BeforeSavingScreen(
 ) {
     val viewModel: BeforeSavingScreenViewModel = hiltViewModel()
 
+    val volume = rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        volume.value = viewModel.getVolumeExercises(sharedViewModel.getPassedExercises())
+    }
+
     LaunchedEffect(Unit) {
         viewModel.initializeWorkout(sharedViewModel.getPassedWorkout())
         viewModel.initializeExercises(sharedViewModel.getPassedExercises())
@@ -102,7 +109,7 @@ fun BeforeSavingScreen(
     val datePickerState = rememberDatePickerState()
     val showDatePickerDialog = remember { mutableStateOf(false) }
 
-    if (showDatePickerDialog.value == true) {
+    if (showDatePickerDialog.value) {
         DatePickerDialog(
             onDismissRequest = { showDatePickerDialog.value = false },
             confirmButton = {
@@ -134,7 +141,7 @@ fun BeforeSavingScreen(
         timeElapsed = viewModel.getTimeElapsed(),
         totalSets = viewModel.getTotalSets(),
         completedSets = viewModel.getCompletedSets(),
-        volumeExercises = viewModel.getVolumeExercises(),
+        volumeExercises = volume.value,
         routineTitle = viewModel.getRoutineTitle(),
         workoutTitle = viewModel.getWorkoutTitle(),
         workoutNotes = viewModel.getWorkoutNotes(),

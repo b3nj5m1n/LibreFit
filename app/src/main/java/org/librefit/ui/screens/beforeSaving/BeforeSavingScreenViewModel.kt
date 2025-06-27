@@ -31,6 +31,7 @@ import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
+import org.librefit.helpers.DataHelper
 import org.librefit.services.WorkoutServiceManager
 import java.time.Instant
 import java.time.LocalDateTime
@@ -56,15 +57,15 @@ class BeforeSavingScreenViewModel @Inject constructor(
         return exercises
     }
 
-    fun getVolumeExercises(): String {
-        return exercises.sumOf {
-            it.sets.sumOf { set ->
-                // TODO: fix volume here and in InfoWorkoutViewModel
-                if (it.exercise.setMode == SetMode.LOAD_ONLY && set.completed) {
-                    set.load.toDouble() * set.reps
-                } else 0.0
-            }
-        }.toFloat().toString().format(Locale.getDefault(), "%.2f")
+    @Inject
+    lateinit var dataHelper: DataHelper
+
+    suspend fun getVolumeExercises(passedExercises: List<ExerciseWithSets>): String {
+        val volume = dataHelper.fetchVolumeFromWorkout(
+            WorkoutWithExercisesAndSets(Workout(), passedExercises)
+        )
+
+        return String.format(Locale.getDefault(), "%.2f", volume)
     }
 
     fun getTotalSets(): Int {
@@ -74,8 +75,8 @@ class BeforeSavingScreenViewModel @Inject constructor(
     }
 
     fun getCompletedSets(): Int {
-        return exercises.sumOf {
-            it.sets.filter { it.completed }.size
+        return exercises.sumOf { exercise ->
+            exercise.sets.filter { it.completed }.size
         }
     }
 
