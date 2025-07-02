@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,9 +58,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastAny
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
@@ -103,10 +101,25 @@ fun ExercisesScreen(
     }
 
 
+    val viewModel: ExercisesScreenViewModel = viewModel()
+
+    LaunchedEffect(sharedViewModel.exercisesList) {
+        viewModel.setExerciseList(sharedViewModel.exercisesList)
+    }
+
+    val filteredExerciseList by viewModel.filteredExerciseList.collectAsState()
+
+    val query by viewModel.query.collectAsState()
+
+
     ExercisesScreenContent(
         addExercises = addExercises,
         selectedExercisesList = selectedExercisesList,
-        exerciseList = sharedViewModel.exercisesList,
+        filteredExerciseList = filteredExerciseList,
+        query = query,
+        updateQuery = viewModel::updateQuery,
+        updateFilter = viewModel::updateFilter,
+        getFilter = viewModel::getFilter,
         actions = if (addExercises) listOf {
             sharedViewModel.addSelectedExerciseToList(selectedExercisesList)
             navigateBack()
@@ -120,14 +133,17 @@ fun ExercisesScreen(
 private fun ExercisesScreenContent(
     addExercises: Boolean,
     selectedExercisesList: MutableList<ExerciseDC>,
-    exerciseList: List<ExerciseDC>,
+    filteredExerciseList: List<ExerciseDC>,
+    query: String,
+    updateQuery: (String) -> Unit,
+    updateFilter: (Enum<*>?, Int) -> Unit,
+    getFilter: (Int) -> Enum<*>?,
     actions: List<() -> Unit>,
     navigateBack: () -> Unit
 ) {
 
     val coroutineScope = rememberCoroutineScope()
 
-    val viewModel: ExercisesScreenViewModel = viewModel()
 
     val lazyListState = rememberLazyListState()
 
@@ -144,19 +160,15 @@ private fun ExercisesScreenContent(
     }
 
 
-    var isFilterExpanded = rememberSaveable { mutableStateOf(false) }
+    val isFilterExpanded = rememberSaveable { mutableStateOf(false) }
 
     /**
      * Holds the information to show in [ExerciseDetailModalBottomSheet]
      */
-    var selectedExercise by remember { mutableStateOf<ExerciseDC>(ExerciseDC()) }
+    var selectedExercise by remember { mutableStateOf(ExerciseDC()) }
 
     var isModalSheetOpen by remember { mutableStateOf(false) }
 
-    /**
-     * Query used to filter [exerciseList] based on the exercise name
-     */
-    val query by viewModel.query.collectAsState()
 
     LibreFitScaffold(
         title = AnnotatedString(stringResource(id = R.string.exercises)),
@@ -179,7 +191,7 @@ private fun ExercisesScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 15.dp, end = 15.dp),
-                        onValueChange = viewModel::updateQuery,
+                        onValueChange = updateQuery,
                         shape = RoundedCornerShape(40.dp),
                         leadingIcon = {
                             Icon(
@@ -189,7 +201,7 @@ private fun ExercisesScreenContent(
                         },
                         trailingIcon = {
                             if (query.isNotEmpty()) {
-                                IconButton(onClick = { viewModel.updateQuery("") }) {
+                                IconButton(onClick = { updateQuery("") }) {
                                     Icon(
                                         imageVector = ImageVector.vectorResource(R.drawable.ic_cancel),
                                         contentDescription = stringResource(R.string.delete)
@@ -209,16 +221,15 @@ private fun ExercisesScreenContent(
             }
 
             // Card to let the user filter the exercises list
-            item { FiltersCard(isFilterExpanded = isFilterExpanded, viewModel = viewModel) }
+            item {
+                FiltersCard(
+                    isFilterExpanded = isFilterExpanded,
+                    updateFilter = updateFilter,
+                    getFilter = getFilter
+                )
+            }
 
-            if (
-                !exerciseList.fastAny {
-                    viewModel.fuzzySearch(
-                        it.name,
-                        query
-                    ) > 60 && viewModel.isExerciseEligible(it)
-                }
-            ) {
+            if (filteredExerciseList.isEmpty()) {
                 item {
                     Column(
                         modifier = Modifier
@@ -237,20 +248,7 @@ private fun ExercisesScreenContent(
 
             //Filtered list of exercises sorted by matching score
             itemsIndexed(
-                items = exerciseList
-                    .fastMap { exercise ->
-                        exercise to viewModel.fuzzySearch(
-                            exercise.name,
-                            query
-                        )
-                    }
-                    .fastFilter { (exercise, score) ->
-                        score > 60 && viewModel.isExerciseEligible(
-                            exercise
-                        )
-                    }
-                    .sortedByDescending { (_, score) -> score }
-                    .fastMap { (exercise, _) -> exercise },
+                items = filteredExerciseList,
                 key = { index, exercise -> exercise.id }
             ) { index, exercise ->
                 if (index == 0) {
@@ -337,13 +335,17 @@ private fun ExercisesScreenContent(
 @Preview
 @Composable
 private fun ExercisesScreenPreview() {
-    LibreFitTheme(false, true) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
         ExercisesScreenContent(
             addExercises = false,
             selectedExercisesList = remember { mutableStateListOf() },
-            exerciseList = List(20) { ExerciseDC(id = "$it", name = "Exercise $it") },
+            filteredExerciseList = List(20) { ExerciseDC(id = "$it", name = "Exercise $it") },
             actions = listOf {},
-            navigateBack = {}
+            navigateBack = {},
+            query = "MyQuery",
+            updateQuery = {},
+            updateFilter = { _, _ -> },
+            getFilter = { _ -> null }
         )
     }
 }

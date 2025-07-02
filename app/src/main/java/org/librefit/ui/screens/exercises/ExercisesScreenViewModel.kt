@@ -20,9 +20,19 @@
 package org.librefit.ui.screens.exercises
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import org.librefit.data.ExerciseDC
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
@@ -40,10 +50,36 @@ class ExercisesScreenViewModel : ViewModel() {
         _query.value = newQuery
     }
 
+    private val _exerciseList = MutableStateFlow<List<ExerciseDC>>(emptyList())
+    private val exerciseList = _exerciseList.asStateFlow()
+
+    fun setExerciseList(exerciseList: List<ExerciseDC>) {
+        _exerciseList.value = exerciseList
+    }
+
+    private val _triggerFiltering = MutableStateFlow(0)
+    private val triggerFiltering = _triggerFiltering.asStateFlow()
+
+    val filteredExerciseList: StateFlow<List<ExerciseDC>> =
+        combine(exerciseList, query, triggerFiltering) { rawList, q, tf ->
+            rawList
+                .fastMap { e -> e to fuzzySearch(e.name, q) }
+                .fastFilter { (e, score) -> score > 60 && isExerciseEligible(e) }
+                .sortedByDescending { it.second }
+                .fastMap { it.first }
+        }
+            .flowOn(Dispatchers.Default)
+            .distinctUntilChanged()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
     /**
      * Refer to [FuzzySearch.partialRatio]
      */
-    fun fuzzySearch(name: String, query: String): Int {
+    private fun fuzzySearch(name: String, query: String): Int {
         if (query == "") return 100
         return FuzzySearch.partialRatio(name.lowercase(), query.lowercase().trim())
     }
@@ -57,6 +93,7 @@ class ExercisesScreenViewModel : ViewModel() {
 
 
     fun updateFilter(enum: Enum<*>?, mode: Int) {
+        _triggerFiltering.value++
         when (mode) {
             0 -> levelFilter.value = enum as Level?
             1 -> forceFilter.value = enum as Force?
@@ -86,7 +123,7 @@ class ExercisesScreenViewModel : ViewModel() {
      * null, the exercise's property must match the filter. Specifically for the muscle filter, the
      * exercise is eligible if the filter matches any of its primary or secondary muscles.
      */
-    fun isExerciseEligible(exercise: ExerciseDC): Boolean {
+    private fun isExerciseEligible(exercise: ExerciseDC): Boolean {
         if (levelFilter.value != null && levelFilter.value != exercise.level) {
             return false
         }
