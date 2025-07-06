@@ -34,7 +34,9 @@ sealed class Route {
     object CalendarScreen
 
     @Serializable
-    object EditWorkoutScreen
+    data class EditWorkoutScreen(
+        val workoutId: Long
+    )
 
     @Serializable
     data class ExercisesScreen(

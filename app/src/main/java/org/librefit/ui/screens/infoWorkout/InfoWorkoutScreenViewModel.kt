@@ -53,7 +53,8 @@ class InfoWorkoutScreenViewModel @Inject constructor(
         private const val WORKOUT_ID_KEY = "workoutId"
     }
 
-    private val workoutId = savedStateHandle.get<Long>(WORKOUT_ID_KEY) ?: 0L
+    private val workoutId = savedStateHandle.get<Long>(WORKOUT_ID_KEY)
+        ?: throw IllegalArgumentException("Invalid WORKOUT_ID_KEY")
 
     init {
         require(workoutId != 0L) { "workoutId must be not equal to 0" }

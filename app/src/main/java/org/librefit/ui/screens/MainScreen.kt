@@ -72,8 +72,7 @@ fun MainScreen(
         ),
         actionsElevated = listOf(false),
         fabAction = {
-            sharedViewModel.updateWorkoutId(0)
-            navController.navigate(Route.EditWorkoutScreen)
+            navController.navigate(Route.EditWorkoutScreen(0L))
         },
         fabIcon = if (homeSelected) ImageVector.vectorResource(R.drawable.ic_add) else null,
         fabDescription = stringResource(R.string.create_routine),

@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,24 +70,24 @@ import org.librefit.ui.theme.LibreFitTheme
 @Composable
 fun EditWorkoutScreen(
     sharedViewModel: SharedViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    workoutId: Long
 ) {
     val viewModel: EditWorkoutScreenViewModel = hiltViewModel()
 
+    val workout by viewModel.workout.collectAsState()
+
+    val exercises by viewModel.exercises.collectAsState()
+
     LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach(viewModel::addExerciseWithSets)
-        viewModel.initialize(
-            workout = sharedViewModel.getPassedWorkout(),
-            newExercises = sharedViewModel.getPassedExercises(),
-            routine = sharedViewModel.getPassedRoutine(),
-        )
     }
 
     EditWorkoutScreenContent(
         navController = navController,
         typeOfEdit = viewModel.getTypeOfEdit(),
-        exercisesWithSets = viewModel.exercisesWithSets,
-        workout = viewModel.getWorkout(),
+        exercisesWithSets = exercises,
+        workout = workout,
         isTitleTooLong = viewModel.isTitleTooLong(),
         isTitleEmpty = viewModel.isTitleEmpty(),
         setPassedData = sharedViewModel::setPassedData,
@@ -300,7 +301,7 @@ private fun EditWorkoutScreenPreview() {
      */
     val typeOfEdit = false
 
-    LibreFitTheme(false, true) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
         EditWorkoutScreenContent(
             navController = rememberNavController(),
             typeOfEdit = typeOfEdit,

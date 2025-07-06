@@ -79,7 +79,7 @@ import kotlin.random.Random
 @Composable
 fun InfoWorkoutScreen(
     navController: NavHostController,
-    workoutId: Long = 0L
+    workoutId: Long
 ) {
     val viewModel: InfoWorkoutScreenViewModel = hiltViewModel()
 
@@ -182,7 +182,7 @@ private fun InfoWorkoutScreenContent(
         navigateBack = { navController.popBackStack() },
         actions = listOf(
             {
-                navController.navigate(Route.EditWorkoutScreen)
+                navController.navigate(Route.EditWorkoutScreen(workoutId = workout.id))
             },
             {
                 showConfirmDialog = true
