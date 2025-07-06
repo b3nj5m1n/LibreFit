@@ -23,6 +23,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 /**
@@ -59,6 +60,7 @@ import kotlin.random.Random
     ],
     indices = [Index(value = ["exerciseId"])]
 )
+@Serializable
 data class Set(
     @PrimaryKey(true) val id: Long = Random.Default.nextLong() + System.currentTimeMillis(),
     val load: Float = 0f,

@@ -22,6 +22,7 @@ package org.librefit.db.relations
 import androidx.room.Embedded
 import androidx.room.Ignore
 import androidx.room.Relation
+import kotlinx.serialization.Serializable
 import org.librefit.data.ExerciseDC
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Set
@@ -37,6 +38,7 @@ import org.librefit.db.entity.Set
  * @property sets The list of [Set] associated with the [exercise] containing all the user related data.
  * @property exerciseDC The actual features of the exercise itself. Details at [ExerciseDC]
  */
+@Serializable
 data class ExerciseWithSets(
     @Embedded var exercise: Exercise = Exercise(),
     @Relation(

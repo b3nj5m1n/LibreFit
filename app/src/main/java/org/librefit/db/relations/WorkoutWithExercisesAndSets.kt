@@ -21,6 +21,7 @@ package org.librefit.db.relations
 
 import androidx.room.Embedded
 import androidx.room.Relation
+import kotlinx.serialization.Serializable
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Workout
 
@@ -34,6 +35,7 @@ import org.librefit.db.entity.Workout
  * @property exercisesWithSets A list of [ExerciseWithSets] entities where each entry consists of an [Exercise]
  * and its related [Set]s.
  */
+@Serializable
 data class WorkoutWithExercisesAndSets(
     @Embedded val workout: Workout,
     @Relation(

@@ -21,6 +21,7 @@ package org.librefit.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -45,13 +46,17 @@ import kotlin.random.Random
  * finished in the [org.librefit.ui.screens.workout.WorkoutScreen].
  */
 @Entity(tableName = "workouts")
+@Serializable
 data class Workout(
-    @PrimaryKey(true) val id: Long = 0,
+    @PrimaryKey(true)
+    val id: Long = 0,
     val routineId: Long = Random.Default.nextLong() + System.currentTimeMillis(),
     val notes: String = "",
     val title: String = "",
     val routine: Boolean = false,
     val timeElapsed: Int = 0,
+    @Serializable(with = LocalDateTimeSerializer::class)
     val created: LocalDateTime = LocalDateTime.now(),
+    @Serializable(with = LocalDateTimeSerializer::class)
     val completed: LocalDateTime = LocalDateTime.now()
 )

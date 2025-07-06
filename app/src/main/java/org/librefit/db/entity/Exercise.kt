@@ -23,6 +23,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import org.librefit.enums.SetMode
 import kotlin.random.Random
 
@@ -57,6 +58,7 @@ import kotlin.random.Random
     ],
     indices = [Index(value = ["workoutId"])]
 )
+@Serializable
 data class Exercise(
     @PrimaryKey(true) val id: Long = Random.nextLong() + System.currentTimeMillis(),
     val exerciseId: String = "",

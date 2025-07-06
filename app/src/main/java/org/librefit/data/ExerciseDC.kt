@@ -20,6 +20,7 @@
 package org.librefit.data
 
 import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.enums.exercise.Force
@@ -194,6 +195,7 @@ import org.librefit.enums.exercise.Muscle
  * @property images Identifiers of images associated with the exercise.
  */
 @JsonClass(generateAdapter = true)
+@Serializable
 data class ExerciseDC(
     val id: String = "",
     val name: String = "",
