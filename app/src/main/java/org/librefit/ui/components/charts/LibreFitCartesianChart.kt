@@ -187,114 +187,126 @@ fun LibreFitCartesianChart(
 
             AnimatedContent(targetState = yValues.isNotEmpty()) { yValuesNotEmpty ->
                 if (yValuesNotEmpty) {
-                    // Show chart
-                    ProvideVicoTheme(rememberM3VicoTheme()) {
-                        CartesianChartHost(
-                            chart = rememberCartesianChart(
-                                if (useColumns) rememberColumnCartesianLayer(
-                                    columnProvider = ColumnCartesianLayer.ColumnProvider.series(
-                                        rememberLineComponent(
-                                            fill = fill(MaterialTheme.colorScheme.primary),
-                                            thickness = 32.dp,
-                                            shape = CorneredShape.rounded(32, 32)
-                                        )
-                                    ),
-                                    columnCollectionSpacing = 64.dp
-                                ) else rememberLineCartesianLayer(
-                                    lineProvider = LineCartesianLayer.LineProvider.series(
-                                        LineCartesianLayer.rememberLine(
-                                            fill = LineCartesianLayer.LineFill.single(
-                                                fill(
-                                                    primaryColor
-                                                )
-                                            ),
-                                            areaFill = LineCartesianLayer.AreaFill.single(
-                                                fill(
-                                                    ShaderProvider.verticalGradient(
-                                                        arrayOf(
-                                                            primaryColor.copy(alpha = 0.4f),
-                                                            Color.Transparent
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        // Show chart
+                        ProvideVicoTheme(rememberM3VicoTheme()) {
+                            CartesianChartHost(
+                                chart = rememberCartesianChart(
+                                    if (useColumns) rememberColumnCartesianLayer(
+                                        columnProvider = ColumnCartesianLayer.ColumnProvider.series(
+                                            rememberLineComponent(
+                                                fill = fill(MaterialTheme.colorScheme.primary),
+                                                thickness = 32.dp,
+                                                shape = CorneredShape.rounded(32, 32)
+                                            )
+                                        ),
+                                        columnCollectionSpacing = 64.dp
+                                    ) else rememberLineCartesianLayer(
+                                        lineProvider = LineCartesianLayer.LineProvider.series(
+                                            LineCartesianLayer.rememberLine(
+                                                fill = LineCartesianLayer.LineFill.single(
+                                                    fill(
+                                                        primaryColor
+                                                    )
+                                                ),
+                                                areaFill = LineCartesianLayer.AreaFill.single(
+                                                    fill(
+                                                        ShaderProvider.verticalGradient(
+                                                            arrayOf(
+                                                                primaryColor.copy(alpha = 0.4f),
+                                                                Color.Transparent
+                                                            )
                                                         )
                                                     )
-                                                )
-                                            ),
-                                            // Curved line
-                                            pointConnector = LineCartesianLayer.PointConnector.cubic()
-                                        )
+                                                ),
+                                                // Curved line
+                                                pointConnector = LineCartesianLayer.PointConnector.cubic()
+                                            )
+                                        ),
+                                        pointSpacing = 64.dp
                                     ),
-                                    pointSpacing = 64.dp
-                                ),
-                                marker = rememberLibreFitMarker(
-                                    valueFormatter = DefaultCartesianMarker.ValueFormatter.default(
-                                        format
-                                    )
-                                ),
-                                markerVisibilityListener = object :
-                                    CartesianMarkerVisibilityListener {
-                                    override fun onShown(
-                                        marker: CartesianMarker,
-                                        targets: List<CartesianMarker.Target>,
-                                    ) {
-                                        selectedWorkoutId.value =
-                                            listChartData[targets.first().x.toInt()].workoutId
-
-                                        selectedWorkoutDate.value =
-                                            listChartData[targets.first().x.toInt()].xValue
-
-                                        super.onShown(marker, listOf(targets.first()))
-                                    }
-
-                                    override fun onUpdated(
-                                        marker: CartesianMarker,
-                                        targets: List<CartesianMarker.Target>,
-                                    ) {
-                                        selectedWorkoutId.value =
-                                            listChartData[targets.first().x.toInt()].workoutId
-
-                                        selectedWorkoutDate.value =
-                                            listChartData[targets.first().x.toInt()].xValue
-
-                                        super.onShown(marker, listOf(targets.first()))
-                                    }
-                                },
-                                startAxis = VerticalAxis.rememberStart(
-                                    valueFormatter = remember(format) {
-                                        CartesianValueFormatter.decimal(
+                                    marker = rememberLibreFitMarker(
+                                        valueFormatter = DefaultCartesianMarker.ValueFormatter.default(
                                             format
                                         )
-                                    }
+                                    ),
+                                    markerVisibilityListener = object :
+                                        CartesianMarkerVisibilityListener {
+                                        override fun onShown(
+                                            marker: CartesianMarker,
+                                            targets: List<CartesianMarker.Target>,
+                                        ) {
+                                            selectedWorkoutId.value =
+                                                listChartData[targets.first().x.toInt()].workoutId
+
+                                            selectedWorkoutDate.value =
+                                                listChartData[targets.first().x.toInt()].xValue
+
+                                            super.onShown(marker, listOf(targets.first()))
+                                        }
+
+                                        override fun onUpdated(
+                                            marker: CartesianMarker,
+                                            targets: List<CartesianMarker.Target>,
+                                        ) {
+                                            selectedWorkoutId.value =
+                                                listChartData[targets.first().x.toInt()].workoutId
+
+                                            selectedWorkoutDate.value =
+                                                listChartData[targets.first().x.toInt()].xValue
+
+                                            super.onShown(marker, listOf(targets.first()))
+                                        }
+                                    },
+                                    startAxis = VerticalAxis.rememberStart(
+                                        valueFormatter = remember(format) {
+                                            CartesianValueFormatter.decimal(
+                                                format
+                                            )
+                                        }
+                                    ),
+                                    bottomAxis = HorizontalAxis.rememberBottom(
+                                        valueFormatter = remember(yValues, xValues) {
+                                            if (xValues.all { it.isNotBlank() } && xValues.isNotEmpty())
+                                                CartesianValueFormatter { context, x, _ ->
+                                                    context.model.extraStore.getOrNull(labelListKey)
+                                                        ?.get(x.toInt())
+                                                        ?: xValues.getOrNull(yValues.indexOf(x.toFloat()))
+                                                        ?: xValues.first()
+                                                }
+                                            else CartesianValueFormatter.decimal()
+                                        }
+                                    ),
                                 ),
-                                bottomAxis = HorizontalAxis.rememberBottom(
-                                    valueFormatter = remember(yValues, xValues) {
-                                        if (xValues.all { it.isNotBlank() } && xValues.isNotEmpty())
-                                            CartesianValueFormatter { context, x, _ ->
-                                                context.model.extraStore.getOrNull(labelListKey)
-                                                    ?.get(x.toInt())
-                                                    ?: xValues.getOrNull(yValues.indexOf(x.toFloat()))
-                                                    ?: xValues.first()
-                                            }
-                                        else CartesianValueFormatter.decimal()
-                                    }
+                                zoomState = rememberVicoZoomState(
+                                    zoomEnabled = false,
+                                    minZoom = Zoom.fixed(),
+                                    maxZoom = Zoom.fixed()
                                 ),
-                            ),
-                            zoomState = rememberVicoZoomState(
-                                zoomEnabled = false,
-                                minZoom = Zoom.fixed(),
-                                maxZoom = Zoom.fixed()
-                            ),
-                            modelProducer = modelProducer,
-                        ) {
-                            // Shown when modelProducer is loading
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
-                                contentAlignment = Alignment.Center
+                                modelProducer = modelProducer,
                             ) {
-                                CircularProgressIndicator()
+                                // Shown when modelProducer is loading
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
-
+                        if (navController != null) {
+                            LibreFitButton(
+                                elevated = false,
+                                enabled = selectedWorkoutId.value != null,
+                                text = if (selectedWorkoutDate.value == null) stringResource(R.string.tap_a_workout)
+                                else stringResource(R.string.open_the_workout) + " ${selectedWorkoutDate.value}",
+                                icon = ImageVector.vectorResource(R.drawable.ic_open_new)
+                            ) {
+                                navController.navigate(Route.InfoWorkoutScreen(selectedWorkoutId.value!!))
+                            }
+                        }
                     }
                 } else {
                     // Inform user that data is insufficient to display the chart
@@ -318,17 +330,6 @@ fun LibreFitCartesianChart(
                 }
             }
 
-            if (navController != null) {
-                LibreFitButton(
-                    elevated = false,
-                    enabled = selectedWorkoutId.value != null,
-                    text = if (selectedWorkoutDate.value == null) stringResource(R.string.tap_a_workout)
-                    else stringResource(R.string.open_the_workout) + " ${selectedWorkoutDate.value}",
-                    icon = ImageVector.vectorResource(R.drawable.ic_open_new)
-                ) {
-                    navController.navigate(Route.InfoWorkoutScreen(selectedWorkoutId.value!!))
-                }
-            }
         }
     }
 }
