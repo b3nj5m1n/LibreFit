@@ -58,12 +58,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,7 +81,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.ExerciseDC
 import org.librefit.db.entity.Exercise
@@ -115,10 +114,12 @@ import kotlin.math.roundToInt
  * [org.librefit.ui.screens.editWorkout.EditWorkoutScreenViewModel.updateExercise].
  * @param showInfo A lambda function executed when info icon next to "type of set" or "rest time" text
  * is clicked. The passed parameter is used by [org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet] to show the relevant information.
- * @param setChronometerIsRunning This should be passed only from the workout screen (so [workout]
- * must be `true`). It allows only one set timer to be running at once.
- * @param setWithRunningChronometer This should be passed only from the workout screen (so [workout]
- * must be `true`). It allows only one set timer to be running at once.
+ * @param idSetWithRunningChronometer The ID of the set whose timer is currently active. This ensures
+ * only one timer runs at a time. The composable will display a running chronometer for the
+ * set matching this ID. Pass 0 if no timer is active. This parameter is only used when [workout] is `true`.
+ * @param updateIdSetWithRunningChronometer A callback invoked when the user interacts with a set with a
+ * running chronometer. It provides the ID of the set that should become active, or 0 to stop the current timer.
+ * This parameter is only used when [workout] is `true`.
  * @param workout A Boolean flag indicating whether a checkbox should be displayed next to each set.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,8 +134,8 @@ fun ExerciseCard(
     deleteSet: (Set) -> Unit,
     updateExercise: (String, Int) -> Unit,
     showInfo: (InfoMode) -> Unit,
-    setChronometerIsRunning: MutableState<Boolean> = mutableStateOf(false),
-    setWithRunningChronometer: MutableState<Set> = mutableStateOf(Set()),
+    idSetWithRunningChronometer: Long = 0L,
+    updateIdSetWithRunningChronometer: (Long) -> Unit = {},
     workout: Boolean = false
 ) {
     ElevatedCard(modifier) {
@@ -359,8 +360,8 @@ fun ExerciseCard(
                 deleteSet = deleteSet,
                 updateSet = updateSet,
                 workout = workout,
-                setChronometerIsRunning = setChronometerIsRunning,
-                setWithRunningChronometer = setWithRunningChronometer
+                idSetWithRunningChronometer = idSetWithRunningChronometer,
+                updateIdSetWithRunningChronometer = updateIdSetWithRunningChronometer
             )
 
             HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp))
@@ -382,10 +383,9 @@ private fun Sets(
     deleteSet: (Set) -> Unit,
     updateSet: (Set, Float, Int) -> Unit,
     workout: Boolean,
-    setChronometerIsRunning: MutableState<Boolean>,
-    setWithRunningChronometer: MutableState<Set>,
+    idSetWithRunningChronometer: Long,
+    updateIdSetWithRunningChronometer: (Long) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
 
     val setHeight = 60
     val animatedSetsColumnHeight = animateDpAsState(
@@ -400,9 +400,9 @@ private fun Sets(
             items = exerciseWithSets.sets,
             key = { i, set -> set.id }
         ) { i, set ->
-            var timeValue by remember { mutableIntStateOf(set.elapsedTime) }
-            var repValue by remember { mutableStateOf(set.reps.toString()) }
-            var weightValue by remember { mutableStateOf(set.load.toString()) }
+            val timeValue by rememberUpdatedState(set.elapsedTime)
+            val repValue by rememberUpdatedState(set.reps.toString())
+            val weightValue by rememberUpdatedState(set.load.toString())
 
             val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
                 confirmValueChange = {
@@ -509,52 +509,43 @@ private fun Sets(
                     if (exerciseWithSets.exercise.setMode == SetMode.DURATION) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (workout) {
-                                IconButton(
-                                    enabled = (!setChronometerIsRunning.value ||
-                                            setWithRunningChronometer.value.id == set.id) &&
-                                            !set.completed,
-                                    onClick = {
-                                        if (setChronometerIsRunning.value) {
-                                            setChronometerIsRunning.value = false
-                                            setWithRunningChronometer.value = Set()
-                                        } else {
-                                            setChronometerIsRunning.value = true
-                                            setWithRunningChronometer.value = set
+                                LaunchedEffect(idSetWithRunningChronometer) {
+                                    // It starts chronometer when id matches
+                                    if (idSetWithRunningChronometer == set.id) {
+                                        val startTime = System.currentTimeMillis()
+                                        val pastTime = timeValue
 
-                                            coroutineScope.launch {
-                                                val startTime =
-                                                    System.currentTimeMillis()
+                                        while (true) {
+                                            val currentTime = System.currentTimeMillis()
+                                            val newTimeValue =
+                                                ((currentTime - startTime).toInt() / 1000) + pastTime
 
-                                                val pastTime = timeValue
-
-                                                while (setChronometerIsRunning.value) {
-                                                    val currentTime =
-                                                        System.currentTimeMillis()
-
-                                                    timeValue =
-                                                        (currentTime - startTime)
-                                                            .toInt() / 1000 + pastTime
-
-                                                    updateSet(
-                                                        set,
-                                                        timeValue.toFloat(),
-                                                        2
-                                                    )
-
-                                                    delay(1000)
-                                                }
-                                            }
+                                            updateSet(
+                                                set,
+                                                newTimeValue.toFloat(),
+                                                2
+                                            )
+                                            delay(1000)
                                         }
                                     }
+                                }
+
+                                IconButton(
+                                    enabled = (idSetWithRunningChronometer == 0L
+                                            || idSetWithRunningChronometer == set.id)
+                                            && !set.completed,
+                                    onClick = {
+                                        val newId =
+                                            if (idSetWithRunningChronometer == set.id) 0L else set.id
+                                        updateIdSetWithRunningChronometer(newId)
+                                    }
                                 ) {
-                                    val running = setChronometerIsRunning.value ||
-                                            setWithRunningChronometer.value.id == set.id
                                     Icon(
                                         imageVector = ImageVector.vectorResource(
-                                            if (running)
+                                            if (idSetWithRunningChronometer == set.id)
                                                 R.drawable.ic_pause else R.drawable.ic_play_arrow
                                         ),
-                                        contentDescription = if (running)
+                                        contentDescription = if (idSetWithRunningChronometer == set.id)
                                             stringResource(R.string.resume) else
                                             stringResource(R.string.pause)
                                     )
@@ -572,11 +563,11 @@ private fun Sets(
                                     val seconds = stringValue.toInt() % 100
                                     val minutes = (stringValue.toInt() - seconds) / 100
 
-                                    timeValue = minutes * 60 + seconds
+                                    val newTimeValue = (minutes * 60 + seconds).toFloat()
 
                                     updateSet(
                                         set,
-                                        timeValue.toFloat(),
+                                        newTimeValue,
                                         2
                                     )
                                 },
@@ -597,10 +588,11 @@ private fun Sets(
                             onValueChange = { string ->
                                 val stringValue = string.filter { it.isDigit() }.takeLast(4)
 
-                                repValue = stringValue.removePrefix("0")
+                                val newRepValue = stringValue.removePrefix("0")
+
                                 updateSet(
                                     set,
-                                    repValue.ifEmpty { "0" }.toFloat(),
+                                    newRepValue.ifEmpty { "0" }.toFloat(),
                                     1
                                 )
                             },
@@ -627,8 +619,10 @@ private fun Sets(
 
                                     val firstDotIndex = stringValue.indexOf(".")
 
+                                    var newWeightValue: String
+
                                     if (firstDotIndex == -1) {
-                                        weightValue = stringValue
+                                        newWeightValue = stringValue
                                     } else {
                                         val beforeFirstDot = stringValue.substring(
                                             0, firstDotIndex + 1
@@ -638,14 +632,14 @@ private fun Sets(
                                             .substring(firstDotIndex + 1)
                                             .replace(".", "")
 
-                                        weightValue = beforeFirstDot + afterFirstDot
+                                        newWeightValue = beforeFirstDot + afterFirstDot
                                     }
 
-                                    if (weightValue == ".") weightValue = "0.0"
+                                    if (weightValue == ".") newWeightValue = "0.0"
 
                                     updateSet(
                                         set,
-                                        weightValue.ifEmpty { "0" }.toFloat(),
+                                        newWeightValue.ifEmpty { "0" }.toFloat(),
                                         0
                                     )
                                 },
@@ -664,9 +658,8 @@ private fun Sets(
                         Checkbox(
                             checked = set.completed,
                             onCheckedChange = { checked ->
-                                if (setChronometerIsRunning.value) {
-                                    setChronometerIsRunning.value = false
-                                    setWithRunningChronometer.value = Set()
+                                if (idSetWithRunningChronometer == set.id) {
+                                    updateIdSetWithRunningChronometer(0L)
                                 }
                                 updateSet(
                                     set,
@@ -694,12 +687,10 @@ private fun setModeToStringId(setMode: SetMode): Int {
 @Preview
 @Composable
 private fun ExerciseCardPreview() {
-    val timerRunning = remember { mutableStateOf(false) }
-    val set = remember { mutableStateOf(Set()) }
+    var currentIdSetWithRunningSet by remember { mutableLongStateOf(0L) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
-        ExerciseCard(
-            Modifier,
+    var e by remember {
+        mutableStateOf(
             ExerciseWithSets(
                 exercise = Exercise(
                     notes = "This is a note!",
@@ -708,16 +699,63 @@ private fun ExerciseCardPreview() {
                 ),
                 sets = listOf(Set(completed = true), Set(elapsedTime = 100)),
                 exerciseDC = ExerciseDC(name = "Exercise name")
-            ),
-            {},
-            {},
-            {},
-            { _, _, _ -> },
-            {},
-            { _, _ -> },
-            {},
-            timerRunning,
-            set,
+            )
+        )
+    }
+
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+        ExerciseCard(
+            exerciseWithSets = e,
+            addSet = { e = e.copy(sets = e.sets + Set()) },
+            onDetail = {},
+            onDelete = {},
+            updateSet = { set, value, mode ->
+                e = e.copy(
+                    sets = e.sets.map {
+                        if (it.id == set.id) {
+                            when (mode) {
+                                0 -> set.copy(load = value)
+                                1 -> set.copy(reps = value.toInt())
+                                2 -> set.copy(elapsedTime = value.toInt())
+                                3 -> set.copy(completed = value == 1f)
+                                else -> set
+                            }
+                        } else it
+                    }
+                )
+            },
+            deleteSet = { set ->
+                e = e.copy(sets = e.sets.filter { it.id != set.id })
+            },
+            updateExercise = { value, mode ->
+                e = when (mode) {
+                    0 -> e.copy(exercise = e.exercise.copy(notes = value))
+                    1 -> e.copy(
+                        exercise = e.exercise.copy(
+                            setMode = when (value) {
+                                SetMode.LOAD.name -> SetMode.LOAD
+                                SetMode.BODYWEIGHT_WITH_LOAD.name -> SetMode.BODYWEIGHT_WITH_LOAD
+                                SetMode.DURATION.name -> SetMode.DURATION
+                                SetMode.BODYWEIGHT.name -> SetMode.BODYWEIGHT
+                                else -> SetMode.LOAD
+                            }
+                        )
+                    )
+
+                    2 -> e.copy(
+                        exercise = e.exercise.copy(
+                            restTime = Integer.parseInt(
+                                value
+                            )
+                        )
+                    )
+
+                    else -> e
+                }
+            },
+            showInfo = {},
+            idSetWithRunningChronometer = currentIdSetWithRunningSet,
+            updateIdSetWithRunningChronometer = { currentIdSetWithRunningSet = it },
             workout = true
         )
     }

@@ -49,7 +49,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -112,6 +111,8 @@ fun WorkoutScreen(
     val workout by viewModel.workout.collectAsState()
 
     val restTime by viewModel.restTime.collectAsState()
+
+    val idSetWithRunningChronometer by viewModel.idSetWithRunningChronometer.collectAsState()
     
 
     //It keeps the screen turned on
@@ -175,10 +176,6 @@ fun WorkoutScreen(
     }
 
 
-    val setChronometerIsRunning = viewModel.setChronometerIsRunning
-    val setWithRunningChronometer = viewModel.setWithRunningChronometer
-
-
 
     WorkoutScreenContent(
         timeElapsed = timeElapsed,
@@ -186,10 +183,10 @@ fun WorkoutScreen(
         isListEmpty = exerciseWithSets.isEmpty(),
         exercisesWithSets = exerciseWithSets,
         progress = viewModel.getProgress(),
-        setWithRunningChronometer = setWithRunningChronometer,
-        setChronometerIsRunning = setChronometerIsRunning,
         timerProgress = viewModel.getRestTimeProgress(),
+        idSetWithRunningChronometer = idSetWithRunningChronometer,
         restTime = restTime,
+        updateIdSetWithRunningChronometer = viewModel::updateIdSetWithRunningChronometer,
         navigateBack = {
             if (exerciseWithSets.isEmpty()) {
                 viewModel.stopWorkoutService()
@@ -260,10 +257,10 @@ private fun WorkoutScreenContent(
     exercisesWithSets: List<ExerciseWithSets>,
     progress: Float,
     isListEmpty: Boolean,
-    setWithRunningChronometer: MutableState<Set>,
-    setChronometerIsRunning: MutableState<Boolean>,
     timerProgress: Float,
+    idSetWithRunningChronometer: Long,
     restTime: Int,
+    updateIdSetWithRunningChronometer: (Long) -> Unit,
     navigateBack: () -> Unit,
     fabAction: () -> Unit,
     action: () -> Unit,
@@ -344,8 +341,8 @@ private fun WorkoutScreenContent(
                             updateExercise(i, value, mode)
                         },
                         showInfo = showInfo,
-                        setChronometerIsRunning = setChronometerIsRunning,
-                        setWithRunningChronometer = setWithRunningChronometer,
+                        idSetWithRunningChronometer = idSetWithRunningChronometer,
+                        updateIdSetWithRunningChronometer = updateIdSetWithRunningChronometer,
                         workout = true
                     )
                 }

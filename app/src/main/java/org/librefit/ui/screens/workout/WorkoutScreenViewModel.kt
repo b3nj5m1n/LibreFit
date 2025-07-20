@@ -21,7 +21,6 @@ package org.librefit.ui.screens.workout
 
 import android.content.Context
 import android.media.MediaPlayer
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -58,9 +57,15 @@ class WorkoutScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val exercisesList: List<ExerciseDC>
 ) : ViewModel() {
-    // Used by set chronometer, it's allowed only one timer at a time
-    var setChronometerIsRunning = mutableStateOf(false)
-    var setWithRunningChronometer = mutableStateOf(Set())
+
+    private val _idSetWithRunningChronometer = MutableStateFlow(0L)
+    val idSetWithRunningChronometer = _idSetWithRunningChronometer.asStateFlow()
+
+    fun updateIdSetWithRunningChronometer(setId: Long) {
+        _idSetWithRunningChronometer.value = setId
+    }
+
+
 
 
     companion object {
@@ -203,9 +208,9 @@ class WorkoutScreenViewModel @Inject constructor(
             }
         }
 
-        if (setWithRunningChronometer.value == set) {
-            setWithRunningChronometer.value = Set()
-            setChronometerIsRunning.value = false
+        // If there's the match, then set has a running chronometer which has to stopped by assign 0
+        if (idSetWithRunningChronometer.value == set.id) {
+            _idSetWithRunningChronometer.value = 0L
         }
     }
 
