@@ -49,9 +49,9 @@ import kotlin.random.Random
 @HiltViewModel
 class InfoWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val exercisesList: List<ExerciseDC>,
+    exercisesList: List<ExerciseDC>,
     private val workoutRepository: WorkoutRepository,
-    private val dataHelper: DataHelper
+    dataHelper: DataHelper
 ) : ViewModel() {
     companion object {
         private const val WORKOUT_ID_KEY = "workoutId"
