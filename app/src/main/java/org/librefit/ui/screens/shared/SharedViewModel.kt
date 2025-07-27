@@ -19,26 +19,20 @@
 
 package org.librefit.ui.screens.shared
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import org.librefit.data.ExerciseDC
 
 
 class SharedViewModel : ViewModel() {
-    private val selectedExercisesList = mutableStateListOf<ExerciseDC>()
+    private var selectedExercisesList = listOf<ExerciseDC>()
 
     fun getSelectedExercisesList(): List<ExerciseDC> {
-        val list = selectedExercisesList.toList()
-        resetSelectedExercisesList()
+        val list = selectedExercisesList
+        selectedExercisesList = emptyList()
         return list
     }
 
-    fun addSelectedExerciseToList(exerciseList: List<ExerciseDC>) {
-        resetSelectedExercisesList()
-        selectedExercisesList += exerciseList
-    }
-
-    fun resetSelectedExercisesList() {
-        selectedExercisesList.clear()
+    fun setSelectedExercisesList(exerciseList: List<ExerciseDC>) {
+        selectedExercisesList = exerciseList
     }
 }

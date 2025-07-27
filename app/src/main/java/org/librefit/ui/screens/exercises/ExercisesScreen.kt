@@ -120,7 +120,7 @@ fun ExercisesScreen(
         updateFilter = viewModel::updateFilter,
         filterValue = filterValue,
         actions = if (addExercises) listOf {
-            sharedViewModel.addSelectedExerciseToList(selectedExercisesList)
+            sharedViewModel.setSelectedExercisesList(selectedExercisesList)
             navigateBack()
         } else listOf(),
         navigateBack = navigateBack,
