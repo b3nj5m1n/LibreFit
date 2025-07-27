@@ -356,7 +356,8 @@ private fun LibreFitCartesianChartPreview() {
             updateChartMode = {
                 chartMode.value = it
             },
-            navController = rememberNavController()
+            navController = if (WorkoutChart.entries.contains(chartMode.value))
+                rememberNavController() else null
         )
     }
 }
