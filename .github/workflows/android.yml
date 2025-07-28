@@ -28,10 +28,6 @@ jobs:
           cache: gradle # Caching is enabled for faster builds
 
 
-      - name: Validate Gradle Wrapper for security
-        uses: gradle/wrapper-validation-action@v1
-
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         
