@@ -27,7 +27,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.librefit.MainCoroutineRule
+import org.librefit.MainDispatcherRule
 import org.librefit.data.ExerciseDC
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.enums.exercise.Force
@@ -37,7 +37,7 @@ class ExercisesScreenViewModelTest {
 
     // MainCoroutineRule to control coroutine execution
     @get:Rule
-    val mainCoroutineRule = MainCoroutineRule(StandardTestDispatcher())
+    val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
 
     // Test data
     private val testExercises = listOf(
@@ -76,7 +76,7 @@ class ExercisesScreenViewModelTest {
 
     @Test
     fun `filteredExerciseList updates after query debounce period`() =
-        runTest(mainCoroutineRule.testDispatcher) {
+        runTest(mainDispatcherRule.testDispatcher) {
             // Given a collector on the filtered list
             viewModel.filteredExerciseList.test {
                 // Then: The initial item is the full list
@@ -86,7 +86,7 @@ class ExercisesScreenViewModelTest {
                 viewModel.updateQuery("Exercise")
 
                 // When: Advance the virtual clock past the debounce timeout
-                mainCoroutineRule.testDispatcher.scheduler.advanceTimeBy(301L)
+                mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
 
                 // Then: The new, filtered list is ordered by fuzzySearch
                 val filteredList = awaitItem()
@@ -118,7 +118,7 @@ class ExercisesScreenViewModelTest {
 
     @Test
     fun `list is filtered by both query and filter value`() =
-        runTest(mainCoroutineRule.testDispatcher) {
+        runTest(mainDispatcherRule.testDispatcher) {
             viewModel.filteredExerciseList.test {
                 // Then: Initial full list
                 assertThat(awaitItem()).containsExactlyElementsIn(testExercises)
@@ -129,7 +129,7 @@ class ExercisesScreenViewModelTest {
 
                 // And When: A query is then applied
                 viewModel.updateQuery("Exercise")
-                mainCoroutineRule.testDispatcher.scheduler.advanceTimeBy(301L)
+                mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
 
                 // Then: The final list ordered by fuzzySearch
                 val finalList = awaitItem()

@@ -29,7 +29,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.librefit.MainCoroutineRule
+import org.librefit.MainDispatcherRule
 import org.librefit.db.entity.Workout
 import org.librefit.db.repository.WorkoutRepository
 import java.time.LocalDate
@@ -41,7 +41,7 @@ class CalendarScreenViewModelTest {
 
     // This rule swaps the main dispatcher with a test dispatcher
     @get:Rule
-    val mainDispatcherRule = MainCoroutineRule()
+    val mainDispatcherRule = MainDispatcherRule()
 
     // The mock repository
     private lateinit var workoutRepository: WorkoutRepository
