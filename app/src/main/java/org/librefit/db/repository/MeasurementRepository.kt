@@ -19,7 +19,6 @@
 
 package org.librefit.db.repository
 
-import kotlinx.coroutines.flow.Flow
 import org.librefit.db.dao.MeasurementDao
 import org.librefit.db.entity.Measurement
 import java.time.LocalDateTime
@@ -36,6 +35,7 @@ import java.time.LocalDateTime
  *
  */
 class MeasurementRepository(private val measurementDao: MeasurementDao) {
+    val measurements = measurementDao.getAllMeasurements()
 
     suspend fun upsertMeasurement(measurement: Measurement) {
         measurementDao.upsertMeasurement(measurement)
@@ -47,10 +47,6 @@ class MeasurementRepository(private val measurementDao: MeasurementDao) {
 
     suspend fun deleteById(id: Long) {
         measurementDao.deleteById(id)
-    }
-
-    fun getAllMeasurements(): Flow<List<Measurement>> {
-        return measurementDao.getAllMeasurements()
     }
 
     suspend fun getLastMeasurementByCutoff(cutoff: LocalDateTime): Measurement? {

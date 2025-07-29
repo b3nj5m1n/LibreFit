@@ -55,7 +55,7 @@ class MeasurementScreenViewModel @Inject constructor(
     }
 
 
-    val measurements: StateFlow<List<Measurement>> = measurementRepository.getAllMeasurements()
+    val measurements: StateFlow<List<Measurement>> = measurementRepository.measurements
         .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
