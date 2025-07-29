@@ -42,11 +42,11 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -93,14 +93,14 @@ fun SettingsScreen(
     val isIgnoringBatteryOptimization by viewModel.isIgnoringBatteryOptimization.collectAsState()
 
 
-    val showPreferenceDialog = remember { mutableStateOf(false) }
+    var showPreferenceDialog by remember { mutableStateOf(false) }
 
 
 
-    if (showPreferenceDialog.value) {
+    if (showPreferenceDialog) {
         AlertDialog(
             title = { Text(stringResource(id = R.string.language)) },
-            onDismissRequest = { showPreferenceDialog.value = false },
+            onDismissRequest = { showPreferenceDialog = false },
             confirmButton = { /*The user doesn't need to confirm*/ },
             text = {
                 LazyColumn(Modifier.heightIn(max = 200.dp)) {
@@ -124,13 +124,13 @@ fun SettingsScreen(
     }
 
     SettingsScreenContent(
+        navController = navController,
         selectedTheme = selectedTheme,
         materialModeOn = materialModeOn,
-        showPreferenceDialog = showPreferenceDialog,
         selectedLanguage = selectedLanguage,
         keepWorkoutScreenOn = keepWorkoutScreenOn,
         isIgnoringBatteryOptimization = isIgnoringBatteryOptimization,
-        navController = navController,
+        onShowPreferenceDialog = { showPreferenceDialog = true },
         saveIntValue = viewModel::savePreference,
         saveBooleanValue = viewModel::savePreference
     )
@@ -139,13 +139,13 @@ fun SettingsScreen(
 @SuppressLint("BatteryLife")
 @Composable
 private fun SettingsScreenContent(
+    navController: NavHostController,
     selectedTheme: ThemeMode,
     materialModeOn: Boolean,
-    showPreferenceDialog: MutableState<Boolean>,
     selectedLanguage: Language,
     keepWorkoutScreenOn: Boolean,
     isIgnoringBatteryOptimization: Boolean,
-    navController: NavHostController,
+    onShowPreferenceDialog: () -> Unit,
     saveIntValue: (Preferences.Key<Int>, value: Int) -> Unit,
     saveBooleanValue: (Preferences.Key<Boolean>, value: Boolean) -> Unit
 ) {
@@ -259,7 +259,7 @@ private fun SettingsScreenContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showPreferenceDialog.value = true },
+                        .clickable { onShowPreferenceDialog() },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -398,7 +398,7 @@ fun SettingsScreenPreview() {
         SettingsScreenContent(
             selectedTheme = ThemeMode.DARK,
             materialModeOn = false,
-            showPreferenceDialog = remember { mutableStateOf(false) },
+            onShowPreferenceDialog = {},
             selectedLanguage = Language.SYSTEM,
             keepWorkoutScreenOn = true,
             isIgnoringBatteryOptimization = false,
