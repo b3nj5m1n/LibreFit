@@ -23,6 +23,7 @@ import android.content.Context
 import android.os.PowerManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,7 +64,15 @@ class SettingsScreenViewModel @Inject constructor(
             initialValue = true
         )
 
+    val language = userPreferences.language
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = Language.SYSTEM
+        )
+
     fun changeLanguage(language: Language) {
+        savePreference(DataStoreManager.languageKey, language.code)
         val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(language.code)
         AppCompatDelegate.setApplicationLocales(appLocale)
     }
@@ -86,33 +95,12 @@ class SettingsScreenViewModel @Inject constructor(
             )
 
 
-
-
-    /**
-     * Pass the corresponding [key] value to save:
-     *  - 0: theme mode
-     *  - 1: material you
-     *  - 2: keep screen on during workout
-     */
-    fun savePreference(key: Int, value: Int) {
+    fun <T> savePreference(key: Preferences.Key<T>, value: T) {
         viewModelScope.launch {
-            when (key) {
-                0 -> userPreferences.savePreference(
-                    key = userPreferences.themeModeKey,
-                    value = value
-                )
-
-                1 -> userPreferences.savePreference(
-                    key = userPreferences.materialModeKey,
-                    value = value == 1
-                )
-
-                2 -> userPreferences.savePreference(
-                    key = userPreferences.keepOnWorkoutScreenKey,
-                    value = value == 1
-                )
-            }
-
+            userPreferences.savePreference(
+                key = key,
+                value = value
+            )
         }
     }
 }

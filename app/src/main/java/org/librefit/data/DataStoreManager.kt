@@ -28,6 +28,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
@@ -62,6 +63,10 @@ class DataStoreManager(private val context: Context) {
 
     val requestPermissionsAgain: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[requestPermissionsAgainKey] != false
+    }
+
+    val language: Flow<Language> = context.dataStore.data.map { preferences ->
+        Language.entries.find { it.code == preferences[languageKey] } ?: Language.SYSTEM
     }
 
     suspend fun <T> savePreference(key: Preferences.Key<T>, value: T) {

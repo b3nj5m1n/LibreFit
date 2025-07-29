@@ -23,7 +23,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +47,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -62,10 +60,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.datastore.preferences.core.Preferences
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
+import org.librefit.data.DataStoreManager
 import org.librefit.enums.Language
 import org.librefit.enums.ThemeMode
 import org.librefit.ui.components.HeadlineText
@@ -82,11 +82,7 @@ fun SettingsScreen(
     val viewModel: SettingsScreenViewModel = hiltViewModel()
 
 
-    var selectedLanguage by remember {
-        mutableStateOf(
-            AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore("-")
-        )
-    }
+    val selectedLanguage by viewModel.language.collectAsState()
 
     val selectedTheme by viewModel.themeMode.collectAsState()
 
@@ -114,13 +110,12 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
-                                selected = language.code == selectedLanguage,
+                                selected = language == selectedLanguage,
                                 onClick = {
-                                    selectedLanguage = language.code
                                     viewModel.changeLanguage(language)
                                 }
                             )
-                            Text(text = stringResource(id = languageCodeToId(language.code)))
+                            Text(text = stringResource(id = languageCodeToId(language)))
                         }
                     }
                 }
@@ -136,7 +131,8 @@ fun SettingsScreen(
         keepWorkoutScreenOn = keepWorkoutScreenOn,
         isIgnoringBatteryOptimization = isIgnoringBatteryOptimization,
         navController = navController,
-        savePreference = viewModel::savePreference
+        saveIntValue = viewModel::savePreference,
+        saveBooleanValue = viewModel::savePreference
     )
 }
 
@@ -146,11 +142,12 @@ private fun SettingsScreenContent(
     selectedTheme: ThemeMode,
     materialModeOn: Boolean,
     showPreferenceDialog: MutableState<Boolean>,
-    selectedLanguage: String,
+    selectedLanguage: Language,
     keepWorkoutScreenOn: Boolean,
     isIgnoringBatteryOptimization: Boolean,
     navController: NavHostController,
-    savePreference: (Int, Int) -> Unit
+    saveIntValue: (Preferences.Key<Int>, value: Int) -> Unit,
+    saveBooleanValue: (Preferences.Key<Boolean>, value: Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -189,7 +186,7 @@ private fun SettingsScreenContent(
                                     selected = selectedTheme == mode,
                                     onClick = {
                                         view.performHapticFeedback(HapticFeedbackConstantsCompat.TOGGLE_ON)
-                                        savePreference(0, index)
+                                        saveIntValue(DataStoreManager.themeModeKey, index)
                                     },
                                     shape = SegmentedButtonDefaults.itemShape(
                                         index = index,
@@ -248,7 +245,7 @@ private fun SettingsScreenContent(
                                     if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
                                     else HapticFeedbackConstantsCompat.TOGGLE_OFF
                                 )
-                                savePreference(1, if (it) 1 else 0)
+                                saveBooleanValue(DataStoreManager.materialModeKey, it)
                             }
                         )
                     }
@@ -321,7 +318,7 @@ private fun SettingsScreenContent(
                                 if (it) HapticFeedbackConstantsCompat.TOGGLE_ON
                                 else HapticFeedbackConstantsCompat.TOGGLE_OFF
                             )
-                            savePreference(2, if (it) 1 else 0)
+                            saveBooleanValue(DataStoreManager.keepOnWorkoutScreenKey, it)
                         }
                     )
                 }
@@ -386,14 +383,12 @@ private fun SettingsScreenContent(
 }
 
 
-private fun languageCodeToId(code: String): Int {
-    val result = when (code) {
-        "en" -> R.string.language_english_nt
-        "it" -> R.string.language_italian_nt
-        else -> R.string.follow_system
+private fun languageCodeToId(language: Language): Int {
+    return when (language) {
+        Language.ENGLISH -> R.string.language_english_nt
+        Language.ITALIAN -> R.string.language_italian_nt
+        Language.SYSTEM -> R.string.follow_system
     }
-
-    return result
 }
 
 @Preview
@@ -404,10 +399,11 @@ fun SettingsScreenPreview() {
             selectedTheme = ThemeMode.DARK,
             materialModeOn = false,
             showPreferenceDialog = remember { mutableStateOf(false) },
-            selectedLanguage = "en",
+            selectedLanguage = Language.SYSTEM,
             keepWorkoutScreenOn = true,
             isIgnoringBatteryOptimization = false,
-            savePreference = { _, _ -> },
+            saveIntValue = { _, _ -> },
+            saveBooleanValue = { _, _ -> },
             navController = rememberNavController()
         )
     }
