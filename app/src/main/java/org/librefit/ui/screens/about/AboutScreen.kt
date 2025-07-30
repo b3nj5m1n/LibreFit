@@ -28,9 +28,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +64,7 @@ fun AboutScreen(navController: NavHostController) {
 
     val context = LocalContext.current
 
-    var url = remember { mutableStateOf("") }
+    val url = remember { mutableStateOf("") }
 
     UrlActionDialog(url)
 
@@ -243,7 +243,7 @@ private fun AboutItem(
     enabled: Boolean = true
 ) {
 
-    OutlinedCard(
+    ElevatedCard(
         enabled = enabled,
         onClick = onClick
     ) {
@@ -279,7 +279,7 @@ private fun AboutItem(
 @Preview
 @Composable
 private fun AboutScreenPreview() {
-    LibreFitTheme(false, true) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
         AboutScreen(rememberNavController())
     }
 }
