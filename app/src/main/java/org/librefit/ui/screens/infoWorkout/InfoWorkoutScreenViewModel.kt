@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
-import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
@@ -49,7 +48,6 @@ import kotlin.random.Random
 @HiltViewModel
 class InfoWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    datasetRepository: DatasetRepository,
     private val workoutRepository: WorkoutRepository,
     dataHelper: DataHelper
 ) : ViewModel() {
@@ -76,12 +74,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
 
             _workout.value = workoutWithExercisesAndSets.workout
 
-            _exercises.value = workoutWithExercisesAndSets.exercisesWithSets.map {
-                it.apply {
-                    it.exerciseDC =
-                        datasetRepository.dataset.value.find { e -> e.id == it.exercise.idExerciseDC }!!
-                }
-            }
+            _exercises.value = workoutWithExercisesAndSets.exercisesWithSets
 
             if (isRoutine()) {
                 _routine.value = workout.value

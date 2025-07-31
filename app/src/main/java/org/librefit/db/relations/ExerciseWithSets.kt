@@ -20,19 +20,18 @@
 package org.librefit.db.relations
 
 import androidx.room.Embedded
-import androidx.room.Ignore
 import androidx.room.Relation
 import kotlinx.serialization.Serializable
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Set
 
 /**
  * A data class representing an [Exercise] with its associated [Set]s.
  *
  * This class is used by Room to retrieve all the data associated with an exercise and
- * the sets associated with it. The actual exercise data is stored in [ExerciseDC] which is provided
- * by [org.librefit.di.ExerciseDatasetModule] based on [Exercise.exerciseId]
+ * the sets associated with it. The actual dataset is stored as [ExerciseDC] and provided
+ * by [org.librefit.db.repository.DatasetRepository]
  *
  * @property exercise It contains the user related data associated with this [Exercise].
  * @property sets The list of [Set] associated with the [exercise] containing all the user related data.
@@ -40,12 +39,15 @@ import org.librefit.db.entity.Set
  */
 @Serializable
 data class ExerciseWithSets(
-    @Embedded var exercise: Exercise = Exercise(),
+    @Embedded val exercise: Exercise = Exercise(),
     @Relation(
         parentColumn = "id",
         entityColumn = "exerciseId"
     )
-    var sets: List<Set> = listOf(Set()),
-    @Ignore
-    var exerciseDC: ExerciseDC = ExerciseDC()
+    val sets: List<Set> = listOf(Set()),
+    @Relation(
+        parentColumn = "idExerciseDC",
+        entityColumn = "id"
+    )
+    val exerciseDC: ExerciseDC = ExerciseDC()
 )

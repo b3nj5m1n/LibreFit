@@ -33,7 +33,6 @@ import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
-import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
 import org.librefit.enums.exercise.Category
@@ -44,8 +43,7 @@ import kotlin.random.Random
 @HiltViewModel
 class EditWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val workoutRepository: WorkoutRepository,
-    datasetRepository: DatasetRepository
+    private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
 
     companion object {
@@ -80,12 +78,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
                 _workout.value = workoutInDb.copy(routine = false)
 
-                _exercises.value = workoutWithExercisesAndSets.exercisesWithSets.map {
-                    it.apply {
-                        it.exerciseDC =
-                            datasetRepository.dataset.value.find { e -> e.id == it.exercise.idExerciseDC }!!
-                    }
-                }
+                _exercises.value = workoutWithExercisesAndSets.exercisesWithSets
             } else {
                 _isRoutine.value = true
             }
