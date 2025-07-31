@@ -21,13 +21,17 @@ package org.librefit.ui.screens.exercises
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.librefit.MainDispatcherRule
 import org.librefit.db.entity.ExerciseDC
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.enums.exercise.Force
 
@@ -37,6 +41,12 @@ class ExercisesScreenViewModelTest {
     // MainCoroutineRule to control coroutine execution
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
+
+    // The mock repository
+    private lateinit var datasetRepository: DatasetRepository
+
+    // A controllable flow to simulate repository emissions
+    private lateinit var datasetFlow: MutableStateFlow<List<ExerciseDC>>
 
     // Test data
     private val testExercises = listOf(
@@ -50,8 +60,15 @@ class ExercisesScreenViewModelTest {
     // Setup the ViewModel before each test
     @Before
     fun setUp() {
+        // Arrange: Create a mock for the repository
+        datasetRepository = mockk()
+        datasetFlow = MutableStateFlow(testExercises)
+
+        // Arrange: Tell the mock what to return when `dataset` is accessed
+        every { datasetRepository.dataset } returns datasetFlow
+
         // Instantiate the ViewModel directly, passing in test data
-        viewModel = ExercisesScreenViewModel(exercisesList = testExercises)
+        viewModel = ExercisesScreenViewModel(datasetRepository = datasetRepository)
     }
 
     @Test

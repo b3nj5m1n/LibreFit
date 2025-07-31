@@ -27,12 +27,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
 import org.librefit.enums.exercise.Category
@@ -44,7 +45,7 @@ import kotlin.random.Random
 class EditWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val workoutRepository: WorkoutRepository,
-    exercisesList: List<ExerciseDC>
+    datasetRepository: DatasetRepository
 ) : ViewModel() {
 
     companion object {
@@ -81,7 +82,8 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
                 _exercises.value = workoutWithExercisesAndSets.exercisesWithSets.map {
                     it.apply {
-                        it.exerciseDC = exercisesList.find { e -> e.id == it.exercise.exerciseId }!!
+                        it.exerciseDC =
+                            datasetRepository.dataset.value.find { e -> e.id == it.exercise.exerciseId }!!
                     }
                 }
             } else {

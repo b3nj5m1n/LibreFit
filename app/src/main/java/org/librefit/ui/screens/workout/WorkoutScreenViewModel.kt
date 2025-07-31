@@ -34,11 +34,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.DataStoreManager
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
 import org.librefit.enums.exercise.Category
@@ -55,7 +56,7 @@ class WorkoutScreenViewModel @Inject constructor(
     userPreferences: DataStoreManager,
     private val workoutServiceManager: WorkoutServiceManager,
     workoutRepository: WorkoutRepository,
-    exercisesList: List<ExerciseDC>
+    datasetRepository: DatasetRepository
 ) : ViewModel() {
 
     private val _idSetWithRunningChronometer = MutableStateFlow(0L)
@@ -95,7 +96,8 @@ class WorkoutScreenViewModel @Inject constructor(
 
                 _exercises.value = workoutWithExercisesAndSets.exercisesWithSets.map {
                     it.apply {
-                        it.exerciseDC = exercisesList.find { e -> e.id == it.exercise.exerciseId }!!
+                        it.exerciseDC =
+                            datasetRepository.dataset.value.find { e -> e.id == it.exercise.exerciseId }!!
                     }
                 }
             }

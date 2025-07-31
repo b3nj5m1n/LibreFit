@@ -33,14 +33,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.util.fuzzySearch.FuzzySearch
 import javax.inject.Inject
 
 @HiltViewModel
 class ExercisesScreenViewModel @Inject constructor(
-    exercisesList: List<ExerciseDC>
+    datasetRepository: DatasetRepository
 ) : ViewModel() {
     private val _query = MutableStateFlow("")
     val query = _query.asStateFlow()
@@ -69,13 +70,13 @@ class ExercisesScreenViewModel @Inject constructor(
     }
 
 
-
     val filteredExerciseList: StateFlow<List<ExerciseDC>> =
         combine(
             debouncedQuery,
-            filterValue
-        ) { q, _ ->
-            exercisesList
+            filterValue,
+            datasetRepository.dataset
+        ) { q, _, dataset ->
+            dataset
                 .fastMap { e -> e to fuzzySearch(e.name, q) }
                 .fastFilter { (e, score) -> score > 60 && filterExercise(e) }
                 .sortedByDescending { it.second }
@@ -85,7 +86,7 @@ class ExercisesScreenViewModel @Inject constructor(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = exercisesList
+                initialValue = datasetRepository.dataset.value
             )
 
 

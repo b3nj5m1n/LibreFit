@@ -34,10 +34,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.librefit.data.ChartData
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
@@ -49,7 +49,7 @@ import kotlin.random.Random
 @HiltViewModel
 class InfoWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    exercisesList: List<ExerciseDC>,
+    datasetRepository: DatasetRepository,
     private val workoutRepository: WorkoutRepository,
     dataHelper: DataHelper
 ) : ViewModel() {
@@ -78,9 +78,8 @@ class InfoWorkoutScreenViewModel @Inject constructor(
 
             _exercises.value = workoutWithExercisesAndSets.exercisesWithSets.map {
                 it.apply {
-                    val exDC = exercisesList.find { e -> e.id == it.exercise.exerciseId }!!
-                    it.exercise = it.exercise.copy(exerciseId = exDC.id)
-                    it.exerciseDC = exDC
+                    it.exerciseDC =
+                        datasetRepository.dataset.value.find { e -> e.id == it.exercise.exerciseId }!!
                 }
             }
 
