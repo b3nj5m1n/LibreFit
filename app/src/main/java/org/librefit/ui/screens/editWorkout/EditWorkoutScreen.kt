@@ -47,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout

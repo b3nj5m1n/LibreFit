@@ -23,7 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.dao.DatasetDao
 
 /**

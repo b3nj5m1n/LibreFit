@@ -22,7 +22,7 @@ package org.librefit.ui.screens.shared
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 
 class SharedViewModelTest {
     private lateinit var viewModel: SharedViewModel

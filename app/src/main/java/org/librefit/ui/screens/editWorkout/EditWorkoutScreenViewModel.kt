@@ -27,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout

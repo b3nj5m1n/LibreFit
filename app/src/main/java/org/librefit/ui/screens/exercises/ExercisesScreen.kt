@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold

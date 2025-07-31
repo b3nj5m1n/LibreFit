@@ -46,7 +46,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Set
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.enums.SetMode

@@ -24,7 +24,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 
 @Dao
 interface DatasetDao {

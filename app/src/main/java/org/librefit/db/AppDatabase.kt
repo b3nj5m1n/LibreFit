@@ -31,7 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.converters.ExerciseDCConverter
 import org.librefit.db.converters.LocalDateTimeConverter
 import org.librefit.db.dao.DatasetDao

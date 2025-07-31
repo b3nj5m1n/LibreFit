@@ -23,7 +23,7 @@ import androidx.room.Embedded
 import androidx.room.Ignore
 import androidx.room.Relation
 import kotlinx.serialization.Serializable
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Set
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. LibreFit
+ * Copyright (c) 2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.data
+package org.librefit.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -33,7 +33,7 @@ import org.librefit.enums.exercise.Muscle
 /**
  * This data class stores exercises as parsed from `res/raw/exercises.json`. The dataset in provided by [org.librefit.db.repository.DatasetRepository]
  * Moshi's generated adapter is used for JSON serialization and deserialization as indicated by
- * [JsonClass] annotation. The actual exercise entries in database are handled by [org.librefit.db.entity.Exercise]
+ * [com.squareup.moshi.JsonClass] annotation. The actual exercise entries in database are handled by [Exercise]
  *
  * The JSON schema associated with this class is defined as follows:
  *
@@ -185,14 +185,14 @@ import org.librefit.enums.exercise.Muscle
  *
  * @property id Unique identifier for the exercise (e.g., "Pull-up"). Must match the pattern "^[0-9a-zA-Z_-]+$".
  * @property name Name of the exercise.
- * @property force The [Force] type applied during the exercise. Acceptable values are defined in the JSON schema.
- * @property level The difficulty [Level] of the exercise. Acceptable values are defined in the JSON schema.
- * @property mechanic The exercise [Mechanic]. Acceptable values are defined in the JSON schema.
- * @property equipment The [Equipment] required for the exercise. Acceptable values are defined in the JSON schema.
- * @property primaryMuscles List of primary [Muscle]s involved in the exercise. Acceptable values are defined in the JSON schema.
- * @property secondaryMuscles List of secondary [Muscle]s involved in the exercise. Acceptable values are defined in the JSON schema.
+ * @property force The [org.librefit.enums.exercise.Force] type applied during the exercise. Acceptable values are defined in the JSON schema.
+ * @property level The difficulty [org.librefit.enums.exercise.Level] of the exercise. Acceptable values are defined in the JSON schema.
+ * @property mechanic The exercise [org.librefit.enums.exercise.Mechanic]. Acceptable values are defined in the JSON schema.
+ * @property equipment The [org.librefit.enums.exercise.Equipment] required for the exercise. Acceptable values are defined in the JSON schema.
+ * @property primaryMuscles List of primary [org.librefit.enums.exercise.Muscle]s involved in the exercise. Acceptable values are defined in the JSON schema.
+ * @property secondaryMuscles List of secondary [org.librefit.enums.exercise.Muscle]s involved in the exercise. Acceptable values are defined in the JSON schema.
  * @property instructions Step-by-step instructions detailing how to perform the exercise.
- * @property category The [Category] of the exercise. Acceptable values are defined in the JSON schema.
+ * @property category The [org.librefit.enums.exercise.Category] of the exercise. Acceptable values are defined in the JSON schema.
  * @property images Identifiers of images associated with the exercise.
  */
 @JsonClass(generateAdapter = true)
@@ -211,4 +211,3 @@ data class ExerciseDC(
     val category: Category = Category.POWERLIFTING,
     val images: List<String> = listOf()
 )
-

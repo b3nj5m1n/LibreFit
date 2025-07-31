@@ -27,7 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.librefit.MainDispatcherRule
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.enums.exercise.Force
 

@@ -20,7 +20,7 @@
 package org.librefit.ui.screens.shared
 
 import androidx.lifecycle.ViewModel
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 
 
 class SharedViewModel : ViewModel() {

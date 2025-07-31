@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.DataStoreManager
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout

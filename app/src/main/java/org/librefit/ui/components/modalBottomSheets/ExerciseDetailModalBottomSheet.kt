@@ -58,7 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.librefit.R
-import org.librefit.data.ExerciseDC
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.enums.exercise.Force
@@ -78,6 +78,8 @@ fun ExerciseDetailModalBottomSheet(
     exercise: ExerciseDC,
     onDismiss: () -> Unit
 ) {
+
+    //TODO: move all logic in a separate screen in order to show past performance
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
