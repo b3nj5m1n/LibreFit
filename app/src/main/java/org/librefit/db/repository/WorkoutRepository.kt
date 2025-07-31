@@ -31,7 +31,7 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
  * This class serves as a mediator between [WorkoutDao] and the
  * application, providing a clean API for data access.
  *
- * This class is provided by [org.librefit.di.DatabaseModule].
+ * This class is provided by [org.librefit.di.RepositoryModule].
  *
  * @param workoutDao The [WorkoutDao] instance used to access workout data from the database.
  * @property completedWorkouts Refer to [WorkoutDao.getCompletedWorkouts]

@@ -23,8 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.dao.DatasetDao
+import org.librefit.db.entity.ExerciseDC
 
 /**
  * Repository class to provide `res/raw/exercises.json` as a [List] of [ExerciseDC].
@@ -36,7 +36,7 @@ import org.librefit.db.dao.DatasetDao
  *
  * @param datasetDao The [DatasetDao] instance used to access the dataset from the database.
  * @param applicationScope A long-lived coroutine on the application scope in order to update the dataset.
- *
+ * @property dataset It provides the latest dataset saved in Room
  */
 class DatasetRepository(
     datasetDao: DatasetDao,

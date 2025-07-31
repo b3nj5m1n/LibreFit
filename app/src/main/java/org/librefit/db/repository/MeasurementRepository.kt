@@ -29,7 +29,7 @@ import java.time.LocalDateTime
  * This class serves as a mediator between [MeasurementDao] and the
  * application, providing a clean API for data access.
  *
- * This class is provided by [org.librefit.di.DatabaseModule].
+ * This class is provided by [org.librefit.di.RepositoryModule].
  *
  * @param measurementDao The [MeasurementDao] instance used to access measurements data from the database.
  *
