@@ -25,7 +25,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import org.librefit.db.dao.DatasetDao
+import org.librefit.db.dao.MeasurementDao
+import org.librefit.db.dao.WorkoutDao
 import org.librefit.db.repository.DatasetRepository
+import org.librefit.db.repository.MeasurementRepository
+import org.librefit.db.repository.WorkoutRepository
 import javax.inject.Singleton
 
 @Module
@@ -38,5 +42,17 @@ object RepositoryModule {
         applicationScope: CoroutineScope
     ): DatasetRepository {
         return DatasetRepository(datasetDao, applicationScope)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkoutRepository(workoutDao: WorkoutDao): WorkoutRepository {
+        return WorkoutRepository(workoutDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMeasurementRepository(measurementDao: MeasurementDao): MeasurementRepository {
+        return MeasurementRepository(measurementDao)
     }
 }

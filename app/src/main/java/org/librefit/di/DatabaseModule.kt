@@ -30,8 +30,6 @@ import org.librefit.db.AppDatabase
 import org.librefit.db.dao.DatasetDao
 import org.librefit.db.dao.MeasurementDao
 import org.librefit.db.dao.WorkoutDao
-import org.librefit.db.repository.MeasurementRepository
-import org.librefit.db.repository.WorkoutRepository
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -71,18 +69,5 @@ object DatabaseModule {
     @Singleton
     fun provideDatasetDao(database: AppDatabase): DatasetDao {
         return database.getDatasetDao()
-    }
-
-    //Repositories
-    @Provides
-    @Singleton
-    fun provideWorkoutRepository(workoutDao: WorkoutDao): WorkoutRepository {
-        return WorkoutRepository(workoutDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideMeasurementRepository(measurementDao: MeasurementDao): MeasurementRepository {
-        return MeasurementRepository(measurementDao)
     }
 }
