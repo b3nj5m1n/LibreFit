@@ -207,7 +207,7 @@ class NotificationHelper(context: Context) {
         } else {
             builder
                 .setContentTitle(
-                    appContext.getString(R.string.time) + ": " + formatTime(
+                    appContext.getString(R.string.elapsed_time) + ": " + formatTime(
                         timeInSeconds
                     )
                 )
