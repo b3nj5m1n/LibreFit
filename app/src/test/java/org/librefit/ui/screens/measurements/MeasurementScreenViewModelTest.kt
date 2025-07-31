@@ -40,7 +40,7 @@ import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MeasurementScreenViewModelTest {
-    // MainCoroutineRule to control coroutine execution
+    // MainDispatcherRule to control coroutine execution
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -58,7 +58,7 @@ class MeasurementScreenViewModelTest {
     private val idMeasurementToDelete = slot<Long>()
 
     // Test data
-    val now: LocalDateTime = LocalDateTime.now()
+    private val now: LocalDateTime = LocalDateTime.now()
 
     private val allMeasurements = listOf(
         Measurement(id = 1, bodyWeight = 90f, bodyFatPercentage = 0.1f),

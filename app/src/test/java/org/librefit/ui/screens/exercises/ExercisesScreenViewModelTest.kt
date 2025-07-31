@@ -38,7 +38,7 @@ import org.librefit.enums.exercise.Force
 @ExperimentalCoroutinesApi
 class ExercisesScreenViewModelTest {
 
-    // MainCoroutineRule to control coroutine execution
+    // MainDispatcherRule to control coroutine execution
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -48,8 +48,8 @@ class ExercisesScreenViewModelTest {
     // A controllable flow to simulate repository emissions
     private lateinit var datasetFlow: MutableStateFlow<List<ExerciseDC>>
 
-    // Test data
-    private val testExercises = listOf(
+    // Test dataset
+    private val dataset = listOf(
         ExerciseDC(name = "Pull exercise", force = Force.PULL),
         ExerciseDC(name = "Push exercise", force = Force.PUSH),
         ExerciseDC(name = "Exercise", force = Force.PULL)
@@ -57,12 +57,11 @@ class ExercisesScreenViewModelTest {
 
     private lateinit var viewModel: ExercisesScreenViewModel
 
-    // Setup the ViewModel before each test
     @Before
     fun setUp() {
         // Arrange: Create a mock for the repository
         datasetRepository = mockk()
-        datasetFlow = MutableStateFlow(testExercises)
+        datasetFlow = MutableStateFlow(dataset)
 
         // Arrange: Tell the mock what to return when `dataset` is accessed
         every { datasetRepository.dataset } returns datasetFlow
@@ -72,58 +71,69 @@ class ExercisesScreenViewModelTest {
     }
 
     @Test
-    fun `initial state is correct`() = runTest {
-        // Then: Assert the initial values are as expected
+    fun `initial state - query is empty`() = runTest {
         assertThat(viewModel.query.value).isEmpty()
+    }
+
+    @Test
+    fun `initial state - debounced query is empty`() = runTest {
         assertThat(viewModel.debouncedQuery.value).isEmpty()
+    }
+
+    @Test
+    fun `initial state - filter is empty`() = runTest {
         assertThat(viewModel.filterValue.value).isEqualTo(FilterValue())
-        assertThat(viewModel.filteredExerciseList.value).containsExactlyElementsIn(testExercises)
+    }
+
+    @Test
+    fun `initial state - filtered exercise list is equal to dataset`() = runTest {
+        assertThat(viewModel.filteredExerciseList.value).containsExactlyElementsIn(dataset)
     }
 
     @Test
     fun `updateQuery updates the query state flow`() = runTest {
         val query = "query"
-        // When: The query is updated
+        // Arrange: The query is updated
         viewModel.updateQuery(query)
 
-        // Then: The immediate query state is updated
+        // Assert: The immediate query state is updated
         assertThat(viewModel.query.value).isEqualTo(query)
     }
 
     @Test
-    fun `filteredExerciseList updates after query debounce period`() =
-        runTest(mainDispatcherRule.testDispatcher) {
-            // Given a collector on the filtered list
-            viewModel.filteredExerciseList.test {
-                // Then: The initial item is the full list
-                assertThat(awaitItem()).containsExactlyElementsIn(testExercises)
+    fun `filteredExerciseList updates after query debounce period`() = runTest(
+        context = mainDispatcherRule.testDispatcher
+    ) {
+        viewModel.filteredExerciseList.test {
+            // Assert: The initial item is the full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
 
-                // When: The query is updated
-                viewModel.updateQuery("Exercise")
+            // Arrange: The query is updated
+            viewModel.updateQuery("Exercise")
 
-                // When: Advance the virtual clock past the debounce timeout
-                mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
+            // Arrange: Advance the virtual clock past the debounce timeout
+            mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
 
-                // Then: The new, filtered list is ordered by fuzzySearch
-                val filteredList = awaitItem()
-                assertThat(filteredList).containsExactly(
-                    ExerciseDC(name = "Exercise", force = Force.PULL),
-                    ExerciseDC(name = "Pull exercise", force = Force.PULL),
-                    ExerciseDC(name = "Push exercise", force = Force.PUSH)
-                ).inOrder()
-            }
+            // Assert: The new, filtered list is ordered by fuzzySearch
+            val filteredList = awaitItem()
+            assertThat(filteredList).containsExactly(
+                ExerciseDC(name = "Exercise", force = Force.PULL),
+                ExerciseDC(name = "Pull exercise", force = Force.PULL),
+                ExerciseDC(name = "Push exercise", force = Force.PUSH)
+            ).inOrder()
         }
+    }
 
     @Test
     fun `updateFilter updates the filtered list immediately`() = runTest {
         viewModel.filteredExerciseList.test {
-            // Then: Initial full list
-            assertThat(awaitItem()).containsExactlyElementsIn(testExercises)
+            // Assert: Initial full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
 
-            // When: The filter is updated
+            // Arrange: The filter is updated
             viewModel.updateFilter(FilterValue(force = Force.PULL))
 
-            // Then: The list is filtered immediately
+            // Assert: The list is filtered immediately
             val filteredList = awaitItem()
             assertThat(filteredList).containsExactly(
                 ExerciseDC(name = "Pull exercise", force = Force.PULL),
@@ -133,26 +143,57 @@ class ExercisesScreenViewModelTest {
     }
 
     @Test
-    fun `list is filtered by both query and filter value`() =
-        runTest(mainDispatcherRule.testDispatcher) {
+    fun `list is filtered by both query and filter value`() = runTest(
+        mainDispatcherRule.testDispatcher
+    ) {
+        viewModel.filteredExerciseList.test {
+            // Assert: Initial full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
+
+            // Arrange: A filter is applied first
+            viewModel.updateFilter(FilterValue(force = Force.PULL))
+            assertThat(awaitItem()).hasSize(2) // Pull exercise
+
+            // Arrange: A query is then applied
+            viewModel.updateQuery("Exercise")
+            mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
+
+            // Assert: The final list ordered by fuzzySearch
+            val finalList = awaitItem()
+            assertThat(finalList).containsExactly(
+                ExerciseDC(name = "Exercise", force = Force.PULL),
+                ExerciseDC(name = "Pull exercise", force = Force.PULL),
+            ).inOrder()
+        }
+    }
+
+    @Test
+    fun `when user queries a non present exercise - filtered exercises list is empty`() = runTest {
+        viewModel.filteredExerciseList.test {
+            // Assert: Initial full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
+
+            // Arrange: A query is then applied
+            viewModel.updateQuery("This query should produce an empty list")
+
+            // Assert: List should be empty because fuzzySearch filters all exercises having a
+            // name with a match score lower than 60 %
+            assertThat(awaitItem()).isEmpty()
+        }
+    }
+
+    @Test
+    fun `when user apply a filter of non present exercise - filtered exercises list is empty`() =
+        runTest {
             viewModel.filteredExerciseList.test {
-                // Then: Initial full list
-                assertThat(awaitItem()).containsExactlyElementsIn(testExercises)
+                // Assert: Initial full list
+                assertThat(awaitItem()).containsExactlyElementsIn(dataset)
 
-                // When: A filter is applied first
-                viewModel.updateFilter(FilterValue(force = Force.PULL))
-                assertThat(awaitItem()).hasSize(2) // Pull exercise
+                // Arrange: A filter is applied first
+                viewModel.updateFilter(FilterValue(force = Force.STATIC))
 
-                // And When: A query is then applied
-                viewModel.updateQuery("Exercise")
-                mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
-
-                // Then: The final list ordered by fuzzySearch
-                val finalList = awaitItem()
-                assertThat(finalList).containsExactly(
-                    ExerciseDC(name = "Exercise", force = Force.PULL),
-                    ExerciseDC(name = "Pull exercise", force = Force.PULL),
-                ).inOrder()
+                // Assert: List should be empty because there aren't exercises with such property
+                assertThat(awaitItem()).isEmpty()
             }
         }
 }
