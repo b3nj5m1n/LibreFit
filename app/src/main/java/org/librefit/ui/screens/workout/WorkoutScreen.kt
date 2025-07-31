@@ -69,6 +69,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import org.librefit.R
+import org.librefit.db.entity.Exercise
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Set
 import org.librefit.db.relations.ExerciseWithSets
@@ -261,10 +262,10 @@ private fun WorkoutScreenContent(
     pauseChronometer: () -> Unit,
     addSetToExercise: (ExerciseWithSets) -> Unit,
     infoExercise: (ExerciseDC) -> Unit,
-    deleteExercise: (Int) -> Unit,
-    updateSet: (Set, ExerciseWithSets) -> Unit,
-    deleteSet: (Int, Set) -> Unit,
-    updateExercise: (Int, String, Int) -> Unit,
+    deleteExercise: (ExerciseWithSets) -> Unit,
+    updateSet: (Set) -> Unit,
+    deleteSet: (Set) -> Unit,
+    updateExercise: (Exercise) -> Unit,
     showInfo: (InfoMode) -> Unit,
     modifyRestTime: (Boolean) -> Unit
 ) {
@@ -321,16 +322,10 @@ private fun WorkoutScreenContent(
                         onDetail = {
                             infoExercise(exerciseWithSets.exerciseDC)
                         },
-                        onDelete = {
-                            deleteExercise(i)
-                        },
-                        updateSet = { set -> updateSet(set, exerciseWithSets) },
-                        deleteSet = { set ->
-                            deleteSet(i, set)
-                        },
-                        updateExercise = { value, mode ->
-                            updateExercise(i, value, mode)
-                        },
+                        onDelete = { deleteExercise(exerciseWithSets) },
+                        updateSet = updateSet,
+                        deleteSet = deleteSet,
+                        updateExercise = updateExercise,
                         showInfo = showInfo,
                         idSetWithRunningChronometer = idSetWithRunningChronometer,
                         updateIdSetWithRunningChronometer = updateIdSetWithRunningChronometer,

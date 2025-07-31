@@ -113,10 +113,10 @@ private fun EditWorkoutScreenContent(
     updateTitle: (String) -> Unit,
     updateNotes: (String) -> Unit,
     addSetToExercise: (ExerciseWithSets) -> Unit,
-    deleteExercise: (Int) -> Unit,
-    updateSet: (Set, ExerciseWithSets) -> Unit,
-    deleteSet: (Int, Set) -> Unit,
-    updateExercise: (Int, String, Int) -> Unit,
+    deleteExercise: (ExerciseWithSets) -> Unit,
+    updateSet: (Set) -> Unit,
+    deleteSet: (Set) -> Unit,
+    updateExercise: (Exercise) -> Unit,
     saveWorkoutWithExercisesInDB: () -> Unit
 ) {
 
@@ -276,14 +276,10 @@ private fun EditWorkoutScreenContent(
                             selectedExercise = exerciseWithSets.exerciseDC
                             isModalSheetOpen = true
                         },
-                        onDelete = { deleteExercise(i) },
-                        updateSet = { updateSet(it, exerciseWithSets) },
-                        deleteSet = { set ->
-                            deleteSet(i, set)
-                        },
-                        updateExercise = { value, mode ->
-                            updateExercise(i, value, mode)
-                        },
+                        onDelete = { deleteExercise(exerciseWithSets) },
+                        updateSet = updateSet,
+                        deleteSet = deleteSet,
+                        updateExercise = updateExercise,
                         showInfo = { infoMode = it },
                         workout = typeOfEdit == false
                     )
@@ -321,9 +317,9 @@ private fun EditWorkoutScreenPreview() {
             updateNotes = { _ -> },
             addSetToExercise = { _ -> },
             deleteExercise = { _ -> },
-            updateSet = { _, _ -> },
-            deleteSet = { _, _ -> },
-            updateExercise = { _, _, _ -> },
+            updateSet = { _ -> },
+            deleteSet = { _ -> },
+            updateExercise = { _ -> },
             saveWorkoutWithExercisesInDB = { },
         )
     }

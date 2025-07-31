@@ -130,15 +130,13 @@ class EditWorkoutScreenViewModel @Inject constructor(
     /**
      * Updates a specific [Set] within a [ExerciseWithSets.sets].
      *
-     * @param exerciseWithSets The [ExerciseWithSets] in the [exercises] list that contains the
-     * set to be updated.
      * @param set The updated [Set] to assign.
      */
-    fun updateSet(set: Set, exerciseWithSets: ExerciseWithSets) {
+    fun updateSet(set: Set) {
         _exercises.value = exercises.value.map { exercise ->
-            if (exercise == exerciseWithSets) {
+            if (exercise.sets.map { it.id }.contains(set.id)) {
                 exercise.copy(
-                    sets = exerciseWithSets.sets.map {
+                    sets = exercise.sets.map {
                         if (it.id == set.id) set else it
                     }
                 )
@@ -148,22 +146,12 @@ class EditWorkoutScreenViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Removes a specific set from the sets associated with an exercise in the [exercises] list.
-     *
-     * This function updates the exercise at the given [index] by filtering out the specified [set]
-     * based on its unique identifier. The modified exercise is then saved back to the [exercises] list.
-     *
-     * @param index The index of the exercise in the [exercises] list from which the set will be deleted.
-     * @param set The set to be removed, identified by its unique ID.
-     */
-    fun deleteSet(index: Int, set: Set) {
-        val exerciseWithSets = exercises.value[index]
 
-        _exercises.value = exercises.value.mapIndexed { i, exercise ->
-            if (index == i) {
+    fun deleteSet(set: Set) {
+        _exercises.value = exercises.value.map { exercise ->
+            if (exercise.sets.contains(set)) {
                 exercise.copy(
-                    sets = exerciseWithSets.sets.filter { it.id != set.id }
+                    sets = exercise.sets.filter { it != set }
                 )
             } else {
                 exercise
@@ -171,57 +159,14 @@ class EditWorkoutScreenViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Updates an instance of [ExerciseWithSets] by assigning a [value] to a specified attribute based on the provided [mode].
-     *
-     * @param index The index of the [ExerciseWithSets] instance in the [exercises] list that needs to be updated.
-     * @param value The new value to be assigned to the specified attribute of the [ExerciseWithSets].
-     * @param mode An integer that determines which attribute will be updated with the [value].
-     * The following modes correspond to specific attributes:
-     *  - 0: [org.librefit.db.entity.Exercise.notes]
-     *  - 1: [org.librefit.db.entity.Exercise.setMode]
-     *  - 2: [org.librefit.db.entity.Exercise.restTime]
-     *
-     * Note: When updating [org.librefit.db.entity.Exercise.setMode], the [value] should be one of the following string representations:
-     *  - [SetMode.LOAD].name
-     *  - [SetMode.DURATION].name
-     *  - [SetMode.BODYWEIGHT].name;
-     * If an invalid string is provided, the default value [SetMode.LOAD] will be assigned.
-     */
-    fun updateExercise(index: Int, value: String, mode: Int) {
-        val exerciseWithSets = exercises.value[index]
-        val newExerciseWithSets = when (mode) {
-            0 -> exerciseWithSets.copy(exercise = exerciseWithSets.exercise.copy(notes = value))
-            1 -> exerciseWithSets.copy(
-                exercise = exerciseWithSets.exercise.copy(
-                    setMode = when (value) {
-                        SetMode.LOAD.name -> SetMode.LOAD
-                        SetMode.BODYWEIGHT_WITH_LOAD.name -> SetMode.BODYWEIGHT_WITH_LOAD
-                        SetMode.DURATION.name -> SetMode.DURATION
-                        SetMode.BODYWEIGHT.name -> SetMode.BODYWEIGHT
-                        else -> SetMode.LOAD
-                    }
-                )
-            )
-
-            2 -> exerciseWithSets.copy(
-                exercise = exerciseWithSets.exercise.copy(
-                    restTime = Integer.parseInt(
-                        value
-                    )
-                )
-            )
-
-            else -> exerciseWithSets
-        }
-
-        _exercises.value = exercises.value.mapIndexed { i, e ->
-            if (i == index) newExerciseWithSets else e
+    fun updateExercise(exercise: Exercise) {
+        _exercises.value = exercises.value.map {
+            if (exercise.id == it.exercise.id) it.copy(exercise = exercise) else it
         }
     }
 
-    fun deleteExercise(index: Int) {
-        _exercises.value = exercises.value.filterIndexed { i, e -> i != index }
+    fun deleteExercise(exerciseWithSets: ExerciseWithSets) {
+        _exercises.value = exercises.value.filter { it != exerciseWithSets }
     }
 
 

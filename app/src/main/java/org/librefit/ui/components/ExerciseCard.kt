@@ -134,7 +134,7 @@ fun ExerciseCard(
     onDelete: () -> Unit,
     updateSet: (Set) -> Unit,
     deleteSet: (Set) -> Unit,
-    updateExercise: (String, Int) -> Unit,
+    updateExercise: (Exercise) -> Unit,
     showInfo: (InfoMode) -> Unit,
     updateIdSetWithRunningChronometer: (Long) -> Unit = {}
 ) {
@@ -176,7 +176,7 @@ fun ExerciseCard(
                 label = { Text(text = stringResource(id = R.string.notes)) },
                 value = exerciseWithSets.exercise.notes,
                 onValueChange = {
-                    updateExercise(it, 0)
+                    updateExercise(exerciseWithSets.exercise.copy(notes = it))
                 }
             )
 
@@ -214,10 +214,7 @@ fun ExerciseCard(
                     }
                 },
                 onValueChangeFinished = {
-                    updateExercise(
-                        restTime.toString(),
-                        2
-                    )
+                    updateExercise(exerciseWithSets.exercise.copy(restTime = restTime))
                 },
                 valueRange = 0f..300f,
                 steps = 19
@@ -286,7 +283,7 @@ fun ExerciseCard(
                         SetMode.entries.forEachIndexed { index, mode ->
                             DropdownMenuItem(
                                 onClick = {
-                                    updateExercise(mode.name, 1)
+                                    updateExercise(exerciseWithSets.exercise.copy(setMode = mode))
                                     expanded = false
                                 },
                                 text = {
@@ -652,32 +649,7 @@ private fun ExerciseCardPreview() {
             deleteSet = { set ->
                 e = e.copy(sets = e.sets.filter { it.id != set.id })
             },
-            updateExercise = { value, mode ->
-                e = when (mode) {
-                    0 -> e.copy(exercise = e.exercise.copy(notes = value))
-                    1 -> e.copy(
-                        exercise = e.exercise.copy(
-                            setMode = when (value) {
-                                SetMode.LOAD.name -> SetMode.LOAD
-                                SetMode.BODYWEIGHT_WITH_LOAD.name -> SetMode.BODYWEIGHT_WITH_LOAD
-                                SetMode.DURATION.name -> SetMode.DURATION
-                                SetMode.BODYWEIGHT.name -> SetMode.BODYWEIGHT
-                                else -> SetMode.LOAD
-                            }
-                        )
-                    )
-
-                    2 -> e.copy(
-                        exercise = e.exercise.copy(
-                            restTime = Integer.parseInt(
-                                value
-                            )
-                        )
-                    )
-
-                    else -> e
-                }
-            },
+            updateExercise = { e = e.copy(exercise = it) },
             showInfo = {},
             idSetWithRunningChronometer = currentIdSetWithRunningSet,
             updateIdSetWithRunningChronometer = { currentIdSetWithRunningSet = it },
