@@ -26,7 +26,7 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.MeasurementRepository
 import org.librefit.enums.SetMode
 import org.librefit.enums.chart.WorkoutChart
-import org.librefit.ui.components.charts.ChartData
+import org.librefit.ui.components.charts.Point
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -41,7 +41,7 @@ class DataHelper @Inject constructor(
         )
 
     /**
-     * It returns a list of [ChartData] corresponding to the given [workoutChart] type
+     * It returns a list of [Point] corresponding to the given [workoutChart] type
      * for each workout in [workoutsWithExercises].
      *
      * Each entry’s X-value is the formatted completion date of the workout, and Y-value is:
@@ -53,16 +53,16 @@ class DataHelper @Inject constructor(
      *
      * This function concurrently:
      *  1. Retrieves the latest user’s [org.librefit.db.entity.Measurement.bodyWeight] at each [org.librefit.db.entity.Workout.completed] date.
-     *  2. Builds the corresponding [ChartData] items.
+     *  2. Builds the corresponding [Point] items.
      *
      * @param workoutChart The metric to chart (duration, volume, or reps).
      * @param workoutsWithExercises A list of workouts paired with their exercises and sets.
-     * @return A list of [ChartData]
+     * @return A list of [Point]
      */
-    suspend fun fetchListChartData(
+    suspend fun fetchPointsForWorkoutsChart(
         workoutChart: WorkoutChart,
         workoutsWithExercises: List<WorkoutWithExercisesAndSets>
-    ): List<ChartData> = coroutineScope {
+    ): List<Point> = coroutineScope {
         val bodyWeights = workoutsWithExercises
             .map {
                 async {
@@ -75,7 +75,7 @@ class DataHelper @Inject constructor(
         workoutsWithExercises
             .mapIndexed { index, it ->
                 async {
-                    ChartData(
+                    Point(
                         yValues = listOf(
                             when (workoutChart) {
                                 WorkoutChart.DURATION -> it.workout.timeElapsed / 60f

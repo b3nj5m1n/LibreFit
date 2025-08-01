@@ -36,7 +36,7 @@ import org.librefit.db.entity.Measurement
 import org.librefit.db.repository.MeasurementRepository
 import org.librefit.enums.MeasurementCardState
 import org.librefit.enums.chart.MeasurementChart
-import org.librefit.ui.components.charts.ChartData
+import org.librefit.ui.components.charts.Point
 import org.librefit.util.Formatter
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -62,7 +62,7 @@ class MeasurementScreenViewModel @Inject constructor(
         )
 
 
-    val listChartData: StateFlow<List<ChartData>> =
+    val points: StateFlow<List<Point>> =
         combine(
             measurements,
             measurementChart
@@ -76,7 +76,7 @@ class MeasurementScreenViewModel @Inject constructor(
                     }
                 }
                 .map {
-                    ChartData(
+                    Point(
                         yValues = listOf(
                             when (measurementChart) {
                                 MeasurementChart.BODY_WEIGHT -> it.bodyWeight

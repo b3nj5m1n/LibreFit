@@ -105,8 +105,8 @@ class MeasurementScreenViewModelTest {
     }
 
     @Test
-    fun `initial state - list data chart is empty `() = runTest {
-        assertThat(viewModel.listChartData.value).isEmpty()
+    fun `initial state - points list is empty `() = runTest {
+        assertThat(viewModel.points.value).isEmpty()
     }
 
     @Test
@@ -145,12 +145,12 @@ class MeasurementScreenViewModelTest {
     }
 
     @Test
-    fun `when measurements are loaded - list data chart displays the bodyweight of all measurements`() =
+    fun `when measurements are loaded - points list contains the bodyweight of all measurements`() =
         runTest {
             // Arrange: Provide measurements from the repository
             measurementsFlow.value = allMeasurements
 
-            viewModel.listChartData.test {
+            viewModel.points.test {
                 // The initial emission is empty
                 assertThat(awaitItem()).isEmpty()
 
@@ -163,12 +163,12 @@ class MeasurementScreenViewModelTest {
         }
 
     @Test
-    fun `when measurements are updated - list data chart displays the bodyweight of all measurements`() =
+    fun `when measurements are updated - points list the bodyweight of all measurements`() =
         runTest {
             // Arrange: Provide measurements from the repository
             measurementsFlow.value = allMeasurements
 
-            viewModel.listChartData.test {
+            viewModel.points.test {
                 // The initial emission is empty
                 assertThat(awaitItem()).isEmpty()
 
@@ -192,7 +192,7 @@ class MeasurementScreenViewModelTest {
         }
 
     @Test
-    fun `when measurement chart is updated - list data chart displays the respective chart values`() =
+    fun `when measurement chart is updated - points list the respective chart values`() =
         runTest {
             // Arrange: Provide measurements from the repository
             measurementsFlow.value = allMeasurements
@@ -200,7 +200,7 @@ class MeasurementScreenViewModelTest {
             // Act: update measurement chart
             viewModel.updateMeasurementChart(MeasurementChart.FAT_MASS)
 
-            viewModel.listChartData.test {
+            viewModel.points.test {
                 // The initial emission is empty
                 assertThat(awaitItem()).isEmpty()
 

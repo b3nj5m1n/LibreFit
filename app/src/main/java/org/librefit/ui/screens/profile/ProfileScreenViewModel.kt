@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
-import org.librefit.ui.components.charts.ChartData
+import org.librefit.ui.components.charts.Point
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -62,11 +62,11 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
 
-    val listChartData: StateFlow<List<ChartData>> = combine(
+    val points: StateFlow<List<Point>> = combine(
         workoutsWithExercises,
         workoutChart
     ) { we, wc ->
-        dataHelper.fetchListChartData(wc, we)
+        dataHelper.fetchPointsForWorkoutsChart(wc, we)
     }
         .distinctUntilChanged()
         .flowOn(Dispatchers.Default)

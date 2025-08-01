@@ -109,8 +109,8 @@ val legendLabelKey = ExtraStore.Key<List<String>>()
  *
  * @param format It is used by [VerticalAxis] to display Y axis values following the provided format.
  * Leave empty in order to use the default format.
- * @param listChartData A list of [ChartData] containing the actual points of the chart.
- * If empty, a placeholder is shown. Leave all [ChartData.xValue]s blank in order to display default ordinal numeration in x axis.
+ * @param points A list of [Point]s containing the actual points of the chart.
+ * If empty, a placeholder is shown. Leave all [Point.xValue]s blank in order to display default ordinal numeration in x axis.
  * @param useColumns When `false`, the chart will use lines instead of columns.
  * @param chartMode A [ChartMode] to display which [FilterChip] is selected. If `null`, none filter chips
  * will be displayed.
@@ -120,12 +120,12 @@ val legendLabelKey = ExtraStore.Key<List<String>>()
  * and to show info about a selected [org.librefit.db.entity.Workout]. It is intended to work only with workouts
  * rather than [org.librefit.db.entity.Measurement] or anything else.
  * @param legendList A list of [String] shown under the chart as a legend. The list must match the
- * size of [ChartData.yValues] and it must not contain blank strings. Leave empty to not shown a legend.
+ * size of [Point.yValues] and it must not contain blank strings. Leave empty to not shown a legend.
  */
 @Composable
 fun LibreFitCartesianChart(
     format: DecimalFormat = DecimalFormat(),
-    listChartData: List<ChartData>,
+    points: List<Point>,
     useColumns: Boolean = false,
     chartMode: ChartMode? = null,
     navController: NavHostController? = null,
@@ -138,8 +138,8 @@ fun LibreFitCartesianChart(
 
     val selectedWorkoutDate = rememberSaveable { mutableStateOf<String?>(null) }
 
-    val rawYValues = listChartData.map { it.yValues }
-    val xValues = listChartData.map { it.xValue }
+    val rawYValues = points.map { it.yValues }
+    val xValues = points.map { it.xValue }
 
     val expectedSize = rawYValues.firstOrNull()?.size ?: 0
     require(rawYValues.all { it.size == expectedSize } && expectedSize <= 4) {
@@ -301,10 +301,10 @@ fun LibreFitCartesianChart(
                                             targets: List<CartesianMarker.Target>,
                                         ) {
                                             selectedWorkoutId.value =
-                                                listChartData[targets.first().x.toInt()].workoutId
+                                                points[targets.first().x.toInt()].workoutId
 
                                             selectedWorkoutDate.value =
-                                                listChartData[targets.first().x.toInt()].xValue
+                                                points[targets.first().x.toInt()].xValue
 
                                             super.onShown(marker, listOf(targets.first()))
                                         }
@@ -314,10 +314,10 @@ fun LibreFitCartesianChart(
                                             targets: List<CartesianMarker.Target>,
                                         ) {
                                             selectedWorkoutId.value =
-                                                listChartData[targets.first().x.toInt()].workoutId
+                                                points[targets.first().x.toInt()].workoutId
 
                                             selectedWorkoutDate.value =
-                                                listChartData[targets.first().x.toInt()].xValue
+                                                points[targets.first().x.toInt()].xValue
 
                                             super.onShown(marker, listOf(targets.first()))
                                         }
@@ -435,8 +435,8 @@ private fun LibreFitCartesianChartPreview() {
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         LibreFitCartesianChart(
             format = DecimalFormat("#.# %"),
-            listChartData = (0..10).map {
-                ChartData(
+            points = (0..10).map {
+                Point(
                     yValues = (0..numRandomEntries).map { Random.nextFloat() },
                     xValue = Formatter.getShortDateFromLocalDate(
                         LocalDateTime.now().minusDays(it.toLong())

@@ -78,8 +78,8 @@ import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.bottomMargin
-import org.librefit.ui.components.charts.ChartData
 import org.librefit.ui.components.charts.LibreFitCartesianChart
+import org.librefit.ui.components.charts.Point
 import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
@@ -104,7 +104,7 @@ fun MeasurementScreen(
 
     val measurements by viewModel.measurements.collectAsState()
 
-    val listChartData by viewModel.listChartData.collectAsState()
+    val points by viewModel.points.collectAsState()
 
     val measurementChart by viewModel.measurementChart.collectAsState()
 
@@ -174,7 +174,7 @@ fun MeasurementScreen(
 
     MeasurementScreenContent(
         measurements = measurements,
-        listChartData = listChartData,
+        listChartData = points,
         date = date,
         measurementCardState = measurementCardState,
         bodyweight = bodyweight,
@@ -203,7 +203,7 @@ fun MeasurementScreen(
 @Composable
 private fun MeasurementScreenContent(
     measurements: List<Measurement>,
-    listChartData: List<ChartData>,
+    listChartData: List<Point>,
     bodyweight: Float,
     fatMass: Float,
     leanMass: Float,
@@ -246,7 +246,7 @@ private fun MeasurementScreenContent(
                         MeasurementChart.FAT_MASS -> DecimalFormat("0' %'")
                         MeasurementChart.LEAN_MASS -> DecimalFormat("0' %'")
                     },
-                    listChartData = listChartData,
+                    points = listChartData,
                     chartMode = measurementChart,
                     updateChartMode = { updateChartMode(it as MeasurementChart) }
                 )
@@ -600,7 +600,7 @@ private fun MeasurementScreenPreview() {
         MeasurementScreenContent(
             measurements = measurements,
             listChartData = measurements.map {
-                ChartData(
+                Point(
                     yValues = listOf(
                         when (measurementChart) {
                             MeasurementChart.BODY_WEIGHT -> it.bodyWeight

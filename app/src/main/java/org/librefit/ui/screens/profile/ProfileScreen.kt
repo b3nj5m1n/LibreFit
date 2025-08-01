@@ -85,8 +85,8 @@ import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.animations.StreakLottie
 import org.librefit.ui.components.bottomMargin
-import org.librefit.ui.components.charts.ChartData
 import org.librefit.ui.components.charts.LibreFitCartesianChart
+import org.librefit.ui.components.charts.Point
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatTime
@@ -104,7 +104,7 @@ fun ProfileScreen(
 ) {
     val viewModel: ProfileScreenViewModel = hiltViewModel()
 
-    val listChartData by viewModel.listChartData.collectAsState()
+    val points by viewModel.points.collectAsState()
 
     val workoutChart by viewModel.workoutChart.collectAsState()
 
@@ -117,7 +117,7 @@ fun ProfileScreen(
         innerPadding = innerPadding,
         navController = navController,
         weekStreak = weekStreak,
-        listChartData = listChartData,
+        points = points,
         workoutsWithExercises = workoutsWithExercises,
         workoutChart = workoutChart,
         updateChartMode = viewModel::updateChartMode
@@ -129,7 +129,7 @@ private fun ProfileScreenContent(
     innerPadding: PaddingValues,
     navController: NavHostController,
     weekStreak: Int,
-    listChartData: List<ChartData>,
+    points: List<Point>,
     workoutChart: WorkoutChart,
     workoutsWithExercises: List<WorkoutWithExercisesAndSets>,
     updateChartMode: (WorkoutChart) -> Unit
@@ -197,7 +197,7 @@ private fun ProfileScreenContent(
                     WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
                     WorkoutChart.REPS -> DecimalFormat()
                 },
-                listChartData = listChartData,
+                points = points,
                 useColumns = true,
                 chartMode = workoutChart,
                 updateChartMode = { updateChartMode(it as WorkoutChart) },
@@ -399,7 +399,7 @@ private fun ProfileScreenPreview() {
     }
 
     val listChartData = workoutsWithExercises.map {
-        ChartData(
+        Point(
             yValues = listOf(it.workout.timeElapsed.toFloat()),
             xValue = Formatter.getShortDateFromLocalDate(it.workout.completed),
             workoutId = it.workout.id
@@ -449,7 +449,7 @@ private fun ProfileScreenPreview() {
                 innerPadding = innerPadding,
                 navController = rememberNavController(),
                 weekStreak = 2,
-                listChartData = listChartData,
+                points = listChartData,
                 workoutChart = WorkoutChart.DURATION,
                 workoutsWithExercises = workoutsWithExercises,
                 updateChartMode = {},

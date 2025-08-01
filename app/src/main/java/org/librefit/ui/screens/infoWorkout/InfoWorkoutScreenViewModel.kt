@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.librefit.db.entity.Workout
@@ -39,7 +38,7 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
-import org.librefit.ui.components.charts.ChartData
+import org.librefit.ui.components.charts.Point
 import org.librefit.util.Formatter
 import java.util.Locale
 import javax.inject.Inject
@@ -140,11 +139,15 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     private val _workoutChart = MutableStateFlow(WorkoutChart.DURATION)
     val workoutChart = _workoutChart.asStateFlow()
 
-    val listChartData: StateFlow<List<ChartData>> = combine(
+    val points: StateFlow<List<Point>> = combine(
         workoutChart,
         completedWorkoutsWithExercises
-    ) { w, ce -> dataHelper.fetchListChartData(workoutChart = w, workoutsWithExercises = ce) }
-        .flowOn(Dispatchers.IO)
+    ) { w, ce ->
+        dataHelper.fetchPointsForWorkoutsChart(
+            workoutChart = w,
+            workoutsWithExercises = ce
+        )
+    }
         .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,

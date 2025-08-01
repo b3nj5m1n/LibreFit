@@ -65,8 +65,8 @@ import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
-import org.librefit.ui.components.charts.ChartData
 import org.librefit.ui.components.charts.LibreFitCartesianChart
+import org.librefit.ui.components.charts.Point
 import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.modalBottomSheets.ExerciseDetailModalBottomSheet
 import org.librefit.ui.theme.LibreFitTheme
@@ -84,7 +84,7 @@ fun InfoWorkoutScreen(
 ) {
     val viewModel: InfoWorkoutScreenViewModel = hiltViewModel()
 
-    val listChartData by viewModel.listChartData.collectAsState()
+    val points by viewModel.points.collectAsState()
 
     val workout by viewModel.workout.collectAsState()
 
@@ -105,7 +105,7 @@ fun InfoWorkoutScreen(
         volumeExercises = volume,
         workoutChart = workoutChartMode,
         exercises = exercises,
-        listChartData = listChartData,
+        points = points,
         deleteWorkout = viewModel::deleteWorkout,
         updateChartMode = viewModel::updateChartMode,
         detachWorkoutFromRoutine = viewModel::detachWorkoutFromRoutine,
@@ -121,7 +121,7 @@ private fun InfoWorkoutScreenContent(
     volumeExercises: String,
     workoutChart: WorkoutChart,
     exercises: List<ExerciseWithSets>,
-    listChartData: List<ChartData>,
+    points: List<Point>,
     deleteWorkout: () -> Unit,
     detachWorkoutFromRoutine: () -> Unit,
     updateChartMode: (WorkoutChart) -> Unit
@@ -277,7 +277,7 @@ private fun InfoWorkoutScreenContent(
                             WorkoutChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
                             WorkoutChart.REPS -> DecimalFormat()
                         },
-                        listChartData = listChartData,
+                        points = points,
                         chartMode = workoutChart,
                         updateChartMode = { updateChartMode(it as WorkoutChart) },
                         navController = navController
@@ -385,7 +385,7 @@ private fun InfoRoutineScreenPreview() {
                     sets = listOf(Set(), Set())
                 )
             ),
-            listChartData = (0..10).map { ChartData(listOf(Random.nextFloat())) },
+            points = (0..10).map { Point(listOf(Random.nextFloat())) },
             detachWorkoutFromRoutine = {
                 routine = Workout()
             },
