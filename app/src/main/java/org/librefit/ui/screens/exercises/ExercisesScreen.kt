@@ -46,7 +46,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -88,7 +87,19 @@ fun ExercisesScreen(
     navigateBack: () -> Unit,
     sharedViewModel: SharedViewModel
 ) {
-    val selectedExercisesList = remember { mutableStateListOf<ExerciseDC>() }
+    val viewModel: ExercisesScreenViewModel = hiltViewModel()
+
+    val filteredExerciseList by viewModel.filteredExerciseList.collectAsState()
+
+    val query by viewModel.query.collectAsState()
+
+    val filterValue by viewModel.filterValue.collectAsState()
+
+    val selectedExercisesList by viewModel.selectedExercises.collectAsState()
+
+    val selectedExercisesIds by viewModel.selectedExerciseIds.collectAsState()
+
+
 
     var showConfirmDialog by remember { mutableStateOf(false) }
 
@@ -110,23 +121,15 @@ fun ExercisesScreen(
     }
 
 
-    val viewModel: ExercisesScreenViewModel = hiltViewModel()
-
-    val filteredExerciseList by viewModel.filteredExerciseList.collectAsState()
-
-    val query by viewModel.query.collectAsState()
-
-    val filterValue by viewModel.filterValue.collectAsState()
-
-
     ExercisesScreenContent(
         addExercises = addExercises,
-        selectedExercisesList = selectedExercisesList,
+        selectedExercisesIdList = selectedExercisesIds,
         filteredExerciseList = filteredExerciseList,
         query = query,
+        filterValue = filterValue,
+        toggleSelectedExercise = viewModel::toggleSelectedExercise,
         updateQuery = viewModel::updateQuery,
         updateFilter = viewModel::updateFilter,
-        filterValue = filterValue,
         actions = if (addExercises) listOf {
             sharedViewModel.setSelectedExercisesList(selectedExercisesList)
             navigateBack()
@@ -139,12 +142,13 @@ fun ExercisesScreen(
 @Composable
 private fun ExercisesScreenContent(
     addExercises: Boolean,
-    selectedExercisesList: MutableList<ExerciseDC>,
+    selectedExercisesIdList: Set<String>,
     filteredExerciseList: List<ExerciseDC>,
     query: String,
+    filterValue: FilterValue,
+    toggleSelectedExercise: (String) -> Unit,
     updateQuery: (String) -> Unit,
     updateFilter: (FilterValue) -> Unit,
-    filterValue: FilterValue,
     actions: List<() -> Unit>,
     navigateBack: () -> Unit
 ) {
@@ -184,7 +188,7 @@ private fun ExercisesScreenContent(
         navigateBack = navigateBack,
         actions = actions,
         actionsDescription = listOf(stringResource(R.string.add)),
-        actionsEnabled = listOf(selectedExercisesList.isNotEmpty()),
+        actionsEnabled = listOf(selectedExercisesIdList.isNotEmpty()),
         fabAction = if (isAtTop) null else scrollToTop,
         fabIcon = ImageVector.vectorResource(R.drawable.ic_keyboard_double_arrow_up),
     ) { innerPadding ->
@@ -270,11 +274,7 @@ private fun ExercisesScreenContent(
                         .clip(CardDefaults.elevatedShape)
                         .clickable {
                             if (addExercises) {
-                                if (selectedExercisesList.contains(exercise)) {
-                                    selectedExercisesList.remove(exercise)
-                                } else {
-                                    selectedExercisesList.add(exercise)
-                                }
+                                toggleSelectedExercise(exercise.id)
                             } else {
                                 selectedExercise = exercise
                                 isModalSheetOpen = true
@@ -292,13 +292,9 @@ private fun ExercisesScreenContent(
                     ) {
                         if (addExercises) {
                             Checkbox(
-                                checked = selectedExercisesList.contains(exercise),
+                                checked = exercise.id in selectedExercisesIdList,
                                 onCheckedChange = {
-                                    if (selectedExercisesList.contains(exercise)) {
-                                        selectedExercisesList.remove(exercise)
-                                    } else {
-                                        selectedExercisesList.add(exercise)
-                                    }
+                                    toggleSelectedExercise(exercise.id)
                                 }
                             )
                         }
@@ -375,14 +371,15 @@ private fun ExercisesScreenPreview() {
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         ExercisesScreenContent(
             addExercises = false,
-            selectedExercisesList = remember { mutableStateListOf() },
+            selectedExercisesIdList = setOf(),
             filteredExerciseList = List(20) {
                 ExerciseDC(id = "$it", name = "Exercise $it", images = listOf("3_4_Sit-Up/0.jpg"))
             },
             query = query,
+            filterValue = filterValue,
+            toggleSelectedExercise = {},
             updateQuery = { query = it },
             updateFilter = { filterValue = it },
-            filterValue = filterValue,
             actions = listOf {},
             navigateBack = {},
         )

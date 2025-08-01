@@ -19,8 +19,6 @@
 
 package org.librefit.ui.screens.exercises
 
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +30,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.repository.DatasetRepository
 import org.librefit.enums.exercise.FilterValue
@@ -47,7 +47,7 @@ class ExercisesScreenViewModel @Inject constructor(
     val query = _query.asStateFlow()
 
     fun updateQuery(newQuery: String) {
-        _query.value = newQuery
+        _query.update { newQuery }
     }
 
     @OptIn(FlowPreview::class)
@@ -66,21 +66,27 @@ class ExercisesScreenViewModel @Inject constructor(
     var filterValue = _filterValue.asStateFlow()
 
     fun updateFilter(newFilterValue: FilterValue) {
-        _filterValue.value = newFilterValue
+        _filterValue.update { newFilterValue }
     }
 
+    val dataset = datasetRepository.dataset
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = datasetRepository.dataset.value
+        )
 
     val filteredExerciseList: StateFlow<List<ExerciseDC>> =
         combine(
             debouncedQuery,
             filterValue,
-            datasetRepository.dataset
+            dataset
         ) { q, _, dataset ->
             dataset
-                .fastMap { e -> e to fuzzySearch(e.name, q) }
-                .fastFilter { (e, score) -> score > 60 && filterExercise(e) }
+                .map { e -> e to fuzzySearch(e.name, q) }
+                .filter { (e, score) -> score > 60 && filterExercise(e) }
                 .sortedByDescending { it.second }
-                .fastMap { it.first }
+                .map { it.first }
         }
             .distinctUntilChanged()
             .stateIn(
@@ -109,6 +115,28 @@ class ExercisesScreenViewModel @Inject constructor(
 
             (category != null && category != exercise.category) -> false
             else -> true
+        }
+    }
+
+    // Store IDs in a Set for fast lookups
+    private val _selectedExerciseIds = MutableStateFlow<Set<String>>(emptySet())
+    val selectedExerciseIds = _selectedExerciseIds.asStateFlow()
+
+    val selectedExercises: StateFlow<List<ExerciseDC>> = _selectedExerciseIds
+        .map { ids -> dataset.value.filter { it.id in ids } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    fun toggleSelectedExercise(id: String) {
+        _selectedExerciseIds.update { currentIds ->
+            if (id in currentIds) {
+                currentIds - id
+            } else {
+                currentIds + id
+            }
         }
     }
 }
