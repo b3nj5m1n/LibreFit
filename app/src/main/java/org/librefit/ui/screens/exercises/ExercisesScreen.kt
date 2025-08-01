@@ -19,13 +19,17 @@
 
 package org.librefit.ui.screens.exercises
 
+import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,10 +56,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -168,6 +176,8 @@ private fun ExercisesScreenContent(
 
     var isModalSheetOpen by rememberSaveable { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
 
     LibreFitScaffold(
         title = AnnotatedString(stringResource(id = R.string.exercises)),
@@ -255,6 +265,7 @@ private fun ExercisesScreenContent(
             ) { index, exercise ->
                 ElevatedCard(
                     modifier = Modifier
+                        .height(120.dp)
                         .animateItem()
                         .clip(CardDefaults.elevatedShape)
                         .clickable {
@@ -291,15 +302,31 @@ private fun ExercisesScreenContent(
                                 }
                             )
                         }
+                        val image = remember(exercise.images[0]) {
+                            BitmapFactory.decodeStream(
+                                context.assets.open(exercise.images[0])
+                            ).asImageBitmap()
+                        }
+                        Image(
+                            bitmap = image,
+                            contentDescription = exercise.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .width(100.dp)
+                                .clip(MaterialTheme.shapes.small)
+                        )
                         Column(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(start = 10.dp),
+                                .padding(start = 20.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = exercise.name,
                                 style = MaterialTheme.typography.titleMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
                             )
                             Text(
                                 text = stringResource(exerciseEnumToStringId(exercise.category)),
@@ -349,7 +376,9 @@ private fun ExercisesScreenPreview() {
         ExercisesScreenContent(
             addExercises = false,
             selectedExercisesList = remember { mutableStateListOf() },
-            filteredExerciseList = List(20) { ExerciseDC(id = "$it", name = "Exercise $it") },
+            filteredExerciseList = List(20) {
+                ExerciseDC(id = "$it", name = "Exercise $it", images = listOf("3_4_Sit-Up/0.jpg"))
+            },
             query = query,
             updateQuery = { query = it },
             updateFilter = { filterValue = it },
