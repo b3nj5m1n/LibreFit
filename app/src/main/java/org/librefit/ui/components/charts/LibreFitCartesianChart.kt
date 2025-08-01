@@ -120,7 +120,7 @@ val legendLabelKey = ExtraStore.Key<List<String>>()
  * and to show info about a selected [org.librefit.db.entity.Workout]. It is intended to work only with workouts
  * rather than [org.librefit.db.entity.Measurement] or anything else.
  * @param legendList A list of [String] shown under the chart as a legend. The list must match the
- * size of [ChartData.yValues] and it must not contain blank strings.
+ * size of [ChartData.yValues] and it must not contain blank strings. Leave empty to not shown a legend.
  */
 @Composable
 fun LibreFitCartesianChart(
@@ -129,7 +129,7 @@ fun LibreFitCartesianChart(
     useColumns: Boolean = false,
     chartMode: ChartMode? = null,
     navController: NavHostController? = null,
-    legendList: List<String> = emptyList(),
+    legendList: List<String>? = null,
     updateChartMode: ((ChartMode) -> Unit)? = null
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
@@ -146,9 +146,11 @@ fun LibreFitCartesianChart(
         "All yValues lists must have the same size which must be not over 4. Found sizes: ${rawYValues.map { it.size }}"
     }
 
-    require(legendList.size == expectedSize && legendList.all { it.isNotBlank() }) {
-        "The legend list must match the size of yValues and it must not contain blank strings. " +
-                "Legend list size: ${legendList.size}. Expected size: $expectedSize."
+    if (legendList != null) {
+        require(legendList.size == expectedSize && legendList.all { it.isNotBlank() }) {
+            "The legend list must match the size of yValues and it must not contain blank strings. " +
+                    "Legend list size: ${legendList.size}. Expected size: $expectedSize."
+        }
     }
 
     /**
@@ -176,7 +178,9 @@ fun LibreFitCartesianChart(
                 if (xValues.all { it.isNotBlank() }) {
                     extras { it[labelListKey] = xValues }
                 }
-                extras { it[legendLabelKey] = legendList }
+                if (legendList != null) {
+                    extras { it[legendLabelKey] = legendList }
+                }
             }
         }
     }
@@ -336,7 +340,7 @@ fun LibreFitCartesianChart(
                                             else CartesianValueFormatter.decimal()
                                         }
                                     ),
-                                    legend = rememberHorizontalLegend(
+                                    legend = if (legendList == null) null else rememberHorizontalLegend(
                                         items = { extraStore ->
                                             extraStore[legendLabelKey].forEachIndexed { index, label ->
                                                 add(

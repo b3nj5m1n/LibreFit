@@ -50,8 +50,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -90,8 +88,10 @@ import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.charts.ChartData
 import org.librefit.ui.components.charts.LibreFitCartesianChart
 import org.librefit.ui.theme.LibreFitTheme
+import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatTime
 import java.text.DecimalFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -386,6 +386,26 @@ fun StreakCard(weekStreak: Int) {
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
+    val workoutsWithExercises = (0..5).map {
+        WorkoutWithExercisesAndSets(
+            workout = Workout(
+                id = Random.nextLong(),
+                title = "Workout $it",
+                completed = LocalDateTime.now().minusDays(it.toLong() * 2),
+                timeElapsed = Random.nextInt(0, 90)
+            ),
+            exercisesWithSets = emptyList()
+        )
+    }
+
+    val listChartData = workoutsWithExercises.map {
+        ChartData(
+            yValues = listOf(it.workout.timeElapsed.toFloat()),
+            xValue = Formatter.getShortDateFromLocalDate(it.workout.completed),
+            workoutId = it.workout.id
+        )
+    }
+
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         LibreFitScaffold(
             title = buildAnnotatedString {
@@ -424,18 +444,14 @@ private fun ProfileScreenPreview() {
                     )
                 }
             }
-        ) {
+        ) { innerPadding ->
             ProfileScreenContent(
-                innerPadding = it,
+                innerPadding = innerPadding,
                 navController = rememberNavController(),
-                weekStreak = 0,
-                listChartData = (0..10).map { ChartData(listOf(Random.nextFloat())) },
+                weekStreak = 2,
+                listChartData = listChartData,
                 workoutChart = WorkoutChart.DURATION,
-                workoutsWithExercises = remember {
-                    mutableStateListOf(
-                        WorkoutWithExercisesAndSets(Workout(title = "Workout 1"), listOf())
-                    )
-                },
+                workoutsWithExercises = workoutsWithExercises,
                 updateChartMode = {},
             )
         }
