@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.data.DataStoreManager
@@ -134,24 +135,26 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
     fun addExerciseWithSets(exerciseDC: ExerciseDC) {
-        _exercises.value = exercises.value +
-            ExerciseWithSets(
-                exercise = Exercise(
-                    idExerciseDC = exerciseDC.id,
-                    setMode = when (exerciseDC.category) {
-                        Category.STRETCHING -> SetMode.DURATION
-                        Category.CARDIO -> SetMode.DURATION
-                        else -> when (exerciseDC.equipment) {
-                            Equipment.BODY_ONLY -> SetMode.BODYWEIGHT
-                            Equipment.FOAM_ROLL -> SetMode.BODYWEIGHT
-                            Equipment.EXERCISE_BALL -> SetMode.BODYWEIGHT
-                            else -> SetMode.LOAD
-                        }
+        val newExercise = ExerciseWithSets(
+            exercise = Exercise(
+                idExerciseDC = exerciseDC.id,
+                setMode = when (exerciseDC.category) {
+                    Category.STRETCHING -> SetMode.DURATION
+                    Category.CARDIO -> SetMode.DURATION
+                    else -> when (exerciseDC.equipment) {
+                        Equipment.BODY_ONLY -> SetMode.BODYWEIGHT
+                        Equipment.FOAM_ROLL -> SetMode.BODYWEIGHT
+                        Equipment.EXERCISE_BALL -> SetMode.BODYWEIGHT
+                        else -> SetMode.LOAD
                     }
-                ),
-                exerciseDC = exerciseDC
-            )
+                }
+            ),
+            exerciseDC = exerciseDC
+        )
 
+        _exercises.update { exercises ->
+            exercises + newExercise
+        }
     }
 
     fun addSetToExercise(exerciseWithSets: ExerciseWithSets) {
@@ -159,11 +162,13 @@ class WorkoutScreenViewModel @Inject constructor(
             .lastOrNull()?.copy(id = Random.Default.nextLong())
             ?: Set()
 
-        _exercises.value = exercises.value.map { exercise ->
-            if (exercise == exerciseWithSets) {
-                exercise.copy(sets = exercise.sets + newSet)
-            } else {
-                exercise
+        _exercises.update { exercises ->
+            exercises.map { exercise ->
+                if (exercise == exerciseWithSets) {
+                    exercise.copy(sets = exercise.sets + newSet)
+                } else {
+                    exercise
+                }
             }
         }
     }
@@ -174,19 +179,21 @@ class WorkoutScreenViewModel @Inject constructor(
      * @param set The updated [Set] to assign.
      */
     fun updateSet(set: Set) {
-        val exerciseWithSets = exercises.value.find { e -> e.sets.map { it.id }.contains(set.id) }!!
-
-        _exercises.value = exercises.value.map { exercise ->
-            if (exercise == exerciseWithSets) {
-                exercise.copy(
-                    sets = exercise.sets.map {
-                        if (it.id == set.id) set else it
-                    }
-                )
-            } else {
-                exercise
+        _exercises.update { currentExercises ->
+            currentExercises.map { exercise ->
+                if (set.id in exercise.sets.map { it.id }) {
+                    exercise.copy(
+                        sets = exercise.sets.map {
+                            if (it.id == set.id) set else it
+                        }
+                    )
+                } else {
+                    exercise
+                }
             }
         }
+
+        val exerciseWithSets = exercises.value.find { e -> set.id in e.sets.map { it.id } }!!
         if (set.completed && exerciseWithSets.exercise.restTime != 0) {
             startRestTimer(exerciseWithSets.exercise.restTime + 1)
         }
@@ -199,30 +206,34 @@ class WorkoutScreenViewModel @Inject constructor(
             _idSetWithRunningChronometer.value = 0L
         }
 
-        _exercises.value = exercises.value.map { exercise ->
-            if (exercise.sets.contains(set)) {
-                exercise.copy(
-                    sets = exercise.sets.filter { it != set }
-                )
-            } else {
-                exercise
+        _exercises.update { currentExercises ->
+            currentExercises.map { exercise ->
+                if (set in exercise.sets) {
+                    exercise.copy(
+                        sets = exercise.sets.filter { it != set }
+                    )
+                } else exercise
             }
         }
     }
 
     fun updateExercise(exercise: Exercise) {
-        _exercises.value = exercises.value.map {
-            if (exercise.id == it.exercise.id) it.copy(exercise = exercise) else it
+        _exercises.update { currentExercises ->
+            currentExercises.map {
+                if (it.exercise.id == exercise.id) it.copy(exercise = exercise) else it
+            }
         }
     }
 
     fun deleteExercise(exerciseWithSets: ExerciseWithSets) {
         // If there's the match, then a set of the exercise has a running chronometer so it has to stopped by assign 0
-        if (exerciseWithSets.sets.map { it.id }.contains(idSetWithRunningChronometer.value)) {
+        if (idSetWithRunningChronometer.value in exerciseWithSets.sets.map { it.id }) {
             _idSetWithRunningChronometer.value = 0L
         }
 
-        _exercises.value = exercises.value.filter { it != exerciseWithSets }
+        _exercises.update { currentExercises ->
+            currentExercises.filter { it != exerciseWithSets }
+        }
     }
 
 
