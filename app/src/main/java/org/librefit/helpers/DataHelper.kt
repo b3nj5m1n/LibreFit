@@ -31,9 +31,8 @@ import org.librefit.ui.components.charts.Point
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
-import javax.inject.Inject
 
-class DataHelper @Inject constructor(
+class DataHelper(
     private val measurementRepository: MeasurementRepository
 ) {
     val shortFormatter: DateTimeFormatter? =

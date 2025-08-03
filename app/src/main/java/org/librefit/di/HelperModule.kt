@@ -25,16 +25,24 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import org.librefit.db.repository.MeasurementRepository
+import org.librefit.helpers.DataHelper
 import org.librefit.helpers.NotificationHelper
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NotificationModule {
+object HelperModule {
 
     @Provides
     @Singleton
     fun provideNotificationHelper(@ApplicationContext context: Context): NotificationHelper {
         return NotificationHelper(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataHelper(measurementRepository: MeasurementRepository): DataHelper {
+        return DataHelper(measurementRepository)
     }
 }

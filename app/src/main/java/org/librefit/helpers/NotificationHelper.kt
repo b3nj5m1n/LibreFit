@@ -43,7 +43,7 @@ import org.librefit.util.Formatter.formatTime
  * and timer events. It sets up notification channels, builds notification content, and
  * handles user interactions through actions in the notifications.
  *
- * This class instance is provided by [org.librefit.di.NotificationModule].
+ * This class instance is provided by [org.librefit.di.HelperModule].
  */
 class NotificationHelper(context: Context) {
     companion object {
