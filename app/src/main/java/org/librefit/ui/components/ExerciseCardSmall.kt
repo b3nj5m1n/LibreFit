@@ -43,15 +43,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
 import org.librefit.enums.SetMode
+import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.theme.LibreFitTheme
+import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatDetails
 import org.librefit.util.Formatter.formatTime
 
@@ -85,13 +88,14 @@ fun ExerciseCardSmall(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
                     text = exerciseWithSets.exerciseDC.name,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
                 IconButton(
                     onClick = onDetail
@@ -102,16 +106,18 @@ fun ExerciseCardSmall(
                     )
                 }
             }
+            HorizontalDivider()
 
-
-            if (exerciseWithSets.exercise.notes.isNotBlank()) {
-                HorizontalDivider()
-
-                Text(formatDetails(stringResource(R.string.notes), exerciseWithSets.exercise.notes))
-            }
+            Text(
+                text = formatDetails(
+                    stringResource(R.string.type_of_set),
+                    stringResource(
+                        Formatter.setModeToStringId(exerciseWithSets.exercise.setMode)
+                    )
+                )
+            )
 
             if (exerciseWithSets.exercise.restTime != 0) {
-                HorizontalDivider()
                 Text(
                     formatDetails(
                         stringResource(R.string.rest_time),
@@ -119,6 +125,13 @@ fun ExerciseCardSmall(
                                 + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
                 )
             }
+
+            if (exerciseWithSets.exercise.notes.isNotBlank()) {
+                HorizontalDivider()
+
+                Text(formatDetails(stringResource(R.string.notes), exerciseWithSets.exercise.notes))
+            }
+
 
             if (exerciseWithSets.sets.isNotEmpty()) {
                 HorizontalDivider()
@@ -204,8 +217,15 @@ private fun ExerciseCardSmallPreview() {
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         ExerciseCardSmall(
             exerciseWithSets = UiExerciseWithSets(
-                exerciseDC = UiExerciseDC(name = "Name exercise"),
-                sets = persistentListOf(UiSet(completed = true), UiSet(), UiSet())
+                exercise = UiExercise(
+                    notes = "Notes",
+                    restTime = 100,
+                    setMode = SetMode.BODYWEIGHT
+                ),
+                exerciseDC = UiExerciseDC(
+                    name = "Name exercise long long long long",
+                ),
+                sets = persistentListOf(UiSet(completed = true), UiSet(reps = 10), UiSet())
             ),
         ) { }
     }

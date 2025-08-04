@@ -25,6 +25,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import org.librefit.R
+import org.librefit.enums.SetMode
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.enums.exercise.ExerciseProperty
@@ -85,7 +86,16 @@ object Formatter {
             Category.OLYMPIC_WEIGHTLIFTING -> R.string.category_olympic_weightlifting
             Category.STRONGMAN -> R.string.category_strongman
             Category.PLYOMETRICS -> R.string.category_plyometrics
-            else -> R.string.any
+            null -> R.string.any
+        }
+    }
+
+    fun setModeToStringId(setMode: SetMode): Int {
+        return when (setMode) {
+            SetMode.LOAD -> R.string.load
+            SetMode.BODYWEIGHT_WITH_LOAD -> R.string.bodyweight_with_load
+            SetMode.BODYWEIGHT -> R.string.bodyweight
+            SetMode.DURATION -> R.string.duration
         }
     }
 

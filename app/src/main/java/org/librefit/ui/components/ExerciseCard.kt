@@ -291,7 +291,7 @@ fun ExerciseCard(
                 ) {
                     OutlinedTextField(
                         readOnly = true,
-                        value = stringResource(setModeToStringId(exerciseWithSets.exercise.setMode)),
+                        value = stringResource(Formatter.setModeToStringId(exerciseWithSets.exercise.setMode)),
                         onValueChange = {},
                         singleLine = true,
                         trailingIcon = {
@@ -312,7 +312,7 @@ fun ExerciseCard(
                                 },
                                 text = {
                                     Text(
-                                        text = stringResource(setModeToStringId(mode))
+                                        text = stringResource(Formatter.setModeToStringId(mode))
                                     )
                                 },
                                 trailingIcon = if (exerciseWithSets.exercise.setMode == mode) {
@@ -635,14 +635,6 @@ private fun Sets(
     }
 }
 
-private fun setModeToStringId(setMode: SetMode): Int {
-    return when (setMode) {
-        SetMode.LOAD -> R.string.load
-        SetMode.BODYWEIGHT_WITH_LOAD -> R.string.bodyweight_with_load
-        SetMode.BODYWEIGHT -> R.string.bodyweight
-        SetMode.DURATION -> R.string.duration
-    }
-}
 
 @Preview
 @Composable
