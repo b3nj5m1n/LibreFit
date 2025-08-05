@@ -46,7 +46,7 @@ import org.librefit.ui.theme.LibreFitTheme
 fun LibreFitButton(
     modifier: Modifier = Modifier,
     text: String,
-    icon: ImageVector,
+    icon: ImageVector? = null,
     iconDescription: String? = null,
     elevated: Boolean = true,
     enabled: Boolean = true,
@@ -68,11 +68,13 @@ fun LibreFitButton(
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = iconDescription
-            )
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = iconDescription
+                )
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            }
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
