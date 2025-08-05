@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.librefit.db.entity.Measurement
 import org.librefit.db.repository.MeasurementRepository
@@ -49,7 +50,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val measurementChart = _measurementChart.asStateFlow()
 
     fun updateMeasurementChart(newMeasurementChart: MeasurementChart) {
-        _measurementChart.value = newMeasurementChart
+        _measurementChart.update { newMeasurementChart }
     }
 
 
@@ -101,7 +102,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val idMeasurement = _idMeasurement.asStateFlow()
 
     fun updateIdMeasurement(newValue: Long) {
-        _idMeasurement.value = newValue
+        _idMeasurement.update { newValue }
     }
 
 
@@ -109,7 +110,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val bodyWeight = _bodyweight.asStateFlow()
 
     fun updateBodyweight(newValue: String) {
-        _bodyweight.value = newValue.ifBlank { "0" }.toFloat()
+        _bodyweight.update { newValue.ifBlank { "0" }.toFloat() }
     }
 
 
@@ -117,7 +118,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val fatMass = _fatMass.asStateFlow()
 
     fun updateFatMass(newValue: String) {
-        _fatMass.value = newValue.ifBlank { "0" }.toFloat()
+        _fatMass.update { newValue.ifBlank { "0" }.toFloat() }
     }
 
 
@@ -125,7 +126,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val leanMass = _leanMass.asStateFlow()
 
     fun updateLeanMass(newValue: String) {
-        _leanMass.value = newValue.ifBlank { "0" }.toFloat()
+        _leanMass.update { newValue.ifBlank { "0" }.toFloat() }
     }
 
 
@@ -133,7 +134,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val notes = _notes.asStateFlow()
 
     fun updateNotes(newValue: String) {
-        _notes.value = newValue
+        _notes.update { newValue }
     }
 
 
@@ -141,7 +142,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val date = _date.asStateFlow()
 
     fun updateDate(newValue: LocalDateTime) {
-        _date.value = newValue
+        _date.update { newValue }
     }
 
 
@@ -149,7 +150,7 @@ class MeasurementScreenViewModel @Inject constructor(
     val measurementCardState = _measurementCardState.asStateFlow()
 
     fun updateMeasurementCardState(measurementCardState: MeasurementCardState) {
-        _measurementCardState.value = measurementCardState
+        _measurementCardState.update { measurementCardState }
     }
 
 
@@ -170,11 +171,11 @@ class MeasurementScreenViewModel @Inject constructor(
         viewModelScope.launch {
             // A new current measurement is emitted when idMeasurement changes and MeasurementCardState is EDIT
             currentMeasurement.collect { measurement ->
-                _notes.value = measurement.notes
-                _bodyweight.value = measurement.bodyWeight
-                _leanMass.value = measurement.muscleMassPercentage
-                _fatMass.value = measurement.bodyFatPercentage
-                _date.value = measurement.date
+                _notes.update { measurement.notes }
+                _bodyweight.update { measurement.bodyWeight }
+                _leanMass.update { measurement.muscleMassPercentage }
+                _fatMass.update { measurement.bodyFatPercentage }
+                _date.update { measurement.date }
             }
         }
     }
@@ -194,7 +195,7 @@ class MeasurementScreenViewModel @Inject constructor(
                 )
             )
 
-            _measurementCardState.value = MeasurementCardState.NEW
+            _measurementCardState.update { MeasurementCardState.NEW }
         }
     }
 
@@ -202,7 +203,7 @@ class MeasurementScreenViewModel @Inject constructor(
         viewModelScope.launch {
             measurementRepository.deleteById(id)
 
-            _measurementCardState.value = MeasurementCardState.NEW
+            _measurementCardState.update { MeasurementCardState.NEW }
         }
     }
 }

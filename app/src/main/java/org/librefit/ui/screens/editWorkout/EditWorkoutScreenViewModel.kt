@@ -78,20 +78,29 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
                 val workoutInDb = workoutWithExercisesAndSets.workout
 
-                _isRoutine.value = workoutInDb.routine
+                _isRoutine.update {
+                    workoutInDb.routine
+                }
 
-                _workout.value = workoutInDb.copy(routine = false)
+                _workout.update {
+                    workoutInDb.copy(routine = false)
+                }
 
-                _exercises.value = workoutWithExercisesAndSets.exercisesWithSets
+                _exercises.update {
+                    workoutWithExercisesAndSets.exercisesWithSets
+                }
             } else {
-                _isRoutine.value = true
+                _isRoutine.update {
+                    true
+                }
             }
 
-
-            if (isRoutine.value) {
-                _routine.value = workout.value
-            } else {
-                _routine.value = workoutRepository.getRoutineFromRoutineID(workout.value.routineId)
+            _routine.update {
+                if (isRoutine.value) {
+                    workout.value
+                } else {
+                    workoutRepository.getRoutineFromRoutineID(workout.value.routineId)
+                }
             }
         }
     }
