@@ -97,6 +97,14 @@
     <string name="quit_routine_creation_question">Quit routine creation?</string>
 
 
+    <!-- Error screen-->
+    <string name="application_encountered_error">The application has encountered an unexpected error</string>
+    <string name="restart_app">Restart</string>
+    <string name="crash_log">Crash log</string>
+    <string name="report_github">Report on GitHub</string>
+    <string name="url_github_search_issue" translatable="false">https://github.com/IamDg/LibreFit/issues?q=</string>
+
+
     <!--Exercises screen-->
     <string name="quit_adding_exercises_question">Quit adding exercises?</string>
     <string name="quit_adding_exercises_text">Are you sure you want to quit? Your selected exercises won\'t be added</string>

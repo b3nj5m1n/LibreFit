@@ -63,6 +63,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activities.ErrorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:process=":error_process">
+        </activity>
+
         <!-- Saves persistently the language locale in Android 12 and below-->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

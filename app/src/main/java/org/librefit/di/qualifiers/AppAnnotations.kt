@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. LibreFit
+ * Copyright (c) 2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -17,24 +17,10 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit
+package org.librefit.di.qualifiers
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import org.librefit.util.GlobalExceptionHandler
-import javax.inject.Inject
+import javax.inject.Qualifier
 
-@HiltAndroidApp
-class MainApplication : Application() {
-    @Inject
-    lateinit var globalExceptionHandler: GlobalExceptionHandler
-
-    override fun onCreate() {
-        super.onCreate()
-        setupGlobalExceptionHandler()
-    }
-
-    private fun setupGlobalExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler)
-    }
-}
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class MainActivityClass

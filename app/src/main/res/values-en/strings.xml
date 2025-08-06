@@ -85,6 +85,7 @@
 
 
     <!--Add exercise screen-->
+    <string name="crash_log">Crash log</string>
     <string name="quit_adding_exercises_question">Quit adding exercises?</string>
     <string name="quit_adding_exercises_text">Are you sure you want to quit? Your selected exercises won\'t be added</string>
     <string name="search_exercise_field">Search for an exercise</string>
@@ -291,6 +292,9 @@
     <string name="month">Month</string>
     <string name="months">Months</string>
     <string name="year">Year</string>
+    <string name="application_encountered_error">The application has encountered an unexpected error</string>
+    <string name="restart_app">Restart</string>
+    <string name="report_github">Report on GitHub</string>
 
 
 </resources>

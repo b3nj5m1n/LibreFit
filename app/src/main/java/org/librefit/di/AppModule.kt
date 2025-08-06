@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. LibreFit
+ * Copyright (c) 2025. LibreFit
  *
  * This file is part of LibreFit
  *
@@ -17,24 +17,23 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit
+package org.librefit.di
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import org.librefit.util.GlobalExceptionHandler
-import javax.inject.Inject
+import android.app.Activity
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import org.librefit.activities.MainActivity
+import org.librefit.di.qualifiers.MainActivityClass
 
-@HiltAndroidApp
-class MainApplication : Application() {
-    @Inject
-    lateinit var globalExceptionHandler: GlobalExceptionHandler
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
 
-    override fun onCreate() {
-        super.onCreate()
-        setupGlobalExceptionHandler()
-    }
-
-    private fun setupGlobalExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler)
+    @Provides
+    @MainActivityClass
+    fun provideMainActivityClass(): Class<out Activity> {
+        return MainActivity::class.java
     }
 }

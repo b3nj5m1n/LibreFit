@@ -68,6 +68,7 @@
     <string name="set">Serie</string>
     <string name="add_set">Aggiungi serie</string>
     <string name="notes">Note</string>
+    <string name="crash_log">Log del crash</string>
     <string name="quit_adding_exercises_question">Interrompere l\'aggiunta degli esercizi?</string>
     <string name="quit_adding_exercises_text">Sei sicuro di voler uscire? I tuoi esercizi selezionati non saranno salvati</string>
     <string name="search_exercise_field">Cerca un esercizio</string>
@@ -255,5 +256,8 @@
     <string name="month">Mese</string>
     <string name="months">Mesi</string>
     <string name="year">Anno</string>
+    <string name="application_encountered_error">L\'applicazione ha riscontrato un errore imprevisto</string>
+    <string name="restart_app">Riavvia</string>
+    <string name="report_github">Segnala su GitHub</string>
 
 </resources>
