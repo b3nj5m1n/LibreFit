@@ -216,12 +216,16 @@ private fun MusclesSection(musclesText: String, musclesList: List<Muscle>) {
 
 @Composable
 private fun AlternatingImages(exercise: UiExerciseDC) {
-    val firstBitmap =
-        BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[0]))
-    val secondBitmap =
-        BitmapFactory.decodeStream(LocalContext.current.assets.open(exercise.images[1]))
+    val context = LocalContext.current
 
-    var currentBitmap by rememberSaveable { mutableStateOf(firstBitmap) }
+    val firstBitmap = remember {
+        BitmapFactory.decodeStream(context.assets.open(exercise.images[0]))
+    }
+    val secondBitmap = remember {
+        BitmapFactory.decodeStream(context.assets.open(exercise.images[1]))
+    }
+
+    var currentBitmap by remember { mutableStateOf(firstBitmap) }
 
     var isPaused by rememberSaveable { mutableStateOf(false) }
 
@@ -237,30 +241,28 @@ private fun AlternatingImages(exercise: UiExerciseDC) {
         }
     }
 
-    currentBitmap?.let {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Image(
+            bitmap = currentBitmap.asImageBitmap(),
+            contentDescription = exercise.name,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.medium)
+                .fillMaxWidth()
+        )
+        FilledIconButton(
+            modifier = Modifier.padding(5.dp),
+            onClick = { isPaused = !isPaused }
         ) {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = exercise.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .fillMaxWidth()
+            Icon(
+                imageVector = ImageVector.vectorResource(
+                    if (isPaused) R.drawable.ic_play_arrow else R.drawable.ic_pause
+                ),
+                contentDescription = stringResource(if (isPaused) R.string.pause else R.string.resume),
             )
-            FilledIconButton(
-                modifier = Modifier.padding(5.dp),
-                onClick = { isPaused = !isPaused }
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(
-                        if (isPaused) R.drawable.ic_play_arrow else R.drawable.ic_pause
-                    ),
-                    contentDescription = stringResource(if (isPaused) R.string.pause else R.string.resume),
-                )
-            }
         }
     }
 }
