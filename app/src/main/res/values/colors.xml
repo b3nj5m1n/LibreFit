@@ -19,4 +19,5 @@
 
 <resources>
     <color name="librefit_background">#FFF5FAFC</color>
+    <color name="ic_launcher_background">#000000</color>
 </resources>

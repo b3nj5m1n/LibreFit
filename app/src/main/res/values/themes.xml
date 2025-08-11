@@ -20,4 +20,11 @@
 <resources>
 
     <style name="Theme.LibreFit" parent="@style/Theme.AppCompat.NoActionBar" />
+
+    <style name="Theme.LibreFit.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/librefit_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.LibreFit</item>
+        <item name="windowSplashScreenAnimationDuration">1500</item>
+    </style>
 </resources>
