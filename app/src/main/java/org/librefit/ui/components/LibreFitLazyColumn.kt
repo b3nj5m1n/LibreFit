@@ -66,15 +66,18 @@ fun LibreFitLazyColumn(
         contentAlignment = Alignment.TopCenter
     ) {
         val threshold = 600
-        //Apply padding only when width is greater than 600.dp (i.e. when screen is in landscape mode)
+        //Apply padding only when width is greater than 600.dp (so when screen orientation is landscape)
         val optionalPadding = if (maxWidth < threshold.dp) 0f else (maxWidth.value - threshold) / 2
         LazyColumn(
-            modifier = Modifier.padding(start = startEndPadding, end = startEndPadding),
+            modifier = Modifier.padding(
+                bottom = innerPadding.calculateBottomPadding()
+            ),
             contentPadding = PaddingValues(
                 top = innerPadding.calculateTopPadding(),
-                start = innerPadding.calculateLeftPadding(LayoutDirection.Ltr) + optionalPadding.dp,
-                end = innerPadding.calculateRightPadding(LayoutDirection.Ltr) + optionalPadding.dp,
-                bottom = innerPadding.calculateBottomPadding()
+                start = innerPadding.calculateLeftPadding(LayoutDirection.Ltr) + optionalPadding.dp
+                        + startEndPadding,
+                end = innerPadding.calculateRightPadding(LayoutDirection.Ltr) + optionalPadding.dp
+                        + startEndPadding,
             ),
             verticalArrangement = Arrangement.spacedBy(verticalSpacing),
             horizontalAlignment = Alignment.CenterHorizontally,
