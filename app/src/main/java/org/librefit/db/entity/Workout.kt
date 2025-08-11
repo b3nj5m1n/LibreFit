@@ -50,7 +50,7 @@ import kotlin.random.Random
 data class Workout(
     @PrimaryKey(true)
     val id: Long = 0,
-    val routineId: Long = Random.Default.nextLong() + System.currentTimeMillis(),
+    val routineId: Long = Random.Default.nextLong(),
     val notes: String = "",
     val title: String = "",
     val routine: Boolean = false,

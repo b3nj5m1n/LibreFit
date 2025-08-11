@@ -62,7 +62,7 @@ import kotlin.random.Random
 )
 @Serializable
 data class Set(
-    @PrimaryKey(true) val id: Long = Random.Default.nextLong() + System.currentTimeMillis(),
+    @PrimaryKey(true) val id: Long = Random.Default.nextLong(),
     val load: Float = 0f,
     val reps: Int = 0,
     val elapsedTime: Int = 0,

@@ -60,7 +60,7 @@ import kotlin.random.Random
 )
 @Serializable
 data class Exercise(
-    @PrimaryKey(true) val id: Long = Random.nextLong() + System.currentTimeMillis(),
+    @PrimaryKey(true) val id: Long = Random.nextLong(),
     val idExerciseDC: String = "",
     val notes: String = "",
     val setMode: SetMode = SetMode.LOAD,
