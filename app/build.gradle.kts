@@ -154,4 +154,7 @@ dependencies {
 
     // Used in ui models' properties
     implementation(libs.kotlinx.collections.immutable)
+
+    // Used to apply material colors to splash screen
+    implementation(libs.material)
 }

@@ -23,6 +23,7 @@ truth = "1.7.0"
 turbine = "1.2.1"
 mockk = "1.14.5"
 kotlinxCollectionsImmutable = "0.4.0"
+material = "1.14.0-alpha03"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.16.0" }
@@ -63,6 +64,7 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
