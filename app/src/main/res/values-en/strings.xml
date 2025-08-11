@@ -63,7 +63,7 @@
     <string name="version">Version</string>
     <string name="libraries">Libraries</string>
     <string name="unlink_routine_question">Unlink routine?</string>
-    <string name="unlink_routine_text">Linking routines allows to measure progress of workouts over time. If you unlink a workout from a routine, it will not be deleted, and any workout linked to that routine will remain unchanged. The unlink will only affect the current workout.</string>
+    <string name="unlink_routine_text">Linking routines allows to measure progress of workouts over time. If you unlink this workout from a routine, the latter will not be deleted and any workout linked to that routine will remain unchanged. The unlink will affect only the current workout.</string>
     <string name="overview">Overview</string>
     <string name="statistics">Statistics</string>
     <string name="volume">Volume</string>

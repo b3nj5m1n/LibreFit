@@ -24,8 +24,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -37,6 +36,7 @@ import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
 import org.librefit.helpers.DataHelper
 import org.librefit.services.WorkoutServiceManager
+import org.librefit.ui.models.UiWorkout
 import org.librefit.ui.models.UiWorkoutWithExercisesAndSets
 import org.librefit.ui.models.mappers.toEntity
 import org.librefit.ui.models.mappers.toUi
@@ -123,7 +123,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
             currentWorkout.copy(routineId = Random.nextLong())
         }
         _routine.update {
-            Workout()
+            UiWorkout()
         }
     }
 
@@ -141,13 +141,16 @@ class BeforeSavingScreenViewModel @Inject constructor(
     }
 
 
-    private val _routine = MutableStateFlow(Workout())
+    private val _routine = MutableStateFlow(UiWorkout())
     val routine = _routine.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _routine.update {
-                workoutRepository.getRoutineFromRoutineID(workout.value.routineId)
+            while (true) {
+                _routine.update {
+                    workoutRepository.getRoutineFromRoutineID(workout.value.routineId).toUi()
+                }
+                delay(100)
             }
         }
     }
@@ -156,8 +159,8 @@ class BeforeSavingScreenViewModel @Inject constructor(
 
     fun saveExercisesWithWorkout() {
         val list = this.exercises.map { exercise ->
-            exercise.copy(
-                sets = exercise.sets.map {
+            exercise.toEntity().copy(
+                sets = exercise.toEntity().sets.map {
                     // This keeps only relevant data on the actual type of set
                     when (exercise.exercise.setMode) {
                         SetMode.DURATION -> it.copy(reps = 0, load = 0f)
@@ -165,15 +168,15 @@ class BeforeSavingScreenViewModel @Inject constructor(
                         SetMode.BODYWEIGHT_WITH_LOAD -> it.copy(elapsedTime = 0)
                         SetMode.LOAD -> it.copy(elapsedTime = 0)
                     }
-                }.toImmutableList()
-            ).toEntity()
+                }
+            )
         }
 
         workoutServiceManager.stopService()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             workoutRepository.addWorkoutWithExercisesAndSets(
-                WorkoutWithExercisesAndSets(workout.value, list)
+                WorkoutWithExercisesAndSets(workout.value.toEntity(), list)
             )
         }
     }

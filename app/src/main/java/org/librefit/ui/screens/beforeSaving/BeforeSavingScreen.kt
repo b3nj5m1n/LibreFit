@@ -19,12 +19,14 @@
 
 package org.librefit.ui.screens.beforeSaving
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
@@ -38,13 +40,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -56,20 +58,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
-import org.librefit.db.entity.Workout
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.bottomMargin
 import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiExerciseWithSets
+import org.librefit.ui.models.UiWorkout
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,8 +135,8 @@ fun BeforeSavingScreen(
 
     BeforeSavingScreenContent(
         navController = navController,
-        showUnlikeRoutineDialog = showUnlikeRoutineDialog,
-        showDatePickerDialog = showDatePickerDialog,
+        showUnlikeRoutineDialog = { showUnlikeRoutineDialog.value = true },
+        showDatePickerDialog = { showDatePickerDialog.value = true },
         exercises = viewModel.exercises,
         workout = workout,
         routine = routine,
@@ -147,11 +153,11 @@ fun BeforeSavingScreen(
 @Composable
 fun BeforeSavingScreenContent(
     navController: NavHostController,
-    showUnlikeRoutineDialog: MutableState<Boolean>,
-    showDatePickerDialog: MutableState<Boolean>,
+    showUnlikeRoutineDialog: () -> Unit,
+    showDatePickerDialog: () -> Unit,
     exercises: List<UiExerciseWithSets>,
-    workout: Workout = Workout(),
-    routine: Workout = Workout(),
+    workout: UiWorkout,
+    routine: UiWorkout,
     volumeExercises: String,
     isTitleTooLong: Boolean,
     isTitleEmpty: Boolean,
@@ -160,9 +166,6 @@ fun BeforeSavingScreenContent(
     saveExercisesWithWorkout: () -> Unit,
     setTimeElapsed: (Int) -> Unit
 ) {
-    val routineTitle = routine.title
-
-
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.overview)),
         navigateBack = { navController.popBackStack() },
@@ -247,9 +250,7 @@ fun BeforeSavingScreenContent(
                         label = { Text(stringResource(R.string.label_when)) },
                         readOnly = true,
                         trailingIcon = {
-                            IconButton(onClick = {
-                                showDatePickerDialog.value = !showDatePickerDialog.value
-                            }) {
+                            IconButton(onClick = showDatePickerDialog) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_date_range),
                                     contentDescription = stringResource(R.string.select_date)
@@ -313,38 +314,59 @@ fun BeforeSavingScreenContent(
                 }
             }
 
-            if (routineTitle != "") {
+            if (routine.title != "") {
                 item {
-                    HeadlineText(stringResource(R.string.routine))
+                    HeadlineText(stringResource(R.string.linked_routine))
                 }
                 item {
-                    ElevatedCard {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.title) + " : " + routineTitle,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    stringResource(R.string.creation_date) + " : "
-                                            + Formatter.getShortDateFromLocalDate(routine.created)
-                                )
+                    ElevatedCard(
+                        modifier = Modifier
+                            .clip(CardDefaults.elevatedShape)
+                            .clickable {
+                                navController.navigate(Route.InfoWorkoutScreen(routine.id))
                             }
-                            IconButton(
-                                onClick = { showUnlikeRoutineDialog.value = true }
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_unlink),
-                                    contentDescription = stringResource(R.string.delete)
-                                )
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.title) + ": " + routine.title,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        stringResource(R.string.creation_date) + ": " +
+                                                routine.created.format(
+                                                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+                                                        .withLocale(
+                                                            Locale.getDefault()
+                                                        )
+                                                )
+                                    )
+                                }
+                                IconButton(
+                                    onClick = showUnlikeRoutineDialog
+                                ) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_unlink),
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
+                                }
+                            }
+
+                            LibreFitButton(
+                                elevated = false,
+                                text = stringResource(R.string.open_this_routine),
+                                icon = ImageVector.vectorResource(R.drawable.ic_open_new)
+                            ) {
+                                navController.navigate(Route.InfoWorkoutScreen(routine.id))
                             }
                         }
                     }
@@ -404,8 +426,8 @@ private fun BeforeSavingScreenPreview() {
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         BeforeSavingScreenContent(
             navController = rememberNavController(),
-            showUnlikeRoutineDialog = remember { mutableStateOf(false) },
-            showDatePickerDialog = remember { mutableStateOf(false) },
+            showUnlikeRoutineDialog = {},
+            showDatePickerDialog = {},
             exercises = listOf(
                 UiExerciseWithSets(
                     exerciseDC = UiExerciseDC(name = "Pullup")
@@ -417,7 +439,9 @@ private fun BeforeSavingScreenPreview() {
             updateWorkoutTitle = {},
             updateWorkoutNotes = {},
             saveExercisesWithWorkout = {},
-            setTimeElapsed = {}
+            setTimeElapsed = {},
+            workout = UiWorkout(),
+            routine = UiWorkout()
         )
     }
 }
