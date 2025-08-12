@@ -114,6 +114,8 @@ fun WorkoutScreen(
     val restTime by viewModel.restTime.collectAsState()
 
     val idSetWithRunningChronometer by viewModel.idSetWithRunningChronometer.collectAsState()
+
+    val progress by viewModel.progress.collectAsState()
     
 
     //It keeps the screen turned on
@@ -192,7 +194,7 @@ fun WorkoutScreen(
         isChronometerPaused = isChronometerPaused,
         isListEmpty = exercisesWithSets.isEmpty(),
         exercisesWithSets = exercisesWithSets,
-        progress = viewModel.getProgress(),
+        progress = progress,
         timerProgress = viewModel.getRestTimeProgress(),
         idSetWithRunningChronometer = idSetWithRunningChronometer,
         restTime = restTime,

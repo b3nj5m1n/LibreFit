@@ -32,7 +32,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -289,14 +291,19 @@ class WorkoutScreenViewModel @Inject constructor(
         }
     }
 
+    val progress: StateFlow<Float> = exercises
+        .map { list ->
+            val totalSets = list.sumOf { it.sets.size }
+            if (totalSets == 0) return@map 0f
 
-    fun getProgress(): Float {
-        val totalSets = if (exercises.value.sumOf { it.sets.size } != 0)
-            exercises.value.sumOf { it.sets.size } else 1
-
-        return exercises.value.sumOf { ex -> ex.sets.filter { it.completed }.size }
-            .toFloat() / totalSets
-    }
+            val completedSets = list.sumOf { it.sets.count { s -> s.completed } }
+            completedSets.toFloat() / totalSets
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0f
+        )
 
 
     val timeElapsed = WorkoutService.timeElapsed
