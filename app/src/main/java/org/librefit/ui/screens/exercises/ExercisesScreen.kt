@@ -22,7 +22,6 @@ package org.librefit.ui.screens.exercises
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -211,7 +210,6 @@ private fun ExercisesScreenContent(
     ) { innerPadding ->
         LibreFitLazyColumn(
             innerPadding = innerPadding,
-            verticalSpacing = 15.dp,
             lazyListState = lazyListState
         ) {
             // Search bar
@@ -314,17 +312,16 @@ private fun LazyItemScope.ItemExerciseDC(
     }
 
     ElevatedCard(
+        onClick = {
+            if (addExercises) {
+                onAddToggle()
+            } else {
+                onInfo()
+            }
+        },
         modifier = Modifier
             .height(120.dp)
-            .animateItem()
-            .clip(CardDefaults.elevatedShape)
-            .clickable {
-                if (addExercises) {
-                    onAddToggle()
-                } else {
-                    onInfo()
-                }
-            },
+            .animateItem(),
         colors = CardDefaults.elevatedCardColors(
             containerColor = if (isSelected)
                 MaterialTheme.colorScheme.primaryContainer else Color.Unspecified

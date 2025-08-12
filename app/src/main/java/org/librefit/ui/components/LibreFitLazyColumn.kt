@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LibreFitLazyColumn(
     innerPadding: PaddingValues = PaddingValues(),
-    verticalSpacing: Dp = 10.dp,
+    verticalSpacing: Dp = 15.dp,
     startEndPadding: Dp = 15.dp,
     lazyListState: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit

@@ -30,7 +30,6 @@ import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -61,7 +60,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -71,6 +69,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -241,12 +240,10 @@ private fun SharedTransitionScope.ProfileScreenContent(
             key = { it.id }
         ) { workout ->
             ElevatedCard(
+                onClick = {
+                    navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                },
                 modifier = Modifier
-                    .padding(5.dp)
-                    .clip(CardDefaults.elevatedShape)
-                    .clickable {
-                        navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
-                    }
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(workout.id),
                         animatedVisibilityScope = animatedVisibilityScope
@@ -265,9 +262,10 @@ private fun SharedTransitionScope.ProfileScreenContent(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = workout.title,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleLarge,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.SemiBold
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(

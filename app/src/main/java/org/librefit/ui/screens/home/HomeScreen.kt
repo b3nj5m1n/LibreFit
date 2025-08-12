@@ -26,7 +26,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,7 +34,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,12 +46,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -172,12 +170,10 @@ private fun SharedTransitionScope.HomeScreenContent(
 
         items(routines, key = { it.id }) { routine ->
             ElevatedCard(
+                onClick = {
+                    navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id))
+                },
                 modifier = Modifier
-                    .padding(5.dp)
-                    .clip(CardDefaults.elevatedShape)
-                    .clickable {
-                        navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id))
-                    }
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(routine.id),
                         animatedVisibilityScope = animatedVisibilityScope
@@ -198,7 +194,8 @@ private fun SharedTransitionScope.HomeScreenContent(
                             text = routine.title,
                             style = MaterialTheme.typography.headlineMedium,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold
                         )
                         IconButton(
                             onClick = {

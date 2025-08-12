@@ -27,7 +27,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DatePicker
@@ -51,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -150,6 +153,9 @@ private fun SharedTransitionScope.CalendarScreenContent(
 
             items(workoutsFromDate) { workout ->
                 ElevatedCard(
+                    onClick = {
+                        navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                    },
                     modifier = Modifier
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(workout.id),
@@ -169,10 +175,12 @@ private fun SharedTransitionScope.CalendarScreenContent(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = workout.title,
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.titleLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.SemiBold
                                 )
+                                Spacer(modifier = Modifier.height(10.dp))
                                 Text(
                                     text = stringResource(R.string.duration) + ": "
                                             + formatTime(workout.timeElapsed),
