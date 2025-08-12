@@ -19,9 +19,6 @@
 
 <resources>
     <string name="app_name">LibreFit</string>
-
-
-    <!--Navigation-->
     <string name="home">Home</string>
     <string name="profile">Profile</string>
     <string name="settings">Settings</string>
@@ -29,16 +26,10 @@
     <string name="add_exercise">Add exercise</string>
     <string name="more_options">More options</string>
     <string name="navigate_back">Back to the previous screen</string>
-
-
-    <!--Home screen-->
     <string name="edit_workout">Edit workout</string>
     <string name="your_routines">Your routines</string>
     <string name="start_empty_workout">Start empty workout</string>
     <string name="create_routine">Create routine</string>
-
-
-    <!--About screen-->
     <string name="copy">Copy</string>
     <string name="support_project">Support the project</string>
     <string name="donate">Donate</string>
@@ -56,9 +47,6 @@
     <string name="contributors">Contributors</string>
     <string name="founder">Founder</string>
     <string name="translators">Translators</string>
-
-
-    <!--Create routine screen-->
     <string name="contributed_to">"Contributed to: "</string>
     <string name="version">Version</string>
     <string name="libraries">Libraries</string>
@@ -82,17 +70,11 @@
     <string name="notes">Notes</string>
     <string name="title_cannot_be_empty">Title cannot be empty</string>
     <string name="title_length_exceeded_30">Title cannot exceed 30 characters</string>
-
-
-    <!--Add exercise screen-->
     <string name="crash_log">Crash log</string>
     <string name="quit_adding_exercises_question">Quit adding exercises?</string>
     <string name="quit_adding_exercises_text">Are you sure you want to quit? Your selected exercises won\'t be added</string>
     <string name="search_exercise_field">Search for an exercise</string>
     <string name="no_exercise_found">No exercise found</string>
-
-
-    <!--Settings screen-->
     <string name="filters">Filters</string>
     <string name="warning">Warning</string>
     <string name="appearance">Appearance</string>
@@ -110,14 +92,8 @@
     <string name="language">Language</string>
     <string name="language_english">English</string>
     <string name="language_italian">Italian</string>
-
-
-    <!--Profile screen-->
     <string name="past_workouts">Past workouts</string>
     <string name="coming_soon">Coming soon</string>
-
-
-    <!-- Workout screen -->
     <string name="nothing_to_show">Nothing to show yet</string>
     <string name="measurements">Measurements</string>
     <string name="calendar">Calendar</string>
@@ -140,15 +116,13 @@
     <string name="quit_workout_text">Are you sure you want to quit? Your workout won\'t be saved</string>
     <string name="resume">Resume</string>
     <string name="pause">Pause</string>
-
-
-    <!--Exercise detail modal bottom sheet-->
     <string name="add_to_empty_workout">Start by adding an exercise to your workout</string>
     <string name="elapsed_time">Elapsed time</string>
     <string name="new_workout">New workout</string>
     <string name="type_of_set_desc">- **Load**: A specified number of repetitions performed against an external resistance. *Examples: bench press, dumbbell curls.*\n- **Bodyweight**: A specified number of repetitions performed using the body as a resistance. *Examples: pullups, pushups, sit ups.*\n- **Bodyweight with load**: A specified number of repetitions performed using the body and a load as resistance. *Examples: weighted pullups, weighted dips.*\n- **Duration**: It measures time execution of the reps. *Examples: planks, warm up, stretching.*</string>
     <string name="statistics_desc">- **Time elapsed**: the total duration of the workout session.\n- **Date**: indicates the date on which the workout was completed.\n- **Volume**: the total amount of weight lifted during a workout, calculated by multiplying for each completed set the number of repetitions performed by the weight lifted. Higher volume is associated with greater muscle hypertrophy and strength gains over time.\n- **Exercises**: the total count of exercises included in this workout.\n- **Total sets**: the cumulative number of sets planned for each exercise in a workout. A set is a group of consecutive repetitions performed without resting.\n- **Completed sets**: the number of sets that were finished as planned by the workout.</string>
-    <string name="muscle_distribution_desc">- This chart shows the **average performance of each muscle over specific time periods**, based on the chosen parameter.\n- The legend identifies the time period represented by each column.\n- The **Historical** column includes all workouts completed before every time period shown.\n- The parameter can be changed by selecting a new one which is located above the chart.</string>
+    <string name="muscle_distribution_desc">- This chart shows the **average performance of each muscle over specific time periods**, based on the chosen parameter.\n- The legend identifies the time period represented by each column.\n- The **Historical** column includes all workouts completed before every time period shown.\n- The parameter can be changed by selecting a new one above the chart.</string>
+    <string name="exercises_distribution_desc">- This chart shows the **average performance of each exercise over specific time periods**, based on the chosen parameter.\n- The legend identifies the time period represented by each column.\n- The **Historical** column includes all workouts completed before every time period shown.\n- The parameter can be changed by selecting a new one above the chart.</string>
     <string name="details">Details</string>
     <string name="force">Force</string>
     <string name="level">Level</string>
@@ -159,9 +133,6 @@
     <string name="primary_muscles">Primary muscles</string>
     <string name="secondary_muscles">Secondary muscles</string>
     <string name="instructions">Instructions</string>
-
-
-    <!--Exercise Enums-->
     <string name="rest_time">Rest time</string>
     <string name="type_of_set">Type of set</string>
     <string name="not_enough_data">Not enough data to display this chart</string>
@@ -174,14 +145,11 @@
     <string name="force_static">Static</string>
     <string name="force_pull">Pull</string>
     <string name="force_push">Push</string>
-
     <string name="level_beginner">Beginner</string>
     <string name="level_intermediate">Intermediate</string>
     <string name="level_expert">Expert</string>
-
     <string name="mechanic_isolation">Isolation</string>
     <string name="mechanic_compound">Compound</string>
-
     <string name="equipment_medicine_ball">Medicine ball</string>
     <string name="equipment_body_only">Body only</string>
     <string name="equipment_bands">Bands</string>
@@ -218,8 +186,6 @@
     <string name="category_olympic_weightlifting">Weightlifting</string>
     <string name="category_strongman">Strongman</string>
     <string name="category_plyometrics">Plyometrics</string>
-
-    <!--Dialog -->
     <string name="cancel_dialog">Cancel</string>
     <string name="quit_dialog">Quit</string>
     <string name="start_routine">Start routine</string>
@@ -255,7 +221,8 @@
     <string name="save">Save</string>
     <string name="years">Years</string>
     <string name="historical">Historical</string>
-    <string name="muscle_distribution">Muscle distribution</string>
+    <string name="muscles_distribution">Muscles distribution</string>
+    <string name="exercises_distribution">Exercises distribution</string>
     <string name="workout_saved">Workout saved</string>
     <string name="edit_routine">Edit routine</string>
     <string name="start_creating_routine">Start by creating a new routine</string>

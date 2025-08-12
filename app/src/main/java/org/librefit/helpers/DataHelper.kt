@@ -129,14 +129,16 @@ class DataHelper @Inject constructor(
 
 
     /**
-     * Calculates average performance points for each muscle group, categorized into dynamic time buckets.
+     * Calculates the distribution for each muscle group, categorized into dynamic time buckets.
      *
      * This function is highly configurable, allowing for any number of time buckets to be defined
      * via cutoffs and providing an option to include or exclude data that falls outside all specified
      * time periods.
      *
+     * @param muscleDistributionStatisticsChart It defines which value has to be calculated based on
+     * the enum passed: [StatisticsChart.LOAD], [StatisticsChart.DURATION] and so on.
      * @param workoutsWithExercises The list of user workouts to process.
-     * @param cutoffs A list of [LocalDateTime] points that define the boundaries for time buckets.
+     * @param muscleDistributionCutoffs A list of [LocalDateTime] points that define the boundaries for time buckets.
      *        The function creates `cutoffs.size` buckets for workouts newer than each cutoff, plus
      *        an optional final bucket for all older workouts. The list is automatically sorted internally.
      *        Example: Providing 2 cutoffs creates buckets for workouts newer than `cutoff[0]`,
@@ -144,20 +146,20 @@ class DataHelper @Inject constructor(
      * @param includeOlderWorkouts If `true`, workouts older than all specified cutoffs are aggregated
      * into a final "older" bucket. If `false`, these workouts are entirely excluded from the results.
      * @return A list where each [Point] contains in [Point.yValues] a list of its average performance
-     * values for each time bucket while in [Point.xValue] there is the associated muscle.
-     * The size of the `averages` list corresponds to the number of time buckets generated based on [cutoffs].
+     * for each time bucket while in [Point.xValue] there is the associated muscle.
+     * The size of the `averages` list corresponds to the number of time buckets generated based on [muscleDistributionCutoffs].
      */
-    suspend fun fetchAveragePerformancePerMuscleWithTimeBuckets(
-        statisticsChart: StatisticsChart,
+    suspend fun fetchMuscleDistributionWithTimeBuckets(
+        muscleDistributionStatisticsChart: StatisticsChart,
         workoutsWithExercises: List<WorkoutWithExercisesAndSets>,
-        cutoffs: List<LocalDateTime>,
+        muscleDistributionCutoffs: List<LocalDateTime>,
         includeOlderWorkouts: Boolean = false
     ): List<Point> {
         if (workoutsWithExercises.isEmpty()) {
             return emptyList()
         }
 
-        val sortedCutoffs = cutoffs.sortedDescending()
+        val sortedCutoffs = muscleDistributionCutoffs.sortedDescending()
         // The number of buckets depends on whether the final "older" bucket is included.
         val numTimeBuckets =
             if (includeOlderWorkouts) sortedCutoffs.size + 1 else sortedCutoffs.size
@@ -196,7 +198,7 @@ class DataHelper @Inject constructor(
                                 w.workout.completed
                             )?.bodyWeight ?: 0f
 
-                            val value = when (statisticsChart) {
+                            val value = when (muscleDistributionStatisticsChart) {
                                 StatisticsChart.LOAD -> sets.sumOf {
                                     when (exercise.setMode) {
                                         SetMode.LOAD -> it.load
@@ -205,7 +207,6 @@ class DataHelper @Inject constructor(
                                         SetMode.DURATION -> 0
                                     }.toDouble()
                                 }
-
                                 StatisticsChart.REPS -> sets.sumOf { it.reps }
                                 StatisticsChart.VOLUME -> sets.sumOf {
                                     when (exercise.setMode) {
@@ -215,14 +216,13 @@ class DataHelper @Inject constructor(
                                         SetMode.DURATION -> 0
                                     }.toDouble() * it.reps
                                 }
-
                                 StatisticsChart.DURATION -> sets.sumOf { it.elapsedTime }
                             }.toDouble()
 
                             if (value == 0.0) {
                                 null // Filter out zero-value
                             } else {
-                                // Create a "one-hot" encoded list for the value's time bucket.
+                                // Create a encoded list for the value's time bucket.
                                 val values = MutableList(numTimeBuckets) { 0f }.apply {
                                     set(timeBucketIndex, value.toFloat())
                                 }.toList()
@@ -268,6 +268,147 @@ class DataHelper @Inject constructor(
                 Point(
                     yValues = list,
                     xValue = context.getString(Formatter.exerciseEnumToStringId(muscle)),
+                )
+            }
+    }
+
+
+    /**
+     * Calculates the distribution for each exercise, categorized into dynamic time buckets.
+     *
+     * This function is highly configurable, allowing for any number of time buckets to be defined
+     * via cutoffs and providing an option to include or exclude data that falls outside all specified
+     * time periods.
+     *
+     * @param exerciseDistributionStatisticsChart It defines which value has to be calculated based on
+     * the enum passed: [StatisticsChart.LOAD], [StatisticsChart.DURATION] and so on.
+     * @param workoutsWithExercises The list of user workouts to process.
+     * @param exerciseDistributionCutoffs A list of [LocalDateTime] points that define the boundaries for time buckets.
+     *        The function creates `cutoffs.size` buckets for workouts newer than each cutoff, plus
+     *        an optional final bucket for all older workouts. The list is automatically sorted internally.
+     *        Example: Providing 2 cutoffs creates buckets for workouts newer than `cutoff[0]`,
+     *        newer than `cutoff[1]`, and optionally all others (which are older).
+     * @param includeOlderWorkouts If `true`, workouts older than all specified cutoffs are aggregated
+     * into a final "older" bucket. If `false`, these workouts are entirely excluded from the results.
+     * @return A list where each [Point] contains in [Point.yValues] a list of its average performance
+     * for each time bucket while in [Point.xValue] there is the name of the associated exercises.
+     * The size of the `averages` list corresponds to the number of time buckets generated based on [exerciseDistributionStatisticsChart].
+     */
+    suspend fun fetchExercisesDistributionWithTimeBuckets(
+        exerciseDistributionStatisticsChart: StatisticsChart,
+        workoutsWithExercises: List<WorkoutWithExercisesAndSets>,
+        exerciseDistributionCutoffs: List<LocalDateTime>,
+        includeOlderWorkouts: Boolean = false
+    ): List<Point> {
+        if (workoutsWithExercises.isEmpty()) {
+            return emptyList()
+        }
+
+        val sortedCutoffs = exerciseDistributionCutoffs.sortedDescending()
+        // The number of buckets depends on whether the final "older" bucket is included.
+        val numTimeBuckets =
+            if (includeOlderWorkouts) sortedCutoffs.size + 1 else sortedCutoffs.size
+
+        val processedData = coroutineScope {
+            // Map each workout to a Deferred result.
+            val deferredResults = workoutsWithExercises.map { w ->
+                async {
+                    // Find the index of the first cutoff the workout date is after.
+                    val cutoffIndex = sortedCutoffs.indexOfFirst { w.workout.completed.isAfter(it) }
+
+                    // Determine the final bucket index, or decide to discard the workout.
+                    // A `null` index will signify that the workout should be discarded.
+                    val timeBucketIndex: Int? = when {
+                        // Case 1: The workout falls into one of the defined cutoff buckets.
+                        cutoffIndex != -1 -> cutoffIndex
+                        // Case 2: It's an older workout, and it is configured to include them.
+                        includeOlderWorkouts -> sortedCutoffs.size // This is the last "older" bucket.
+                        // Case 3: It's an older workout, and it is configured to EXCLUDE them.
+                        else -> null
+                    }
+
+                    // If timeBucketIndex is null, return an empty list for this workout.
+                    // Otherwise, process the exercises.
+                    if (timeBucketIndex == null) {
+                        emptyList()
+                    } else {
+                        // Process these exercises in order to calculate the specified value for each exerciseDC
+                        w.exercisesWithSets.mapNotNull { e ->
+                            val sets = e.sets.filter { it.completed }
+                            val exercise = e.exercise
+
+                            val bodyWeight = measurementRepository.getLastMeasurementByCutoff(
+                                w.workout.completed
+                            )?.bodyWeight ?: 0f
+
+                            val value = when (exerciseDistributionStatisticsChart) {
+                                StatisticsChart.LOAD -> sets.sumOf {
+                                    when (exercise.setMode) {
+                                        SetMode.LOAD -> it.load
+                                        SetMode.BODYWEIGHT -> bodyWeight
+                                        SetMode.BODYWEIGHT_WITH_LOAD -> it.load + bodyWeight
+                                        SetMode.DURATION -> 0
+                                    }.toDouble()
+                                }
+
+                                StatisticsChart.REPS -> sets.sumOf { it.reps }
+                                StatisticsChart.VOLUME -> sets.sumOf {
+                                    when (exercise.setMode) {
+                                        SetMode.LOAD -> it.load
+                                        SetMode.BODYWEIGHT -> bodyWeight
+                                        SetMode.BODYWEIGHT_WITH_LOAD -> it.load + bodyWeight
+                                        SetMode.DURATION -> 0
+                                    }.toDouble() * it.reps
+                                }
+
+                                StatisticsChart.DURATION -> sets.sumOf { it.elapsedTime }
+                            }.toDouble()
+
+                            if (value == 0.0) {
+                                null // Filter out zero-value
+                            } else {
+                                // Create a encoded list for the value's time bucket.
+                                val values = MutableList(numTimeBuckets) { 0f }.apply {
+                                    set(timeBucketIndex, value.toFloat())
+                                }.toList()
+                                // Pair the exercise with the calculated value list.
+                                e.exerciseDC to values
+                            }
+                        }
+                    }
+                }
+            }
+            // Wait for all parallel jobs to complete while
+            // `flatten()` converts the List<List<Pair>> into a single List<Pair>.
+            deferredResults.awaitAll().flatten()
+        }
+
+
+        return processedData
+            .asSequence()
+            // Group all value lists by exercise.
+            .groupBy(
+                keySelector = { it.first },      // Group by ExerciseDC
+                valueTransform = { it.second }   // Collect only the value lists
+            )
+            // Calculate the average for each time bucket for each exercise.
+            .mapValues { (_, dataLists) ->
+                List(numTimeBuckets) { bucketIndex ->
+                    // For each bucket, get all non-zero values from the collected lists.
+                    val nonZeroValues = dataLists.mapNotNull { dataList ->
+                        dataList[bucketIndex].takeIf { it != 0f }
+                    }
+
+                    // Safely calculate average. .average() on an empty list returns NaN.
+                    nonZeroValues.average().toFloat().takeIf { !it.isNaN() } ?: 0f
+                }
+            }
+            .map { (exercise, list) ->
+                // Each point represent the average performance of an exercise in different time
+                // buckets which are defined by cutoffs
+                Point(
+                    yValues = list,
+                    xValue = exercise.name,
                 )
             }
     }

@@ -52,28 +52,42 @@ fun StatisticsScreen(
 ) {
     val viewModel: StatisticsScreenViewModel = hiltViewModel()
 
-    val points by viewModel.points.collectAsState()
+    val muscleDistributionPoints by viewModel.muscleDistributionPoints.collectAsState()
 
-    val legend by viewModel.legendIds.collectAsState()
+    val muscleDistributionLegendIds by viewModel.muscleDistributionLegendIds.collectAsState()
 
-    val statisticsChart by viewModel.statisticsChart.collectAsState()
+    val muscleDistributionStatisticsChart by viewModel.muscleDistributionStatisticsChart.collectAsState()
+
+    val exercisesDistributionPoints by viewModel.exercisesDistributionPoints.collectAsState()
+
+    val exercisesDistributionLegendIds by viewModel.exercisesDistributionLegendIds.collectAsState()
+
+    val exercisesDistributionStatisticsChart by viewModel.exercisesDistributionStatisticsChart.collectAsState()
 
     StatisticsScreenContent(
         navController = navController,
-        points = points,
-        legend = legend,
-        statisticsChart = statisticsChart,
-        updateStatisticsChart = viewModel::updateStatisticsChart
+        muscleDistributionPoints = muscleDistributionPoints,
+        muscleDistributionLegendIds = muscleDistributionLegendIds,
+        muscleDistributionStatisticsChart = muscleDistributionStatisticsChart,
+        exercisesDistributionPoints = exercisesDistributionPoints,
+        exercisesDistributionLegendIds = exercisesDistributionLegendIds,
+        exercisesDistributionStatisticsChart = exercisesDistributionStatisticsChart,
+        updateMuscleDistributionStatisticsChart = viewModel::updateMuscleDistributionStatisticsChart,
+        updateExercisesDistributionStatisticsChart = viewModel::updateExercisesDistributionStatisticsChart,
     )
 }
 
 @Composable
 private fun StatisticsScreenContent(
     navController: NavHostController,
-    points: List<Point>,
-    legend: List<Pair<Int, Long?>>,
-    statisticsChart: StatisticsChart,
-    updateStatisticsChart: (StatisticsChart) -> Unit
+    muscleDistributionPoints: List<Point>,
+    muscleDistributionLegendIds: List<Pair<Int, Long?>>,
+    muscleDistributionStatisticsChart: StatisticsChart,
+    exercisesDistributionPoints: List<Point>,
+    exercisesDistributionLegendIds: List<Pair<Int, Long?>>,
+    exercisesDistributionStatisticsChart: StatisticsChart,
+    updateMuscleDistributionStatisticsChart: (StatisticsChart) -> Unit,
+    updateExercisesDistributionStatisticsChart: (StatisticsChart) -> Unit
 ) {
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.statistics)),
@@ -82,27 +96,53 @@ private fun StatisticsScreenContent(
         LibreFitLazyColumn(innerPadding = innerPadding) {
             item {
                 HeadlineText(
-                    stringResource(R.string.muscle_distribution),
+                    stringResource(R.string.muscles_distribution),
                     InfoMode.MUSCLE_DISTRIBUTION
                 )
             }
             item {
                 LibreFitCartesianChart(
-                    format = when (statisticsChart) {
+                    format = when (muscleDistributionStatisticsChart) {
                         StatisticsChart.LOAD -> DecimalFormat("#.## " + stringResource(R.string.kg))
                         StatisticsChart.REPS -> DecimalFormat()
                         StatisticsChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
                         StatisticsChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
                     },
-                    points = points,
-                    legendList = legend.map { pair ->
+                    points = muscleDistributionPoints,
+                    legendList = muscleDistributionLegendIds.map { pair ->
                         stringResource(pair.first) + if (pair.second != null) {
                             ": " + pair.second
                         } else ""
                     },
-                    chartMode = statisticsChart,
+                    chartMode = muscleDistributionStatisticsChart,
                     useColumns = true,
-                    updateChartMode = { updateStatisticsChart(it as StatisticsChart) }
+                    updateChartMode = { updateMuscleDistributionStatisticsChart(it as StatisticsChart) }
+                )
+            }
+
+            item {
+                HeadlineText(
+                    stringResource(R.string.exercises_distribution),
+                    InfoMode.EXERCISES_DISTRIBUTION
+                )
+            }
+            item {
+                LibreFitCartesianChart(
+                    format = when (exercisesDistributionStatisticsChart) {
+                        StatisticsChart.LOAD -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                        StatisticsChart.REPS -> DecimalFormat()
+                        StatisticsChart.VOLUME -> DecimalFormat("#.## " + stringResource(R.string.kg))
+                        StatisticsChart.DURATION -> DecimalFormat("# " + stringResource(R.string.min))
+                    },
+                    points = exercisesDistributionPoints,
+                    legendList = exercisesDistributionLegendIds.map { pair ->
+                        stringResource(pair.first) + if (pair.second != null) {
+                            ": " + pair.second
+                        } else ""
+                    },
+                    chartMode = exercisesDistributionStatisticsChart,
+                    useColumns = true,
+                    updateChartMode = { updateExercisesDistributionStatisticsChart(it as StatisticsChart) }
                 )
             }
         }
@@ -112,7 +152,8 @@ private fun StatisticsScreenContent(
 @Preview
 @Composable
 fun StatisticsScreenPreview() {
-    var statisticsChart by remember { mutableStateOf(StatisticsChart.LOAD) }
+    var muscleDistributionStatisticsChart by remember { mutableStateOf(StatisticsChart.entries.random()) }
+    var exerciseDistributionStatisticsChart by remember { mutableStateOf(StatisticsChart.entries.random()) }
 
     val musclesNames = listOf(
         stringResource(Formatter.exerciseEnumToStringId(Muscle.BICEPS)),
@@ -123,8 +164,19 @@ fun StatisticsScreenPreview() {
         R.string.past_week to null, R.string.past_month to null, R.string.historical to null
     )
 
-    key(statisticsChart) {
-        val points = listOf(
+    key(muscleDistributionStatisticsChart) {
+        val muscleDistributionPoints = listOf(
+            Point(
+                yValues = (0..2).map { Random.nextFloat() },
+                xValue = musclesNames.first()
+            ),
+            Point(
+                yValues = (0..2).map { Random.nextFloat() },
+                xValue = musclesNames[1]
+            )
+        )
+
+        val exerciseDistributionPoints = listOf(
             Point(
                 yValues = (0..2).map { Random.nextFloat() },
                 xValue = musclesNames.first()
@@ -138,10 +190,18 @@ fun StatisticsScreenPreview() {
         LibreFitTheme(dynamicColor = false, darkTheme = true) {
             StatisticsScreenContent(
                 navController = rememberNavController(),
-                statisticsChart = statisticsChart,
-                points = points,
-                legend = cutoffsIds,
-                updateStatisticsChart = { statisticsChart = it },
+                muscleDistributionPoints = muscleDistributionPoints,
+                muscleDistributionLegendIds = cutoffsIds,
+                muscleDistributionStatisticsChart = muscleDistributionStatisticsChart,
+                updateMuscleDistributionStatisticsChart = {
+                    muscleDistributionStatisticsChart = it
+                },
+                exercisesDistributionPoints = exerciseDistributionPoints,
+                exercisesDistributionLegendIds = emptyList(),
+                exercisesDistributionStatisticsChart = exerciseDistributionStatisticsChart,
+                updateExercisesDistributionStatisticsChart = {
+                    exerciseDistributionStatisticsChart = it
+                }
             )
         }
     }

@@ -45,11 +45,11 @@ class StatisticsScreenViewModel @Inject constructor(
     workoutRepository: WorkoutRepository,
     dataHelper: DataHelper
 ) : ViewModel() {
-    private val _statisticsChart = MutableStateFlow(StatisticsChart.LOAD)
-    val statisticsChart = _statisticsChart.asStateFlow()
+    private val _muscleDistributionStatisticsChart = MutableStateFlow(StatisticsChart.LOAD)
+    val muscleDistributionStatisticsChart = _muscleDistributionStatisticsChart.asStateFlow()
 
-    fun updateStatisticsChart(statisticsChart: StatisticsChart) {
-        _statisticsChart.update {
+    fun updateMuscleDistributionStatisticsChart(statisticsChart: StatisticsChart) {
+        _muscleDistributionStatisticsChart.update {
             statisticsChart
         }
     }
@@ -64,15 +64,15 @@ class StatisticsScreenViewModel @Inject constructor(
     val cutoffs = _cutoffs.asStateFlow()
 
 
-    val points: StateFlow<List<Point>> = combine(
+    val muscleDistributionPoints: StateFlow<List<Point>> = combine(
         workoutRepository.completedWorkoutsWithExercisesAndSets,
-        statisticsChart,
+        muscleDistributionStatisticsChart,
         cutoffs
     ) { workouts, statisticsChart, cutoffs ->
-        dataHelper.fetchAveragePerformancePerMuscleWithTimeBuckets(
-            statisticsChart = statisticsChart,
+        dataHelper.fetchMuscleDistributionWithTimeBuckets(
+            muscleDistributionStatisticsChart = statisticsChart,
             workoutsWithExercises = workouts,
-            cutoffs = cutoffs,
+            muscleDistributionCutoffs = cutoffs,
             includeOlderWorkouts = cutoffs.size <= 3
         )
     }
@@ -83,9 +83,9 @@ class StatisticsScreenViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val legendIds: StateFlow<List<Pair<Int, Long?>>> = combine(
+    val muscleDistributionLegendIds: StateFlow<List<Pair<Int, Long?>>> = combine(
         cutoffs,
-        points
+        muscleDistributionPoints
     ) { cutoffs, points ->
         var ids = cutoffs.mapIndexedNotNull { index, cutoff ->
             val cutoffDate = cutoff.toLocalDate()
@@ -123,4 +123,70 @@ class StatisticsScreenViewModel @Inject constructor(
         )
 
 
+    private val _exercisesDistributionStatisticsChart = MutableStateFlow(StatisticsChart.LOAD)
+    val exercisesDistributionStatisticsChart = _exercisesDistributionStatisticsChart.asStateFlow()
+
+    fun updateExercisesDistributionStatisticsChart(statisticsChart: StatisticsChart) {
+        _exercisesDistributionStatisticsChart.update {
+            statisticsChart
+        }
+    }
+
+    val exercisesDistributionPoints: StateFlow<List<Point>> = combine(
+        workoutRepository.completedWorkoutsWithExercisesAndSets,
+        exercisesDistributionStatisticsChart,
+        cutoffs
+    ) { workouts, statisticsChart, cutoffs ->
+        dataHelper.fetchExercisesDistributionWithTimeBuckets(
+            exerciseDistributionStatisticsChart = statisticsChart,
+            workoutsWithExercises = workouts,
+            exerciseDistributionCutoffs = cutoffs,
+            includeOlderWorkouts = cutoffs.size <= 3
+        )
+    }
+        .distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val exercisesDistributionLegendIds: StateFlow<List<Pair<Int, Long?>>> = combine(
+        cutoffs,
+        exercisesDistributionPoints
+    ) { cutoffs, points ->
+        var ids = cutoffs.mapIndexedNotNull { index, cutoff ->
+            val cutoffDate = cutoff.toLocalDate()
+            val differenceDays = ChronoUnit.DAYS.between(
+                cutoffDate, LocalDate.now()
+            )
+
+            when (differenceDays) {
+                7L -> R.string.past_week to null
+                30L -> R.string.past_month to null
+                365L -> R.string.past_year to null
+                else -> {
+                    if (differenceDays <= 30) {
+                        R.string.days to differenceDays
+                    } else if (differenceDays <= 365) {
+                        R.string.months to (differenceDays / 30)
+                    } else {
+                        R.string.year to (differenceDays / 365)
+                    }
+                }
+            }
+        }
+
+        if (cutoffs.size <= 3) {
+            ids = ids + (R.string.historical to null)
+        }
+
+        ids.take(points.firstOrNull()?.yValues?.size ?: 0)
+    }
+        .distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 }
