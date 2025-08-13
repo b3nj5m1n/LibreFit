@@ -195,7 +195,13 @@ private fun SharedTransitionScope.HomeScreenContent(
                             style = MaterialTheme.typography.headlineMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(
+                                    routine.id.toString() + routine.title
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                         )
                         IconButton(
                             onClick = {

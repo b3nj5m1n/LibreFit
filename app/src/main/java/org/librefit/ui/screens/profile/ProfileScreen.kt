@@ -265,7 +265,13 @@ private fun SharedTransitionScope.ProfileScreenContent(
                                 style = MaterialTheme.typography.titleLarge,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.sharedElement(
+                                    sharedContentState = rememberSharedContentState(
+                                        workout.id.toString() + workout.title
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(

@@ -19,6 +19,7 @@
 
 package org.librefit.ui.screens.infoWorkout
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -47,6 +48,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -213,13 +216,22 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            formatDetails(
-                                stringResource(R.string.title),
-                                workout.title
+                            text = workout.title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(
+                                    key = workout.id.toString() + workout.title
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         )
 
                         if (workout.notes.isNotBlank()) {
+                            HorizontalDivider()
+
                             Text(
                                 formatDetails(
                                     stringResource(R.string.notes),
@@ -328,8 +340,17 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                                     verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Text(
-                                        text = stringResource(R.string.title) + ": " + routine.title,
-                                        style = MaterialTheme.typography.titleMedium
+                                        text = routine.title,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.sharedElement(
+                                            sharedContentState = rememberSharedContentState(
+                                                routine.id.toString() + routine.title
+                                            ),
+                                            animatedVisibilityScope = animatedVisibilityScope
+                                        )
                                     )
                                     Text(
                                         stringResource(R.string.creation_date) + ": " +
@@ -389,29 +410,31 @@ private fun InfoRoutineScreenPreview() {
 
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         SharedTransitionLayout {
-            InfoWorkoutScreenContent(
-                navController = rememberNavController(),
-                deleteWorkout = {},
-                workout = UiWorkout(title = "My workout", notes = "This is a note!"),
-                routine = routine,
-                isRoutine = false,
-                workoutDate = "DD/MM/YY",
-                volumeExercises = "100",
-                workoutChart = WorkoutChart.REPS,
-                exercises = listOf(
-                    UiExerciseWithSets(
-                        exerciseDC = UiExerciseDC(name = "Name exercise"),
-                        sets = persistentListOf(UiSet(), UiSet())
-                    )
-                ),
-                points = (0..10).map { Point(listOf(Random.nextFloat())) },
-                detachWorkoutFromRoutine = {
-                    routine = UiWorkout()
-                },
-                updateChartMode = {},
-                workoutId = 0,
-                animatedVisibilityScope = this as AnimatedVisibilityScope
-            )
+            AnimatedVisibility(visible = true) {
+                InfoWorkoutScreenContent(
+                    navController = rememberNavController(),
+                    deleteWorkout = {},
+                    workout = UiWorkout(title = "My workout", notes = "This is a note!"),
+                    routine = routine,
+                    isRoutine = false,
+                    workoutDate = "DD/MM/YY",
+                    volumeExercises = "100",
+                    workoutChart = WorkoutChart.REPS,
+                    exercises = listOf(
+                        UiExerciseWithSets(
+                            exerciseDC = UiExerciseDC(name = "Name exercise"),
+                            sets = persistentListOf(UiSet(), UiSet())
+                        )
+                    ),
+                    points = (0..10).map { Point(listOf(Random.nextFloat())) },
+                    detachWorkoutFromRoutine = {
+                        routine = UiWorkout()
+                    },
+                    updateChartMode = {},
+                    workoutId = 0,
+                    animatedVisibilityScope = this
+                )
+            }
         }
     }
 }

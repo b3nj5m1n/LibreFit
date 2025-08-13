@@ -53,7 +53,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -347,8 +349,17 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                                     verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Text(
-                                        text = stringResource(R.string.title) + ": " + routine.title,
-                                        style = MaterialTheme.typography.titleMedium
+                                        text = routine.title,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.sharedElement(
+                                            sharedContentState = rememberSharedContentState(
+                                                routine.id.toString() + routine.title
+                                            ),
+                                            animatedVisibilityScope = animatedVisibilityScope
+                                        )
                                     )
                                     Text(
                                         stringResource(R.string.creation_date) + ": " +
