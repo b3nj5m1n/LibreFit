@@ -27,6 +27,7 @@ import kotlinx.coroutines.coroutineScope
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.MeasurementRepository
 import org.librefit.enums.SetMode
+import org.librefit.enums.WorkoutState
 import org.librefit.enums.chart.StatisticsChart
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.ui.components.charts.Point
@@ -107,7 +108,7 @@ class DataHelper @Inject constructor(
     suspend fun fetchVolumeFromWorkout(
         workout: WorkoutWithExercisesAndSets
     ): Float {
-        val isRoutine = workout.workout.routine
+        val isRoutine = workout.workout.state == WorkoutState.ROUTINE
 
         val bodyWeight = measurementRepository.getLastMeasurementByCutoff(
             if (isRoutine) workout.workout.created else workout.workout.completed

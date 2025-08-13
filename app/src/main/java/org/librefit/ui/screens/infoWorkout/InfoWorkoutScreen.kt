@@ -107,6 +107,7 @@ fun SharedTransitionScope.InfoWorkoutScreen(
         navController = navController,
         workout = workout,
         routine = routine,
+        isRoutine = viewModel.isRoutine(),
         workoutDate = viewModel.getDate(),
         volumeExercises = volume,
         workoutChart = workoutChartMode,
@@ -126,6 +127,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
     navController: NavHostController,
     workout: UiWorkout,
     routine: UiWorkout,
+    isRoutine: Boolean,
     workoutDate: String,
     volumeExercises: String,
     workoutChart: WorkoutChart,
@@ -140,11 +142,11 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
     if (showConfirmDialog) {
         ConfirmDialog(
             title = stringResource(
-                if (workout.routine) R.string.delete_routine_question
+                if (isRoutine) R.string.delete_routine_question
                 else R.string.delete_workout_question
             ),
             text = stringResource(
-                if (workout.routine) R.string.delete_routine_text
+                if (isRoutine) R.string.delete_routine_text
                 else R.string.delete_workout_text
             ),
             confirmText = stringResource(R.string.delete),
@@ -179,10 +181,8 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
      */
     var selectedExercise by remember { mutableStateOf<UiExerciseDC?>(null) }
 
-    var isModalSheetOpen by remember { mutableStateOf(false) }
-
     LibreFitScaffold(
-        title = AnnotatedString(stringResource(if (workout.routine) R.string.routine else R.string.workout)),
+        title = AnnotatedString(stringResource(if (isRoutine) R.string.routine else R.string.workout)),
         navigateBack = { navController.popBackStack() },
         actions = listOf(
             {
@@ -230,7 +230,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
 
                         HorizontalDivider()
 
-                        if (!workout.routine) {
+                        if (!isRoutine) {
                             Text(
                                 formatDetails(
                                     stringResource(R.string.duration),
@@ -241,7 +241,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
 
                         Text(
                             formatDetails(
-                                if (workout.routine) stringResource(R.string.creation_date)
+                                if (isRoutine) stringResource(R.string.creation_date)
                                 else stringResource(R.string.label_when),
                                 workoutDate
                             )
@@ -261,7 +261,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                                 exercises.sumOf { it.sets.size }.toString()
                             )
                         )
-                        if (!workout.routine) {
+                        if (!isRoutine) {
                             Text(
                                 formatDetails(
                                     stringResource(R.string.completed_sets),
@@ -281,7 +281,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                 }
             }
 
-            if (workout.routine) {
+            if (isRoutine) {
                 item { HeadlineText(stringResource(R.string.past_workouts)) }
 
                 item {
@@ -300,7 +300,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
             }
 
 
-            if (routine.id != 0L && !workout.routine) {
+            if (routine.id != 0L && !isRoutine) {
                 item {
                     HeadlineText(stringResource(R.string.linked_routine))
                 }
@@ -366,18 +366,17 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
 
             item { HeadlineText(stringResource(R.string.exercises)) }
             items(exercises) { exercise ->
-                ExerciseCardSmall(exercise, workout.routine) {
+                ExerciseCardSmall(exercise, isRoutine) {
                     selectedExercise = exercise.exerciseDC
-                    isModalSheetOpen = true
                 }
             }
             bottomMargin()
         }
     }
     // Opened by info icon next to exercise name, it shows the details of an exercise
-    if (isModalSheetOpen) {
+    selectedExercise?.let {
         ExerciseDetailModalBottomSheet(exercise = selectedExercise!!) {
-            isModalSheetOpen = false
+            selectedExercise = null
         }
     }
 }
@@ -395,6 +394,7 @@ private fun InfoRoutineScreenPreview() {
                 deleteWorkout = {},
                 workout = UiWorkout(title = "My workout", notes = "This is a note!"),
                 routine = routine,
+                isRoutine = false,
                 workoutDate = "DD/MM/YY",
                 volumeExercises = "100",
                 workoutChart = WorkoutChart.REPS,

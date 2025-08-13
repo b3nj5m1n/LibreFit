@@ -43,6 +43,7 @@ import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.repository.UserPreferencesRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
+import org.librefit.enums.WorkoutState
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.services.WorkoutService
@@ -114,7 +115,7 @@ class WorkoutScreenViewModel @Inject constructor(
                 _workout.update {
                     workoutWithExercisesAndSets.workout.copy(
                         id = 0,
-                        routine = false
+                        state = WorkoutState.RUNNING
                     )
                 }
 

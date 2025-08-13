@@ -34,6 +34,7 @@ import org.librefit.db.entity.Workout
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
+import org.librefit.enums.WorkoutState
 import org.librefit.helpers.DataHelper
 import org.librefit.services.WorkoutServiceManager
 import org.librefit.ui.models.UiWorkout
@@ -158,25 +159,26 @@ class BeforeSavingScreenViewModel @Inject constructor(
 
 
     fun saveExercisesWithWorkout() {
-        val list = this.exercises.map { exercise ->
-            exercise.toEntity().copy(
-                sets = exercise.toEntity().sets.map {
-                    // This keeps only relevant data on the actual type of set
-                    when (exercise.exercise.setMode) {
-                        SetMode.DURATION -> it.copy(reps = 0, load = 0f)
-                        SetMode.BODYWEIGHT -> it.copy(elapsedTime = 0, load = 0f)
-                        SetMode.BODYWEIGHT_WITH_LOAD -> it.copy(elapsedTime = 0)
-                        SetMode.LOAD -> it.copy(elapsedTime = 0)
-                    }
-                }
-            )
-        }
-
         workoutServiceManager.stopService()
 
         viewModelScope.launch {
             workoutRepository.addWorkoutWithExercisesAndSets(
-                WorkoutWithExercisesAndSets(workout.value.toEntity(), list)
+                WorkoutWithExercisesAndSets(
+                    workout = workout.value.copy(state = WorkoutState.COMPLETED).toEntity(),
+                    exercisesWithSets = exercises.map { exercise ->
+                        exercise.toEntity().copy(
+                            sets = exercise.toEntity().sets.map {
+                                // This keeps only relevant data on the actual type of set
+                                when (exercise.exercise.setMode) {
+                                    SetMode.DURATION -> it.copy(reps = 0, load = 0f)
+                                    SetMode.BODYWEIGHT -> it.copy(elapsedTime = 0, load = 0f)
+                                    SetMode.BODYWEIGHT_WITH_LOAD -> it.copy(elapsedTime = 0)
+                                    SetMode.LOAD -> it.copy(elapsedTime = 0)
+                                }
+                            }
+                        )
+                    }
+                )
             )
         }
     }

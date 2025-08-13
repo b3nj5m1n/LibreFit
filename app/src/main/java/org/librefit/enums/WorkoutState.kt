@@ -17,27 +17,12 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.models
+package org.librefit.enums
 
-import androidx.compose.runtime.Immutable
-import org.librefit.enums.WorkoutState
-import java.time.LocalDateTime
-import kotlin.random.Random
-
-/**
- * The [org.librefit.db.entity.Workout] model used only by the ui. The difference is the use
- * of [Immutable] annotation
- *
- * @see [org.librefit.db.entity.Workout]
- */
-@Immutable
-data class UiWorkout(
-    val id: Long = 0,
-    val routineId: Long = Random.Default.nextLong(),
-    val notes: String = "",
-    val title: String = "",
-    val state: WorkoutState = WorkoutState.COMPLETED,
-    val timeElapsed: Int = 0,
-    val created: LocalDateTime = LocalDateTime.now(),
-    val completed: LocalDateTime = LocalDateTime.now()
-)
+enum class WorkoutState {
+    RUNNING,
+    COMPLETED,
+    ROUTINE,
+    ARCHIVED,
+    LIBRARY
+}

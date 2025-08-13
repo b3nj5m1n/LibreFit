@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
+import org.librefit.enums.WorkoutState
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
 import org.librefit.ui.components.charts.Point
@@ -118,7 +119,7 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     }
 
     fun isRoutine(): Boolean {
-        return workout.value.routine
+        return workout.value.state == WorkoutState.ROUTINE
     }
 
     fun deleteWorkout() {

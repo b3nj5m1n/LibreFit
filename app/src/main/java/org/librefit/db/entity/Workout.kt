@@ -22,6 +22,7 @@ package org.librefit.db.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
+import org.librefit.enums.WorkoutState
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -35,9 +36,10 @@ import kotlin.random.Random
  * and [org.librefit.ui.screens.editWorkout.EditWorkoutScreen]
  * @property notes A user note about the routine or workout. The user can modify it in [org.librefit.ui.screens.workout.WorkoutScreen]
  *  * and [org.librefit.ui.screens.editWorkout.EditWorkoutScreen]
- * @property routine A boolean flag indicating whether the workout is a routine.
- * If `true`, the workout will be displayed as a playable routine in the [org.librefit.ui.screens.home.HomeScreen]
- * and the info in [org.librefit.ui.screens.infoWorkout.InfoWorkoutScreen] will be shown differently
+ * @property state It indicates whether the workout is a workout, routine, archived or in the library of workouts.
+ * When it is set as `ROUTINE`, it will be displayed as a playable routine in the [org.librefit.ui.screens.home.HomeScreen]
+ * and the info in [org.librefit.ui.screens.infoWorkout.InfoWorkoutScreen] will be shown differently.
+ * When it is set as `ARCHIVED`, it will be located in the respective section in `HomeScreen`. Same goes for `LIBRARY`
  * @property timeElapsed The total time elapsed during the workout, measured in seconds by
  * [org.librefit.services.WorkoutService] chronometer during a workout session.
  * @property created The timestamp indicating when a routine was created.
@@ -53,7 +55,7 @@ data class Workout(
     val routineId: Long = Random.Default.nextLong(),
     val notes: String = "",
     val title: String = "",
-    val routine: Boolean = false,
+    val state: WorkoutState = WorkoutState.COMPLETED,
     val timeElapsed: Int = 0,
     @Serializable(with = LocalDateTimeSerializer::class)
     val created: LocalDateTime = LocalDateTime.now(),

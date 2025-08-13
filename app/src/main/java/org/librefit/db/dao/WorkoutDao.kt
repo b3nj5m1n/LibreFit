@@ -31,24 +31,23 @@ import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
 import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
+import org.librefit.enums.WorkoutState
 import java.time.LocalDateTime
 
 @Dao
 interface WorkoutDao {
     /**
-     * Returns a flow that emits a stream of [org.librefit.db.entity.Workout]s which are routines ([org.librefit.db.entity.Workout.routine] = `true`)
+     * Returns a flow that emits a stream of [org.librefit.db.entity.Workout]s filtered by [state]
      */
-    @Query("SELECT * FROM workouts WHERE 1 = routine ORDER BY title")
-    fun getRoutines(): Flow<List<Workout>>
+    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY title")
+    fun getWorkoutsByState(state: WorkoutState): Flow<List<Workout>>
 
     /**
-     * Returns a flow that emits a stream of [Workout]s which are
-     * - completed ([Workout.completed] = `true`)
-     * - not routines ([Workout.routine] = `false`)
-     * - ordered by date from newest to latest ([Workout.completed])
+     * Returns a flow that emits a stream of [Workout]s which have the requested [state]. They are
+     * ordered by date from newest to latest ([Workout.completed])
      */
-    @Query("SELECT * FROM workouts WHERE 0 = routine ORDER BY completed DESC")
-    fun getCompletedWorkouts(): Flow<List<Workout>>
+    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY completed DESC")
+    fun getWorkoutsByStateAndOrderedByCompleted(state: WorkoutState): Flow<List<Workout>>
 
     @Query("SELECT * FROM workouts WHERE id = :id")
     fun getWorkout(id: Long): Workout
@@ -57,8 +56,8 @@ interface WorkoutDao {
     @Query("SELECT * FROM workouts WHERE id = :id")
     suspend fun getWorkoutWithExercisesAndSets(id: Long): WorkoutWithExercisesAndSets
 
-    @Query("SELECT * FROM workouts WHERE routine AND routineId = :routineId")
-    suspend fun getRoutineFromRoutineID(routineId: Long): Workout?
+    @Query("SELECT * FROM workouts WHERE state = :state AND routineId = :routineId")
+    suspend fun getWorkoutFromRoutineIDAndState(routineId: Long, state: WorkoutState): Workout?
 
     @Insert
     suspend fun addWorkout(workout: Workout): Long
@@ -88,12 +87,12 @@ interface WorkoutDao {
     suspend fun deleteSet(set: Set)
 
     /**
-     * Returns a flow list of completed [org.librefit.db.relations.WorkoutWithExercisesAndSets]s which are not routines so
-     * those which have [Workout.routine] = `false`.
+     * Returns a flow list [org.librefit.db.relations.WorkoutWithExercisesAndSets]s filtered by [state].
+     * They are  ordered by date from newest to latest ([Workout.completed])
      */
     @Transaction
-    @Query("SELECT * FROM workouts WHERE routine = 0 ORDER BY completed DESC")
-    fun getCompletedWorkoutsWithExercisesAndSets(): Flow<List<WorkoutWithExercisesAndSets>>
+    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY completed DESC")
+    fun getWorkoutsWithExercisesAndSetsByStateAndOrderedByCompleted(state: WorkoutState): Flow<List<WorkoutWithExercisesAndSets>>
 
 
     /**
@@ -116,8 +115,11 @@ interface WorkoutDao {
      * This function queries the database to fetch all workouts that belong to the given [Workout.routineId]
      */
     @Transaction
-    @Query("SELECT * FROM workouts WHERE routineId = :routineId AND routine = 0 ORDER BY completed DESC")
-    suspend fun getCompletedWorkoutsWithExercisesAndSetsFromRoutine(routineId: Long): List<WorkoutWithExercisesAndSets>
+    @Query("SELECT * FROM workouts WHERE routineId = :routineId AND state = :state ORDER BY completed DESC")
+    suspend fun getWorkoutsWithExercisesAndSetsFromRoutineByState(
+        routineId: Long,
+        state: WorkoutState
+    ): List<WorkoutWithExercisesAndSets>
 
     /**
      * Adds a workout along with its associated exercises and sets to the database.
@@ -147,11 +149,12 @@ interface WorkoutDao {
         val workout = workoutWithExercisesAndSets.workout
 
         val workoutId = if (workout.id == 0L) {
-            if (workout.routine) {
-                addWorkout(workout.copy(completed = LocalDateTime.now()))
-            } else {
-                addWorkout(workout.copy(created = LocalDateTime.now()))
-            }
+            addWorkout(
+                workout = when (workout.state) {
+                    WorkoutState.ROUTINE -> workout.copy(completed = LocalDateTime.now())
+                    else -> workout.copy(created = LocalDateTime.now())
+                }
+            )
         } else {
             updateWorkout(workout)
             workout.id

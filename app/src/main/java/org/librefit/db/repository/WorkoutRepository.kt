@@ -21,8 +21,8 @@ package org.librefit.db.repository
 
 import org.librefit.db.dao.WorkoutDao
 import org.librefit.db.entity.Workout
-import org.librefit.db.relations.ExerciseWithSets
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
+import org.librefit.enums.WorkoutState
 import org.librefit.ui.models.UiWorkoutWithExercisesAndSets
 import org.librefit.ui.models.mappers.toUi
 import javax.inject.Inject
@@ -35,33 +35,32 @@ import javax.inject.Singleton
  * application, providing a clean API for data access.
  *
  * @param workoutDao The [WorkoutDao] instance used to access workout data from the database.
- * @property completedWorkouts Refer to [WorkoutDao.getCompletedWorkouts]
- * @property routines Refer to [WorkoutDao.getRoutines]
- * @property completedWorkoutsWithExercisesAndSets Refer to [WorkoutDao.getCompletedWorkoutsWithExercisesAndSets]
+ * @property completedWorkouts Refer to [WorkoutDao.getWorkoutsByStateAndOrderedByCompleted]
+ * @property routines Refer to [WorkoutDao.getWorkoutsByState]
+ * @property completedWorkoutsWithExercisesAndSets Refer to [WorkoutDao.getWorkoutsWithExercisesAndSetsByStateAndOrderedByCompleted]
  *
  */
 @Singleton
 class WorkoutRepository @Inject constructor(
     private val workoutDao: WorkoutDao
 ) {
-    val completedWorkouts = workoutDao.getCompletedWorkouts()
+    val completedWorkouts =
+        workoutDao.getWorkoutsByStateAndOrderedByCompleted(WorkoutState.COMPLETED)
 
-    val routines = workoutDao.getRoutines()
+    val routines = workoutDao.getWorkoutsByState(WorkoutState.ROUTINE)
 
     val completedWorkoutsWithExercisesAndSets =
-        workoutDao.getCompletedWorkoutsWithExercisesAndSets()
+        workoutDao.getWorkoutsWithExercisesAndSetsByStateAndOrderedByCompleted(WorkoutState.COMPLETED)
 
 
-    fun getWorkout(id: Long): Workout {
-        return workoutDao.getWorkout(id)
-    }
 
     suspend fun getWorkoutWithExercisesAndSets(workoutID: Long): UiWorkoutWithExercisesAndSets {
         return workoutDao.getWorkoutWithExercisesAndSets(id = workoutID).toUi()
     }
 
     suspend fun getRoutineFromRoutineID(routineId: Long): Workout {
-        return workoutDao.getRoutineFromRoutineID(routineId) ?: Workout()
+        return workoutDao.getWorkoutFromRoutineIDAndState(routineId, state = WorkoutState.ROUTINE)
+            ?: Workout()
     }
 
     suspend fun updateWorkout(workout: Workout) {
@@ -74,18 +73,15 @@ class WorkoutRepository @Inject constructor(
 
 
 
-    /**
-     * Refer to [WorkoutDao.getExercisesFromWorkout]
-     */
-    suspend fun getExercisesFromWorkout(workoutId: Long): List<ExerciseWithSets> {
-        return workoutDao.getExercisesFromWorkout(workoutId)
-    }
 
     /**
-     * Refer to [WorkoutDao.getCompletedWorkoutsWithExercisesAndSetsFromRoutine]
+     * Refer to [WorkoutDao.getWorkoutsWithExercisesAndSetsFromRoutineByState]
      */
     suspend fun getCompletedWorkoutsWithExercisesAndSetsFromRoutine(routineId: Long): List<WorkoutWithExercisesAndSets> {
-        return workoutDao.getCompletedWorkoutsWithExercisesAndSetsFromRoutine(routineId)
+        return workoutDao.getWorkoutsWithExercisesAndSetsFromRoutineByState(
+            routineId,
+            state = WorkoutState.COMPLETED
+        )
     }
 
     /**

@@ -33,6 +33,7 @@ import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
+import org.librefit.enums.WorkoutState
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.ui.models.UiExercise
@@ -79,11 +80,11 @@ class EditWorkoutScreenViewModel @Inject constructor(
                 val workoutInDb = workoutWithExercisesAndSets.workout
 
                 _isRoutine.update {
-                    workoutInDb.routine
+                    workoutInDb.state == WorkoutState.ROUTINE
                 }
 
                 _workout.update {
-                    workoutInDb.copy(routine = false)
+                    workoutInDb.copy(state = WorkoutState.COMPLETED)
                 }
 
                 _exercises.update {
@@ -261,9 +262,11 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
     fun saveWorkoutWithExercisesInDB() {
         viewModelScope.launch(Dispatchers.IO) {
+            val state = if (isRoutine.value) WorkoutState.ROUTINE else WorkoutState.COMPLETED
+
             workoutRepository.addWorkoutWithExercisesAndSets(
                 WorkoutWithExercisesAndSets(
-                    workout = workout.value.copy(routine = isRoutine.value).toEntity(),
+                    workout = workout.value.copy(state = state).toEntity(),
                     exercisesWithSets = exercises.value.map { it.toEntity() }
                 )
             )
