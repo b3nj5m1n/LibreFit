@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.ui.theme.LibreFitTheme
+import kotlin.random.Random
 
 @Composable
 fun LibreFitButton(
@@ -55,10 +56,7 @@ fun LibreFitButton(
     Button(
         modifier = modifier,
         onClick = onClick,
-        colors = if (elevated) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        ),
+        colors = if (elevated) ButtonDefaults.buttonColors() else ButtonDefaults.filledTonalButtonColors(),
         enabled = enabled
     ) {
         Row(
@@ -91,7 +89,8 @@ private fun LibreFitButtonPreview() {
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         LibreFitButton(
             text = stringResource(R.string.start_routine),
-            icon = ImageVector.vectorResource(R.drawable.ic_play_arrow)
+            icon = ImageVector.vectorResource(R.drawable.ic_play_arrow),
+            elevated = Random.nextBoolean()
         ) { }
     }
 }
