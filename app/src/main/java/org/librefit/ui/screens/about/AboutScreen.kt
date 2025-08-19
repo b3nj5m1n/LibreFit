@@ -148,7 +148,7 @@ fun AboutScreen(navController: NavHostController) {
                     stringResource(R.string.privacy),
                     description = stringResource(R.string.privacy_policy_desc),
                     onClick = {
-                        navController.navigate(Route.PrivacyScreen)
+                        navController.navigate(Route.PrivacyScreen) { launchSingleTop = true }
                     }
 
                 )
@@ -171,7 +171,7 @@ fun AboutScreen(navController: NavHostController) {
                     stringResource(R.string.license),
                     description = stringResource(R.string.license_desc),
                     onClick = {
-                        navController.navigate(Route.LicenseScreen)
+                        navController.navigate(Route.LicenseScreen) { launchSingleTop = true }
                     }
                 )
             }
@@ -192,7 +192,7 @@ fun AboutScreen(navController: NavHostController) {
                     ImageVector.vectorResource(R.drawable.ic_library),
                     stringResource(R.string.libraries),
                     onClick = {
-                        navController.navigate(Route.LibrariesScreen)
+                        navController.navigate(Route.LibrariesScreen) { launchSingleTop = true }
                     }
                 )
             }

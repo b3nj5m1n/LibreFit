@@ -149,7 +149,7 @@ fun SharedTransitionScope.ExercisesScreen(
         actions = actions,
         navigateBack = navController::popBackStack,
         navigateToInfoExercise = {
-            navController.navigate(Route.InfoExerciseScreen(0L, it))
+            navController.navigate(Route.InfoExerciseScreen(0L, it)) { launchSingleTop = true }
         }
     )
 

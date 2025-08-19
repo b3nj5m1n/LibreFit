@@ -183,7 +183,9 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
         navigateBack = { navController.popBackStack() },
         actions = listOf(
             {
-                navController.navigate(Route.EditWorkoutScreen(workoutId = workout.id))
+                navController.navigate(Route.EditWorkoutScreen(workoutId = workout.id)) {
+                    launchSingleTop = true
+                }
             },
             {
                 showConfirmDialog = true
@@ -314,7 +316,9 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                 item {
                     ElevatedCard(
                         onClick = {
-                            navController.navigate(Route.InfoWorkoutScreen(routine.id))
+                            navController.navigate(Route.InfoWorkoutScreen(routine.id)) {
+                                launchSingleTop = true
+                            }
                         },
                         modifier = Modifier
                             .sharedBounds(
@@ -371,7 +375,9 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                                 text = stringResource(R.string.open_this_routine),
                                 icon = ImageVector.vectorResource(R.drawable.ic_open_new)
                             ) {
-                                navController.navigate(Route.InfoWorkoutScreen(routine.id))
+                                navController.navigate(Route.InfoWorkoutScreen(routine.id)) {
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     }
@@ -391,7 +397,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
                             e.exercise.id,
                             e.exerciseDC.toEntity()
                         )
-                    )
+                    ) { launchSingleTop = true }
                 }
             }
         }

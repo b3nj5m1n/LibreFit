@@ -179,6 +179,7 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
         actions = listOf {
             saveExercisesWithWorkout()
             navController.navigate(Route.SuccessScreen(SuccessMessage.WORKOUT_SAVED)) {
+                launchSingleTop = true
                 popUpTo(Route.MainScreen) { inclusive = false }
             }
         },
@@ -328,7 +329,9 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                 item {
                     ElevatedCard(
                         onClick = {
-                            navController.navigate(Route.InfoWorkoutScreen(routine.id))
+                            navController.navigate(Route.InfoWorkoutScreen(routine.id)) {
+                                launchSingleTop = true
+                            }
                         },
                         modifier = Modifier
                             .sharedBounds(
@@ -385,7 +388,9 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                                 text = stringResource(R.string.open_this_routine),
                                 icon = ImageVector.vectorResource(R.drawable.ic_open_new)
                             ) {
-                                navController.navigate(Route.InfoWorkoutScreen(routine.id))
+                                navController.navigate(Route.InfoWorkoutScreen(routine.id)) {
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     }

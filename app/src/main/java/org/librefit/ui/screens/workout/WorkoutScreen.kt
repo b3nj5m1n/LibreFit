@@ -192,7 +192,9 @@ fun SharedTransitionScope.WorkoutScreen(
             }
         },
         fabAction = {
-            navController.navigate(Route.ExercisesScreen(addExercises = true))
+            navController.navigate(Route.ExercisesScreen(addExercises = true)) {
+                launchSingleTop = true
+            }
         },
         action = {
             navController.navigate(
@@ -205,10 +207,15 @@ fun SharedTransitionScope.WorkoutScreen(
                         exercisesWithSets = exercisesWithSets.map { it.toEntity() },
                     )
                 )
-            )
+            ) { launchSingleTop = true }
         },
         onSelectedExerciseIdChange = { id, exercise ->
-            navController.navigate(Route.InfoExerciseScreen(id, exercise.toEntity()))
+            navController.navigate(
+                Route.InfoExerciseScreen(
+                    id,
+                    exercise.toEntity()
+                )
+            ) { launchSingleTop = true }
         },
         startChronometer = viewModel::startChronometer,
         pauseChronometer = viewModel::pauseChronometer,

@@ -423,7 +423,9 @@ fun LibreFitCartesianChart(
                                 else stringResource(R.string.open_the_workout) + " ${selectedWorkoutDate.value}",
                                 icon = ImageVector.vectorResource(R.drawable.ic_open_new)
                             ) {
-                                navController.navigate(Route.InfoWorkoutScreen(selectedWorkoutId.value!!))
+                                navController.navigate(Route.InfoWorkoutScreen(selectedWorkoutId.value!!)) {
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     }

@@ -153,7 +153,9 @@ private fun SharedTransitionScope.CalendarScreenContent(
             items(workoutsFromDate) { workout ->
                 ElevatedCard(
                     onClick = {
-                        navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                        navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id)) {
+                            launchSingleTop = true
+                        }
                     },
                     modifier = Modifier
                         .sharedBounds(
@@ -206,7 +208,9 @@ private fun SharedTransitionScope.CalendarScreenContent(
                             }
                             IconButton(
                                 onClick = {
-                                    navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                                    navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id)) {
+                                        launchSingleTop = true
+                                    }
                                 },
                             ) {
                                 Icon(

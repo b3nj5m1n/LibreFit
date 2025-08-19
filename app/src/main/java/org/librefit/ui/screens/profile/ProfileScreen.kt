@@ -162,7 +162,7 @@ private fun SharedTransitionScope.ProfileScreenContent(
                     modifier = Modifier.weight(0.5f),
                     elevated = false
                 ) {
-                    navController.navigate(Route.StatisticsScreen)
+                    navController.navigate(Route.StatisticsScreen) { launchSingleTop = true }
                 }
                 LibreFitButton(
                     text = stringResource(R.string.exercises),
@@ -170,7 +170,9 @@ private fun SharedTransitionScope.ProfileScreenContent(
                     modifier = Modifier.weight(0.5f),
                     elevated = false
                 ) {
-                    navController.navigate(Route.ExercisesScreen(addExercises = false))
+                    navController.navigate(Route.ExercisesScreen(addExercises = false)) {
+                        launchSingleTop = true
+                    }
                 }
             }
         }
@@ -186,7 +188,7 @@ private fun SharedTransitionScope.ProfileScreenContent(
                     modifier = Modifier.weight(0.5f),
                     elevated = false
                 ) {
-                    navController.navigate(Route.MeasurementScreen)
+                    navController.navigate(Route.MeasurementScreen) { launchSingleTop = true }
                 }
                 LibreFitButton(
                     text = stringResource(R.string.calendar),
@@ -194,7 +196,7 @@ private fun SharedTransitionScope.ProfileScreenContent(
                     modifier = Modifier.weight(0.5f),
                     elevated = false
                 ) {
-                    navController.navigate(Route.CalendarScreen)
+                    navController.navigate(Route.CalendarScreen) { launchSingleTop = true }
                 }
             }
         }
@@ -240,7 +242,9 @@ private fun SharedTransitionScope.ProfileScreenContent(
         ) { workout ->
             ElevatedCard(
                 onClick = {
-                    navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                    navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id)) {
+                        launchSingleTop = true
+                    }
                 },
                 modifier = Modifier
                     .sharedBounds(
@@ -291,7 +295,9 @@ private fun SharedTransitionScope.ProfileScreenContent(
                         }
                         IconButton(
                             onClick = {
-                                navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id))
+                                navController.navigate(Route.InfoWorkoutScreen(workoutId = workout.id)) {
+                                    launchSingleTop = true
+                                }
                             },
                         ) {
                             Icon(

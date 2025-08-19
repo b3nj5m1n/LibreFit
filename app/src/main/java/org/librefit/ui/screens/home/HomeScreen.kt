@@ -106,9 +106,12 @@ fun SharedTransitionScope.HomeScreen(
             val requestPermission = !hasNotificationPermission && requestPermissionNextTime
 
             if (requestPermission) {
-                navController.navigate(Route.RequestPermissionScreen(workoutId = workoutId))
+                navController.navigate(Route.RequestPermissionScreen(workoutId = workoutId)) {
+                    launchSingleTop = true
+                }
             } else {
                 navController.navigate(Route.WorkoutScreen(workoutId = workoutId)) {
+                    launchSingleTop = true
                     popUpTo(Route.RequestPermissionScreen(workoutId = workoutId)) {
                         inclusive = true
                     }
@@ -170,7 +173,9 @@ private fun SharedTransitionScope.HomeScreenContent(
         items(routines, key = { it.id }) { routine ->
             ElevatedCard(
                 onClick = {
-                    navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id))
+                    navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id)) {
+                        launchSingleTop = true
+                    }
                 },
                 modifier = Modifier
                     .sharedBounds(
@@ -204,7 +209,9 @@ private fun SharedTransitionScope.HomeScreenContent(
                         )
                         IconButton(
                             onClick = {
-                                navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id))
+                                navController.navigate(Route.InfoWorkoutScreen(workoutId = routine.id)) {
+                                    launchSingleTop = true
+                                }
                             }
                         ) {
                             Icon(

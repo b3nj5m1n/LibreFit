@@ -200,10 +200,11 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                             exercisesWithSets = exercisesWithSets.map { it.toEntity() }
                         )
                     )
-                )
+                ) { launchSingleTop = true }
             } else {
                 saveWorkoutWithExercisesInDB()
                 navController.navigate(Route.SuccessScreen(SuccessMessage.ROUTINE_SAVED)) {
+                    launchSingleTop = true
                     popUpTo(Route.MainScreen) { inclusive = false }
                 }
             }
@@ -215,7 +216,9 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
         actionsEnabled = listOf(!isTitleEmpty && !isTitleTooLong && exercisesWithSets.isNotEmpty()),
         fabIcon = ImageVector.vectorResource(R.drawable.ic_add),
         fabAction = {
-            navController.navigate(Route.ExercisesScreen(addExercises = true))
+            navController.navigate(Route.ExercisesScreen(addExercises = true)) {
+                launchSingleTop = true
+            }
         },
         fabDescription = stringResource(R.string.add_exercise)
     ) { innerPadding ->
@@ -295,7 +298,7 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                                     id,
                                     exercise.toEntity()
                                 )
-                            )
+                            ) { launchSingleTop = true }
                         },
                         onDelete = deleteExercise,
                         deleteSet = deleteSet,

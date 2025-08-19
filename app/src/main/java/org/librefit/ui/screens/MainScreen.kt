@@ -56,7 +56,9 @@ fun SharedTransitionScope.MainScreen(
     var homeSelected by rememberSaveable { mutableStateOf(true) }
 
     val fabAction: () -> Unit = {
-        navController.navigate(Route.EditWorkoutScreen(0L))
+        navController.navigate(Route.EditWorkoutScreen(0L)) {
+            launchSingleTop = true
+        }
     }
 
 
@@ -68,8 +70,8 @@ fun SharedTransitionScope.MainScreen(
             append(stringResource(id = R.string.app_name).removeRange(0, 5))
         },
         actions = listOf(
-            { navController.navigate(Route.AboutScreen) },
-            { navController.navigate(Route.SettingsScreen) }
+            { navController.navigate(Route.AboutScreen) { launchSingleTop = true } },
+            { navController.navigate(Route.SettingsScreen) { launchSingleTop = true } }
         ),
         actionsIcons = listOf(
             ImageVector.vectorResource(R.drawable.ic_info),
