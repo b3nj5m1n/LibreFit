@@ -31,13 +31,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.converters.ExerciseDCConverter
 import org.librefit.db.converters.LocalDateTimeConverter
 import org.librefit.db.dao.DatasetDao
 import org.librefit.db.dao.MeasurementDao
 import org.librefit.db.dao.WorkoutDao
 import org.librefit.db.entity.Exercise
+import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Measurement
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
@@ -81,13 +81,13 @@ abstract class AppDatabase : RoomDatabase() {
                     // ExerciseDC adapter is auto generated. All entries of all
                     // enums must be annotated with @Json with its corresponding value in json file
                     val exercises = adapter.fromJson(jsonFile)
-                        ?: throw JsonDataException("Failed to parse exercises.json file. Resource ID: ${R.raw.exercises}")
+                        ?: throw JsonDataException("Failed to parse `exercises.json` file. Resource ID: ${R.raw.exercises}")
 
                     // Set the dataset into the database using the DAO
                     daoProvider.get().setDataset(exercises)
 
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    error(e.message.toString())
                 }
             }
         }
