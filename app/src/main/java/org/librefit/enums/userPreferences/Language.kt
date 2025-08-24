@@ -17,9 +17,9 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.enums
+package org.librefit.enums.userPreferences
 
-enum class Language(val code: String) {
+enum class Language(val code: String) : DialogPreference {
     SYSTEM(""),
     ENGLISH("en"),
     ITALIAN("it")

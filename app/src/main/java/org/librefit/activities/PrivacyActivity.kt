@@ -29,7 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import org.librefit.db.repository.UserPreferencesRepository
-import org.librefit.enums.ThemeMode
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.screens.about.PrivacyScreen
 import org.librefit.ui.theme.LibreFitTheme
 import javax.inject.Inject

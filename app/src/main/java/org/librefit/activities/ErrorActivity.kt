@@ -64,7 +64,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.db.repository.UserPreferencesRepository
-import org.librefit.enums.ThemeMode
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold

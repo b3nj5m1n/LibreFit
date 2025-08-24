@@ -31,8 +31,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.librefit.di.qualifiers.ApplicationScope
-import org.librefit.enums.Language
-import org.librefit.enums.ThemeMode
+import org.librefit.enums.userPreferences.Language
+import org.librefit.enums.userPreferences.ThemeMode
 import javax.inject.Inject
 import javax.inject.Singleton
 
