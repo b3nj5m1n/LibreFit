@@ -125,6 +125,55 @@ class ExercisesScreenViewModelTest {
     }
 
     @Test
+    fun `filteredExerciseList updates after last query debounce period`() = runTest(
+        context = mainDispatcherRule.testDispatcher
+    ) {
+        viewModel.filteredExerciseList.test {
+            // Assert: The initial item is the full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
+
+            // Arrange: The query is updated multiple times and advance the virtual clock past the debounce timeout
+            viewModel.updateQuery("Exe")
+            mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(100L)
+
+            viewModel.updateQuery("Exerc")
+            mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(100L)
+
+            viewModel.updateQuery("Exercise")
+            mainDispatcherRule.testDispatcher.scheduler.advanceTimeBy(301L)
+
+            // Assert: The new, filtered list is ordered by fuzzySearch
+            val filteredList = awaitItem()
+            assertThat(filteredList).containsExactly(
+                UiExerciseDC(name = "Exercise", force = Force.PULL),
+                UiExerciseDC(name = "Pull exercise", force = Force.PULL),
+                UiExerciseDC(name = "Push exercise", force = Force.PUSH)
+            ).inOrder()
+        }
+    }
+
+    @Test
+    fun `filteredExerciseList doesn't update before query debounce period`() = runTest(
+        context = mainDispatcherRule.testDispatcher
+    ) {
+        viewModel.filteredExerciseList.test {
+            // Assert: The initial item is the full list
+            assertThat(awaitItem()).containsExactlyElementsIn(dataset)
+
+            // Arrange: The query is updated
+            viewModel.updateQuery("Exercise")
+
+            // Assert: The new, filtered list is ordered by fuzzySearch
+            val filteredList = awaitItem()
+            assertThat(filteredList).containsExactly(
+                UiExerciseDC(name = "Exercise", force = Force.PULL),
+                UiExerciseDC(name = "Pull exercise", force = Force.PULL),
+                UiExerciseDC(name = "Push exercise", force = Force.PUSH)
+            ).inOrder()
+        }
+    }
+
+    @Test
     fun `updateFilter updates the filtered list immediately`() = runTest {
         viewModel.filteredExerciseList.test {
             // Assert: Initial full list
