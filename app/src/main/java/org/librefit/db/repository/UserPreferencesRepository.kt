@@ -102,11 +102,10 @@ class UserPreferencesRepository @Inject constructor(
      * A Flow that emits the new Locale whenever the app's configuration changes.
      * This is an efficient, callback-based alternative to polling.
      */
-    val onLocaleChanged: Flow<Locale> = callbackFlow {
+    private val onLocaleChanged: Flow<Locale?> = callbackFlow {
         val callback = object : ComponentCallbacks {
             override fun onConfigurationChanged(newConfig: Configuration) {
-                val currentLocale =
-                    AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()
+                val currentLocale = AppCompatDelegate.getApplicationLocales()[0]
                 // Offer the new locale to the channel
                 trySend(currentLocale)
             }
@@ -127,7 +126,8 @@ class UserPreferencesRepository @Inject constructor(
         // It listens for external changes to locale and updates data store.
         applicationScope.launch {
             onLocaleChanged.collect { newLocale ->
-                val newLanguageCode = newLocale.language
+                // Null means `follow system`
+                val newLanguageCode = newLocale?.language ?: ""
                 // Only update if the system language is different from the saved preference.
                 if (language.value.code != newLanguageCode) {
                     savePreference(languageKey, newLanguageCode)
