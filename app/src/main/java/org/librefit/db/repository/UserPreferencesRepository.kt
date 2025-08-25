@@ -62,6 +62,7 @@ class UserPreferencesRepository @Inject constructor(
         val keepOnWorkoutScreenKey = booleanPreferencesKey("workout_screen_on")
         val requestPermissionsNextTimeKey = booleanPreferencesKey("ask_permission_again")
         val languageKey = stringPreferencesKey("language")
+        val restTimerSoundKey = booleanPreferencesKey("alert_sound")
     }
 
     val themeMode: StateFlow<ThemeMode> = dataStore.data
@@ -96,6 +97,14 @@ class UserPreferencesRepository @Inject constructor(
             scope = applicationScope,
             started = SharingStarted.Eagerly,
             initialValue = false
+        )
+
+    val restTimerSoundOn: StateFlow<Boolean> = dataStore.data
+        .map { preferences -> preferences[restTimerSoundKey] != false }
+        .stateIn(
+            scope = applicationScope,
+            started = SharingStarted.Eagerly,
+            initialValue = true
         )
 
     /**

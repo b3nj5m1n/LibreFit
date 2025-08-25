@@ -251,6 +251,8 @@
     <string name="open_this_routine">Apri questa routine</string>
     <string name="linked_routine">Routine collegata</string>
     <string name="others">Altri</string>
+    <string name="rest_timer_sound_on_desc">Riproduci un suono quando il timer di riposo termina</string>
+    <string name="rest_timer_sound_off_desc">Gli avvisi del timer di riposo saranno silenziosi</string>
     <string name="past">Scorso</string>
     <string name="past_week">Scorsa settimana</string>
     <string name="past_month">Scorso mese</string>
@@ -272,5 +274,6 @@
     <string name="session_reps">Ripetizione per sessione</string>
     <string name="most_reps">Massime ripetizioni</string>
     <string name="session_volume">Volume per sessione</string>
+    <string name="rest_timer_sound">Suono timer riposo</string>
 
 </resources>

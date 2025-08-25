@@ -231,6 +231,9 @@
     <string name="language_english">English</string>
     <string name="language_italian_nt" translatable="false">Italiano</string>
     <string name="language_italian">Italian</string>
+    <string name="rest_timer_sound">Rest timer sound</string>
+    <string name="rest_timer_sound_on_desc">Play a sound when rest timer ends</string>
+    <string name="rest_timer_sound_off_desc">Rest timer alerts will be silent</string>
 
 
     <!-- Statistics screen-->

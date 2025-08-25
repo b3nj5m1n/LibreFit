@@ -60,7 +60,7 @@ import kotlin.random.Random
 class WorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @param:ApplicationContext private val context: Context,
-    userPreferences: UserPreferencesRepository,
+    private val userPreferences: UserPreferencesRepository,
     private val workoutServiceManager: WorkoutServiceManager,
     workoutRepository: WorkoutRepository
 ) : ViewModel() {
@@ -329,13 +329,15 @@ class WorkoutScreenViewModel @Inject constructor(
             WorkoutService.restTime.collect { newRestTime ->
                 _restTime.update { newRestTime.coerceAtLeast(0) }
 
-                // When timer is over and screen is visible, it plays alert sound
+                // When timer is over and screen is visible, it plays alert sound only by respecting user preference
                 if (initialRestTime != 1 && restTime.value == 0 && isFocused) {
-                    val mediaPlayer = MediaPlayer.create(context, R.raw.alert_notification)
-                    mediaPlayer.setOnCompletionListener {
-                        it.release()
+                    if (userPreferences.restTimerSoundOn.value) {
+                        val mediaPlayer = MediaPlayer.create(context, R.raw.alert_notification)
+                        mediaPlayer.setOnCompletionListener {
+                            it.release()
+                        }
+                        mediaPlayer.start()
                     }
-                    mediaPlayer.start()
                     initialRestTime = 1
                 }
             }
@@ -379,9 +381,4 @@ class WorkoutScreenViewModel @Inject constructor(
 
 
     val keepScreenOn = userPreferences.workoutScreenOn
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = true
-        )
 }

@@ -252,6 +252,7 @@
     <string name="open_this_routine">Open this routine</string>
     <string name="linked_routine">Linked routine</string>
     <string name="others">Others</string>
+    <string name="rest_timer_sound_off_desc">Rest timer alerts will be silent</string>
     <string name="past">Past</string>
     <string name="past_week">Past week</string>
     <string name="past_month">Past month</string>
@@ -273,6 +274,8 @@
     <string name="session_reps">Session reps</string>
     <string name="most_reps">Most reps</string>
     <string name="session_volume">Session volume</string>
+    <string name="rest_timer_sound">Rest timer sound</string>
+    <string name="rest_timer_sound_on_desc">Play a sound when rest timer ends</string>
 
 
 </resources>

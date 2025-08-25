@@ -46,6 +46,7 @@ class SettingsScreenViewModel @Inject constructor(
     val materialMode = userPreferences.materialMode
     val keepScreenOn = userPreferences.workoutScreenOn
     val language = userPreferences.language
+    val restTimerSoundOn = userPreferences.restTimerSoundOn
 
 
     fun <T> savePreference(key: Preferences.Key<T>, value: T) {

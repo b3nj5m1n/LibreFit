@@ -61,6 +61,7 @@ import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.dialogs.PreferenceDialog
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
+import kotlin.random.Random
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -78,6 +79,8 @@ fun SettingsScreen(
     val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState()
 
     val materialModeOn by viewModel.materialMode.collectAsState()
+
+    val restTimerSoundOn by viewModel.restTimerSoundOn.collectAsState()
 
     val preferences by viewModel.preferences.collectAsState()
 
@@ -100,6 +103,7 @@ fun SettingsScreen(
         materialModeOn = materialModeOn,
         selectedLanguage = selectedLanguage,
         keepWorkoutScreenOn = keepWorkoutScreenOn,
+        restTimerSoundOn = restTimerSoundOn,
         updatePreferences = viewModel::updatePreferences,
         saveBooleanValue = viewModel::savePreference
     )
@@ -113,6 +117,7 @@ private fun SettingsScreenContent(
     materialModeOn: Boolean,
     selectedLanguage: Language,
     keepWorkoutScreenOn: Boolean,
+    restTimerSoundOn: Boolean,
     updatePreferences: (List<DialogPreference>) -> Unit,
     saveBooleanValue: (Preferences.Key<Boolean>, value: Boolean) -> Unit
 ) {
@@ -214,13 +219,7 @@ private fun SettingsScreenContent(
                         Switch(
                             modifier = iconPaddingModifier,
                             checked = materialModeOn,
-                            onCheckedChange = {
-                                haptic.performHapticFeedback(
-                                    hapticFeedbackType = if (it) HapticFeedbackType.ToggleOn
-                                    else HapticFeedbackType.ToggleOff
-                                )
-                                saveBooleanValue(UserPreferencesRepository.materialModeKey, it)
-                            }
+                            onCheckedChange = null
                         )
                     }
                 }
@@ -311,18 +310,60 @@ private fun SettingsScreenContent(
                     Switch(
                         modifier = iconPaddingModifier,
                         checked = keepWorkoutScreenOn,
-                        onCheckedChange = {
-                            haptic.performHapticFeedback(
-                                hapticFeedbackType = if (it) HapticFeedbackType.ToggleOn
-                                else HapticFeedbackType.ToggleOff
-                            )
-                            saveBooleanValue(UserPreferencesRepository.keepOnWorkoutScreenKey, it)
-                        }
+                        onCheckedChange = null
                     )
                 }
             }
 
-            //TODO: toggle to enable/disable rest timer sound
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.large)
+                        .clickable {
+                            haptic.performHapticFeedback(
+                                hapticFeedbackType = if (!restTimerSoundOn) HapticFeedbackType.ToggleOn
+                                else HapticFeedbackType.ToggleOff
+                            )
+                            saveBooleanValue(
+                                UserPreferencesRepository.restTimerSoundKey,
+                                !restTimerSoundOn
+                            )
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(preferencesPadding)
+                            .weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_notification_sound),
+                            contentDescription = stringResource(R.string.rest_timer_sound),
+                            modifier = iconPaddingModifier
+                        )
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(id = R.string.rest_timer_sound),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = stringResource(
+                                    id = if (restTimerSoundOn) R.string.rest_timer_sound_on_desc else R.string.rest_timer_sound_off_desc
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                    Switch(
+                        modifier = iconPaddingModifier,
+                        checked = restTimerSoundOn,
+                        onCheckedChange = null
+                    )
+                }
+            }
         }
     }
 }
@@ -332,13 +373,17 @@ private fun SettingsScreenContent(
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    val materialModeOn = Random.nextBoolean()
+    val theme = ThemeMode.entries.random()
+
+    LibreFitTheme(dynamicColor = materialModeOn, darkTheme = theme != ThemeMode.LIGHT) {
         SettingsScreenContent(
-            selectedTheme = ThemeMode.DARK,
-            materialModeOn = false,
+            selectedTheme = theme,
+            materialModeOn = materialModeOn,
             updatePreferences = {},
             selectedLanguage = Language.SYSTEM,
-            keepWorkoutScreenOn = true,
+            keepWorkoutScreenOn = Random.nextBoolean(),
+            restTimerSoundOn = Random.nextBoolean(),
             saveBooleanValue = { _, _ -> },
             navController = rememberNavController()
         )

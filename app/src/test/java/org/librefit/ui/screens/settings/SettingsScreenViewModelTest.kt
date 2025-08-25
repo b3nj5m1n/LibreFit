@@ -55,6 +55,7 @@ class SettingsScreenViewModelTest {
     private lateinit var themeMode: MutableStateFlow<ThemeMode>
     private lateinit var keepScreenOn: MutableStateFlow<Boolean>
     private lateinit var materialModeOn: MutableStateFlow<Boolean>
+    private lateinit var restTimerSoundOn: MutableStateFlow<Boolean>
 
     // Captured objects
     private val key = slot<Preferences.Key<Any>>()
@@ -68,12 +69,14 @@ class SettingsScreenViewModelTest {
         themeMode = MutableStateFlow(ThemeMode.SYSTEM)
         keepScreenOn = MutableStateFlow(true)
         materialModeOn = MutableStateFlow(false)
+        restTimerSoundOn = MutableStateFlow(true)
 
         // Arrange: Tell the mock what to return when these are accessed
         every { userPreferencesRepository.language } returns language
         every { userPreferencesRepository.themeMode } returns themeMode
         every { userPreferencesRepository.workoutScreenOn } returns keepScreenOn
         every { userPreferencesRepository.materialMode } returns materialModeOn
+        every { userPreferencesRepository.restTimerSoundOn } returns restTimerSoundOn
         coEvery {
             userPreferencesRepository.savePreference(
                 capture(key),
@@ -100,6 +103,10 @@ class SettingsScreenViewModelTest {
                     materialModeOn.value = value as Boolean
                 }
 
+                UserPreferencesRepository.restTimerSoundKey -> {
+                    restTimerSoundOn.value = value as Boolean
+                }
+
                 else -> error("Invalid key")
             }
         }
@@ -119,13 +126,18 @@ class SettingsScreenViewModelTest {
     }
 
     @Test
-    fun `initial state - keep screen on is true`() = runTest {
+    fun `initial state - keep screen is on`() = runTest {
         assertThat(viewModel.keepScreenOn.value).isTrue()
     }
 
     @Test
     fun `initial state - material mode is off`() = runTest {
         assertThat(viewModel.materialMode.value).isFalse()
+    }
+
+    @Test
+    fun `initial state - rest timer is is off`() = runTest {
+        assertThat(viewModel.restTimerSoundOn.value).isTrue()
     }
 
     @Test
@@ -287,6 +299,23 @@ class SettingsScreenViewModelTest {
 
             // Act: update preference
             viewModel.savePreference(UserPreferencesRepository.keepOnWorkoutScreenKey, expected)
+
+            // Assert: update is correct
+            assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `rest timer sound on mode updates correctly`() = runTest {
+        // Arrange: set expected value
+        val expected = false
+
+        viewModel.restTimerSoundOn.test {
+            // Initial emission
+            assertThat(awaitItem()).isEqualTo(true)
+
+            // Act: update preference
+            viewModel.savePreference(UserPreferencesRepository.restTimerSoundKey, expected)
 
             // Assert: update is correct
             assertThat(awaitItem()).isEqualTo(expected)
