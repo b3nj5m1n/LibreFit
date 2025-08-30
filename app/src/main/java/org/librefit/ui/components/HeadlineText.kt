@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +57,7 @@ import org.librefit.ui.theme.LibreFitTheme
  * @param infoMode If non-null, the  information is used by the [IconButton] when clicked
  * to open [InfoModalBottomSheet]
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HeadlineText(
     text: String,
@@ -74,7 +76,7 @@ fun HeadlineText(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmallEmphasized,
             color = MaterialTheme.colorScheme.primary
         )
         if (infoMode != null) {
@@ -95,10 +97,10 @@ fun HeadlineText(
 @Preview
 @Composable
 private fun HeadlineTextPreview() {
-    LibreFitTheme(false, true) {
-        LibreFitScaffold(title = AnnotatedString("HeadlineText showcase")) {
+    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+        LibreFitScaffold(title = AnnotatedString("HeadlineText showcase")) { innerPadding ->
             LazyColumn(
-                contentPadding = it,
+                contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item {
