@@ -37,7 +37,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -175,74 +177,78 @@ fun SharedTransitionScope.ExerciseCardSmall(
 
 
             if (exerciseWithSets.sets.isNotEmpty()) {
-                HorizontalDivider()
-
                 val setMode = exerciseWithSets.exercise.setMode
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
+                ElevatedCard(
+                    shape = MaterialTheme.shapes.largeIncreased,
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    )
                 ) {
-                    Text(stringResource(R.string.set))
-                    if (setMode == SetMode.DURATION) {
-                        Text(stringResource(R.string.time))
-                    } else {
-                        Text(stringResource(R.string.reps))
-                        if (setMode == SetMode.LOAD || setMode == SetMode.BODYWEIGHT_WITH_LOAD) {
-                            Text(
-                                stringResource(R.string.load) + " (" + stringResource(
-                                    R.string.kg
-                                ) + ")"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(stringResource(R.string.set))
+                        if (setMode == SetMode.DURATION) {
+                            Text(stringResource(R.string.time))
+                        } else {
+                            Text(stringResource(R.string.reps))
+                            if (setMode == SetMode.LOAD || setMode == SetMode.BODYWEIGHT_WITH_LOAD) {
+                                Text(
+                                    stringResource(R.string.load) + " (" + stringResource(
+                                        R.string.kg
+                                    ) + ")"
+                                )
+                            }
+                        }
+                        if (!isRoutine) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_check),
+                                contentDescription = stringResource(R.string.done)
                             )
                         }
                     }
-                    if (!isRoutine) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_check),
-                            contentDescription = stringResource(R.string.done)
-                        )
-                    }
-                }
-
-                Column {
-                    exerciseWithSets.sets.forEachIndexed { index, set ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(
-                                    RoundedCornerShape(
-                                        topStart = CornerSize(if (index == 0) 25 else 0),
-                                        topEnd = CornerSize(if (index == 0) 25 else 0),
-                                        bottomEnd = CornerSize(
-                                            if (index == exerciseWithSets.sets.lastIndex) 25 else 0
-                                        ),
-                                        bottomStart = CornerSize(
-                                            if (index == exerciseWithSets.sets.lastIndex) 25 else 0
-                                        ),
+                    Column {
+                        exerciseWithSets.sets.forEachIndexed { index, set ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(
+                                        RoundedCornerShape(
+                                            topStart = CornerSize(if (index == 0) 45 else 0),
+                                            topEnd = CornerSize(if (index == 0) 45 else 0),
+                                            bottomEnd = CornerSize(
+                                                if (index == exerciseWithSets.sets.lastIndex) 45 else 0
+                                            ),
+                                            bottomStart = CornerSize(
+                                                if (index == exerciseWithSets.sets.lastIndex) 45 else 0
+                                            ),
+                                        )
                                     )
-                                )
-                                .background(
-                                    if (!isRoutine && set.completed) MaterialTheme.colorScheme.secondaryContainer
-                                    else Color.Unspecified
-                                )
-                                .padding(5.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Text("${index + 1}")
-                            if (setMode == SetMode.DURATION) {
-                                Text(formatTime(set.elapsedTime).substring(3))
-                            } else {
-                                Text("${set.reps}")
-                                if (setMode == SetMode.LOAD || setMode == SetMode.BODYWEIGHT_WITH_LOAD) {
-                                    Text("${set.load}")
+                                    .background(
+                                        if (!isRoutine && set.completed) MaterialTheme.colorScheme.secondaryContainer
+                                        else Color.Unspecified
+                                    )
+                                    .padding(5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Text("${index + 1}")
+                                if (setMode == SetMode.DURATION) {
+                                    Text(formatTime(set.elapsedTime).substring(3))
+                                } else {
+                                    Text("${set.reps}")
+                                    if (setMode == SetMode.LOAD || setMode == SetMode.BODYWEIGHT_WITH_LOAD) {
+                                        Text("${set.load}")
+                                    }
                                 }
-                            }
-                            if (!isRoutine) {
-                                Checkbox(
-                                    checked = set.completed,
-                                    onCheckedChange = null
-                                )
+                                if (!isRoutine) {
+                                    Checkbox(
+                                        checked = set.completed,
+                                        onCheckedChange = null
+                                    )
+                                }
                             }
                         }
                     }
