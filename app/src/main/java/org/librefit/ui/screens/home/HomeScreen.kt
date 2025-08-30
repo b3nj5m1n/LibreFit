@@ -178,6 +178,7 @@ private fun SharedTransitionScope.HomeScreenContent(
                         launchSingleTop = true
                     }
                 },
+                shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(routine.id),

@@ -203,6 +203,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
         LibreFitLazyColumn(innerPadding) {
             item {
                 ElevatedCard(
+                    shape = MaterialTheme.shapes.extraLarge,
                     modifier = Modifier.sharedBounds(
                         sharedContentState = rememberSharedContentState(workoutId),
                         animatedVisibilityScope = animatedVisibilityScope
