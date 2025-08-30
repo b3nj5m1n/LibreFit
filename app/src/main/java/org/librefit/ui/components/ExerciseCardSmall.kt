@@ -35,8 +35,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,16 +73,16 @@ import org.librefit.util.Formatter.formatDetails
 import org.librefit.util.Formatter.formatTime
 
 /**
- * This is a smaller version of [ExerciseCard]. It is suitable to only show data of [UiExerciseWithSets]
+ * This is a smaller version of [ExerciseCard] when actually is a button. It is suitable to only show data of [UiExerciseWithSets]
  * but not to modify it.
  *
  * @param exerciseWithSets A [UiExerciseWithSets] that holds the data
  * @param animatedVisibilityScope Used for image's animation transition
  * @param isRoutine When `false`, the card shows checkboxes of set completion
- * @param onDetail A lambda function triggered when the `Info` icon is clicked, which should open
- * the [org.librefit.ui.screens.infoExercise.InfoExerciseScreen].
+ * @param onDetail A lambda function triggered when the `Info` icon is clicked or when [ExerciseCardSmall] is clicked.
+ * It should open the [org.librefit.ui.screens.infoExercise.InfoExerciseScreen].
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SharedTransitionScope.ExerciseCardSmall(
     exerciseWithSets: UiExerciseWithSets,
@@ -94,15 +96,20 @@ fun SharedTransitionScope.ExerciseCardSmall(
         BitmapFactory.decodeStream(context.assets.open(exerciseWithSets.exerciseDC.images[0]))
     }.asImageBitmap()
 
-    ElevatedCard(
+    Button(
         onClick = onDetail,
         modifier = Modifier
-            .padding(5.dp)
+            .padding(5.dp),
+        shapes = ButtonDefaults.shapes(
+            shape = MaterialTheme.shapes.extraLarge
+        ),
+        contentPadding = ButtonDefaults.MediumContentPadding,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
