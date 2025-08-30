@@ -399,25 +399,17 @@ private fun BottomAppBarContent(
                 contentAlignment = Alignment.Center
             ) {
                 val maxHeight = maxHeight.value
-                val maxWidth = maxWidth.value
-                val animatedWidth = animateFloatAsState(
-                    targetValue = if (isStopwatchPaused) maxHeight else maxWidth
-                )
                 //Play button
-                FilledIconButton(
-                    onClick = {
-                        if (isStopwatchPaused) startStopwatch()
-                        else pauseStopwatch()
-                    },
-                    modifier = Modifier
-                        .height(maxHeight.dp)
-                        .width(animatedWidth.value.dp)
+                ElevatedToggleButton(
+                    checked = !isStopwatchPaused,
+                    onCheckedChange = { if (it) startStopwatch() else pauseStopwatch() },
+                    modifier = Modifier.height(maxHeight.dp),
+                    shapes = ToggleButtonDefaults.shapesFor(maxHeight.dp)
                 ) {
                     Icon(
                         imageVector = if (isStopwatchPaused) ImageVector.vectorResource(R.drawable.ic_play_arrow) else
                             ImageVector.vectorResource(id = R.drawable.ic_pause),
                         contentDescription = stringResource(if (isStopwatchPaused) R.string.pause else R.string.resume),
-                        modifier = Modifier.fillMaxSize(0.7f)
                     )
                 }
             }
@@ -453,7 +445,8 @@ private fun BottomAppBarContent(
             ) {
                 IconButton(
                     onClick = { modifyRestTime(false) },
-                    enabled = restTime != 0
+                    enabled = restTime != 0,
+                    shapes = IconButtonDefaults.shapes()
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_replay_10),
@@ -472,7 +465,8 @@ private fun BottomAppBarContent(
                 }
                 IconButton(
                     onClick = { modifyRestTime(true) },
-                    enabled = restTime != 0
+                    enabled = restTime != 0,
+                    shapes = IconButtonDefaults.shapes()
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_forward_10),
