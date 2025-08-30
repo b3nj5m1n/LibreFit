@@ -25,11 +25,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +41,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -75,7 +79,7 @@ import org.librefit.R
  * @param bottomBar The bottom bar of the scaffold. By default there's no bottom bar.
  * @param content A composable lambda that defines the main content of the screen.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LibreFitScaffold(
     title: AnnotatedString? = null,
@@ -120,49 +124,67 @@ fun LibreFitScaffold(
                     actions = {
                         val haptic = LocalHapticFeedback.current
 
-                        actions.forEachIndexed { index, action ->
-                            val description = actionsDescription.getOrNull(index)
+                        val interactionSources =
+                            remember { List(actions.size) { MutableInteractionSource() } }
+                        ButtonGroup(
+                            overflowIndicator = {},
+                        ) {
+                            actions.forEachIndexed { index, action ->
+                                val description = actionsDescription.getOrNull(index)
 
-                            val icon = actionsIcons.getOrNull(index)
+                                val icon = actionsIcons.getOrNull(index)
 
-                            val enabled = actionsEnabled.getOrNull(index) != false
+                                val enabled = actionsEnabled.getOrNull(index) != false
 
-                            val elevated = actionsElevated.getOrNull(index) != false
+                                val elevated = actionsElevated.getOrNull(index) != false
 
+                                customItem(
+                                    buttonGroupContent = {
+                                        if (icon != null) {
+                                            IconButton(
+                                                modifier = Modifier.animateWidth(interactionSources[index]),
+                                                onClick = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                                    action()
+                                                },
+                                                shapes = IconButtonDefaults.shapes(),
+                                                interactionSource = interactionSources[index],
+                                                enabled = enabled,
+                                                colors = if (elevated)
+                                                    IconButtonDefaults.filledIconButtonColors() else
+                                                    IconButtonDefaults.iconButtonColors()
+                                            ) {
+                                                Icon(
+                                                    imageVector = icon,
+                                                    contentDescription = description
+                                                )
+                                            }
+                                        }
+                                        if (description != null) {
+                                            Button(
+                                                modifier = Modifier.animateWidth(interactionSources[index]),
+                                                onClick = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                                                    action()
+                                                },
+                                                shapes = ButtonDefaults.shapes(),
+                                                interactionSource = interactionSources[index],
+                                                enabled = enabled,
+                                                colors = if (elevated)
+                                                    ButtonDefaults.buttonColors() else
+                                                    ButtonDefaults.textButtonColors()
+                                            ) {
+                                                Text(text = description)
 
-                            if (icon != null) {
-                                IconButton(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        action()
+                                            }
+                                        }
                                     },
-                                    enabled = enabled,
-                                    colors = if (elevated)
-                                        IconButtonDefaults.filledIconButtonColors() else
-                                        IconButtonDefaults.iconButtonColors()
-                                ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = description
-                                    )
-                                }
-                            }
-                            if (description != null) {
-                                Button(
-                                    onClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
-                                        action()
-                                    },
-                                    enabled = enabled,
-                                    colors = if (elevated)
-                                        ButtonDefaults.buttonColors() else
-                                        ButtonDefaults.textButtonColors()
-                                ) {
-                                    Text(text = description)
+                                    menuContent = {}
+                                )
 
-                                }
                             }
                         }
+
                     },
                 )
             }
