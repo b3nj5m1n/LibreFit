@@ -19,6 +19,7 @@
 
 package org.librefit.ui.components.charts
 
+import android.graphics.Typeface
 import android.text.Layout
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ fun rememberLibreFitMarker(
     valueFormatter: DefaultCartesianMarker.ValueFormatter =
         DefaultCartesianMarker.ValueFormatter.default(),
     showIndicator: Boolean = true,
+    typeface: Typeface
 ): CartesianMarker {
     val labelBackgroundShape = markerCorneredShape(CorneredShape.Corner.Rounded)
     val labelBackground =
@@ -57,6 +59,7 @@ fun rememberLibreFitMarker(
     val label =
         rememberTextComponent(
             color = MaterialTheme.colorScheme.onSurface,
+            typeface = typeface,
             textAlignment = Layout.Alignment.ALIGN_CENTER,
             padding = insets(8.dp, 4.dp),
             background = labelBackground,

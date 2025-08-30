@@ -19,6 +19,7 @@
 
 package org.librefit.ui.components.charts
 
+import android.graphics.Typeface
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -46,8 +48,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontSynthesis
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -128,6 +137,7 @@ val legendLabelKey = ExtraStore.Key<List<String>>()
  * @param legendList A list of [String] shown under the chart as a legend. The list must have a less
  * or equal size of [Point.yValues] and it must not contain blank strings. Leave empty to not shown a legend.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LibreFitCartesianChart(
     format: DecimalFormat = DecimalFormat(),
@@ -201,7 +211,21 @@ fun LibreFitCartesianChart(
         MaterialTheme.colorScheme.onSurfaceVariant
     )
 
-    val legendItemLabelComponent = rememberTextComponent(MaterialTheme.colorScheme.onSurface)
+    val materialStyle = MaterialTheme.typography.labelLarge
+    val resolver = LocalFontFamilyResolver.current
+    val typeface: Typeface = remember {
+        resolver.resolve(
+            fontFamily = materialStyle.fontFamily,
+            fontWeight = materialStyle.fontWeight ?: FontWeight.Normal,
+            fontStyle = materialStyle.fontStyle ?: FontStyle.Normal,
+            fontSynthesis = materialStyle.fontSynthesis ?: FontSynthesis.All
+        ).value as Typeface
+    }
+
+    val labelComponent = rememberTextComponent(
+        color = MaterialTheme.colorScheme.onSurface,
+        typeface = typeface
+    )
 
     ElevatedCard {
         Column(
@@ -315,7 +339,7 @@ fun LibreFitCartesianChart(
                                         fill(colorPalette[index]),
                                         CorneredShape.Pill
                                     ),
-                                    legendItemLabelComponent,
+                                    labelComponent,
                                     label,
                                 )
                             )
@@ -346,7 +370,8 @@ fun LibreFitCartesianChart(
                                     marker = rememberLibreFitMarker(
                                         valueFormatter = DefaultCartesianMarker.ValueFormatter.default(
                                             format
-                                        )
+                                        ),
+                                        typeface = typeface
                                     ),
                                     markerVisibilityListener = object :
                                         CartesianMarkerVisibilityListener {
@@ -377,6 +402,7 @@ fun LibreFitCartesianChart(
                                         }
                                     },
                                     startAxis = VerticalAxis.rememberStart(
+                                        label = labelComponent,
                                         valueFormatter = remember(format) {
                                             CartesianValueFormatter.decimal(
                                                 format
@@ -384,6 +410,7 @@ fun LibreFitCartesianChart(
                                         }
                                     ),
                                     bottomAxis = HorizontalAxis.rememberBottom(
+                                        label = labelComponent,
                                         valueFormatter = remember(xValues) {
                                             if (xValues.all { it.isNotBlank() } && xValues.isNotEmpty())
                                                 CartesianValueFormatter { context, x, _ ->
