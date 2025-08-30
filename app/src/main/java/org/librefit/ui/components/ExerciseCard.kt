@@ -50,13 +50,14 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
@@ -153,7 +154,10 @@ private val NoOpUpdate: (Long?) -> Unit = {}
  * This parameter is only used when [workout] is `true`.
  * @param workout A Boolean flag indicating whether a checkbox should be displayed next to each set.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun SharedTransitionScope.ExerciseCard(
     modifier: Modifier = Modifier,
@@ -337,7 +341,7 @@ fun SharedTransitionScope.ExerciseCard(
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         },
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                     )
                     ExposedDropdownMenu(
@@ -482,39 +486,19 @@ private fun LazyItemScope.Set(
     val repValue by rememberUpdatedState(set.reps.toString())
     var weightValue by remember { mutableStateOf(set.load.toString()) }
 
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            when (it) {
-                SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
-                else -> deleteSet(set.id)
-            }
-            return@rememberSwipeToDismissBoxState true
-        },
-        positionalThreshold = { it * 0.3f }
-    )
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
-    var zoom by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
-    LaunchedEffect(swipeToDismissBoxState.progress < 0.3f) {
-        if (swipeToDismissBoxState.progress < 0.3f || swipeToDismissBoxState.progress == 1f) {
-            zoom = false
-        } else {
+    LaunchedEffect(swipeToDismissBoxState.currentValue) {
+        if (swipeToDismissBoxState.currentValue != SwipeToDismissBoxValue.Settled) {
             haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
-            zoom = true
         }
     }
-
-    val size = animateDpAsState(
-        targetValue = if (zoom) {
-            (ImageVector.vectorResource(R.drawable.ic_delete).defaultHeight.value * 1.2f).dp
-        } else {
-            ImageVector.vectorResource(R.drawable.ic_delete).defaultHeight
-        }
-    )
 
     SwipeToDismissBox(
         modifier = Modifier.animateItem(),
         state = swipeToDismissBoxState,
+        onDismiss = { deleteSet(set.id) },
         backgroundContent = {
             Row(
                 modifier = Modifier
@@ -543,10 +527,11 @@ private fun LazyItemScope.Set(
                 horizontalArrangement = when (swipeToDismissBoxState.dismissDirection) {
                     SwipeToDismissBoxValue.EndToStart -> Arrangement.End
                     else -> Arrangement.Start
+                    SwipeToDismissBoxValue.Settled -> Arrangement.Start
+                    SwipeToDismissBoxValue.StartToEnd -> Arrangement.Start
                 }
             ) {
                 Icon(
-                    modifier = Modifier.size(size.value),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                     contentDescription = stringResource(R.string.delete),
                 )
