@@ -29,7 +29,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -41,8 +41,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +58,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -133,7 +136,7 @@ fun SharedTransitionScope.ProfileScreen(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SharedTransitionScope.ProfileScreenContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -152,52 +155,84 @@ private fun SharedTransitionScope.ProfileScreenContent(
         }
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            val interactionSources = remember { List(2) { MutableInteractionSource() } }
+            ButtonGroup(
+                overflowIndicator = {}
             ) {
-                LibreFitButton(
-                    text = stringResource(R.string.statistics),
-                    icon = ImageVector.vectorResource(R.drawable.ic_chart),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.StatisticsScreen) { launchSingleTop = true }
-                }
-                LibreFitButton(
-                    text = stringResource(R.string.exercises),
-                    icon = ImageVector.vectorResource(R.drawable.ic_search),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.ExercisesScreen(addExercises = false)) {
-                        launchSingleTop = true
-                    }
-                }
+                customItem(
+                    buttonGroupContent = {
+                        LibreFitButton(
+                            text = stringResource(R.string.statistics),
+                            icon = ImageVector.vectorResource(R.drawable.ic_chart),
+                            modifier = Modifier.weight(0.5f),
+                            elevated = false,
+                            buttonGroupScope = this,
+                            interactionSource = interactionSources[0]
+                        ) {
+                            navController.navigate(Route.StatisticsScreen) {
+                                launchSingleTop = true
+                            }
+                        }
+                    },
+                    menuContent = {}
+                )
+                customItem(
+                    buttonGroupContent = {
+                        LibreFitButton(
+                            text = stringResource(R.string.exercises),
+                            icon = ImageVector.vectorResource(R.drawable.ic_search),
+                            modifier = Modifier.weight(0.5f),
+                            elevated = false,
+                            buttonGroupScope = this,
+                            interactionSource = interactionSources[1]
+                        ) {
+                            navController.navigate(Route.ExercisesScreen(addExercises = false)) {
+                                launchSingleTop = true
+                            }
+                        }
+                    },
+                    menuContent = {}
+                )
             }
         }
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            val interactionSources = remember { List(2) { MutableInteractionSource() } }
+            ButtonGroup(
+                overflowIndicator = {}
             ) {
-                LibreFitButton(
-                    text = stringResource(R.string.measurements),
-                    icon = ImageVector.vectorResource(R.drawable.ic_monitor),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.MeasurementScreen) { launchSingleTop = true }
-                }
-                LibreFitButton(
-                    text = stringResource(R.string.calendar),
-                    icon = ImageVector.vectorResource(R.drawable.ic_date_range),
-                    modifier = Modifier.weight(0.5f),
-                    elevated = false
-                ) {
-                    navController.navigate(Route.CalendarScreen) { launchSingleTop = true }
-                }
+                customItem(
+                    buttonGroupContent = {
+                        LibreFitButton(
+                            text = stringResource(R.string.measurements),
+                            icon = ImageVector.vectorResource(R.drawable.ic_monitor),
+                            modifier = Modifier.weight(0.5f),
+                            elevated = false,
+                            buttonGroupScope = this,
+                            interactionSource = interactionSources[0]
+                        ) {
+                            navController.navigate(Route.MeasurementScreen) {
+                                launchSingleTop = true
+                            }
+                        }
+                    },
+                    menuContent = {}
+                )
+                customItem(
+                    buttonGroupContent = {
+                        LibreFitButton(
+                            text = stringResource(R.string.calendar),
+                            icon = ImageVector.vectorResource(R.drawable.ic_date_range),
+                            modifier = Modifier.weight(0.5f),
+                            elevated = false,
+                            buttonGroupScope = this,
+                            interactionSource = interactionSources[1]
+                        ) {
+                            navController.navigate(Route.CalendarScreen) { launchSingleTop = true }
+                        }
+                    },
+                    menuContent = {}
+                )
             }
         }
 
