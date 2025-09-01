@@ -32,7 +32,7 @@ import kotlin.random.Random
  */
 @Immutable
 data class UiSet(
-    val id: Long = Random.Default.nextLong() + System.currentTimeMillis(),
+    val id: Long = Random.Default.nextLong(),
     val load: Double = 0.0,
     val reps: Int = 0,
     val elapsedTime: Int = 0,
