@@ -71,6 +71,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.librefit.R
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
@@ -120,6 +121,8 @@ fun SharedTransitionScope.WorkoutScreen(
     val idSetWithRunningStopwatch by viewModel.idSetWithRunningStopwatch.collectAsState()
 
     val progress by viewModel.progress.collectAsState()
+
+    val previousPerformances by viewModel.previousPerformances.collectAsStateWithLifecycle()
     
 
     //It keeps the screen turned on
@@ -179,6 +182,7 @@ fun SharedTransitionScope.WorkoutScreen(
         isStopwatchPaused = isStopwatchPaused,
         isListEmpty = exercisesWithSets.isEmpty(),
         exercisesWithSets = exercisesWithSets,
+        previousPerformances = previousPerformances,
         progress = progress,
         timerProgress = viewModel.getRestTimeProgress(),
         idSetWithRunningStopwatch = idSetWithRunningStopwatch,
@@ -231,7 +235,8 @@ fun SharedTransitionScope.WorkoutScreen(
         updateExerciseSetMode = viewModel::updateExerciseSetMode,
         deleteExercise = viewModel::deleteExercise,
         showInfo = { infoMode = it },
-        modifyRestTime = viewModel::modifyRestTime
+        modifyRestTime = viewModel::modifyRestTime,
+        applyPreviousSetPerformance = viewModel::applyPreviousSetPerformance
     )
 
 
@@ -259,6 +264,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
     timeElapsed: Int,
     isStopwatchPaused: Boolean,
     exercisesWithSets: List<UiExerciseWithSets>,
+    previousPerformances: List<List<String>?>,
     progress: Float,
     isListEmpty: Boolean,
     timerProgress: Float,
@@ -282,7 +288,8 @@ private fun SharedTransitionScope.WorkoutScreenContent(
     deleteExercise: (Long) -> Unit,
     onSelectedExerciseIdChange: (Long, UiExerciseDC) -> Unit,
     showInfo: (InfoMode) -> Unit,
-    modifyRestTime: (Boolean) -> Unit
+    modifyRestTime: (Boolean) -> Unit,
+    applyPreviousSetPerformance: (Long) -> Unit
 ) {
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.workout)),
@@ -332,6 +339,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                         modifier = Modifier.animateItem(),
                         animatedVisibilityScope = animatedVisibilityScope,
                         exerciseWithSets = exerciseWithSets,
+                        previousPerformances = previousPerformances.getOrNull(i),
                         idSetWithRunningStopwatch = idSetWithRunningStopwatch,
                         workout = true,
                         addSet = addSetToExercise,
@@ -347,6 +355,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                         updateSetReps = updateSetReps,
                         updateSetLoad = updateSetLoad,
                         updateSetCompleted = updateSetCompleted,
+                        applyPreviousSetPerformance = applyPreviousSetPerformance
                     )
                 }
             }

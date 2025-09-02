@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -65,6 +66,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,6 +91,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -103,10 +106,7 @@ import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
-import org.librefit.util.Formatter.formatTime
 import kotlin.math.roundToInt
-
-private val NoOpUpdate: (Long?) -> Unit = {}
 
 /**
  * A custom [ElevatedCard] designed to display an [UiExerciseWithSets] with a uniform appearance across
@@ -117,6 +117,8 @@ private val NoOpUpdate: (Long?) -> Unit = {}
  * @param animatedVisibilityScope Used for image's animation transition
  * @param exerciseWithSets An instance of [UiExerciseWithSets] containing all the relevant information
  * required for the card display.
+ * @param previousPerformances When not null and not empty, it displays the performances of previous set next
+ * to the associated set. The strings should be already formatted and ready to be displayed.
  * @param addSet A lambda function invoked when the "Add set" button is clicked.
  * @param onDetail A lambda function triggered when the exercise's name or image is clicked, which should open
  * the [org.librefit.ui.screens.infoExercise.InfoExerciseScreen].
@@ -153,6 +155,8 @@ private val NoOpUpdate: (Long?) -> Unit = {}
  * running stopwatch. It provides the ID of the set that should become active, or null to stop the current timer.
  * This parameter is only used when [workout] is `true`.
  * @param workout A Boolean flag indicating whether a checkbox should be displayed next to each set.
+ * @param applyPreviousSetPerformance Triggered when the user clicks the previous set performance
+ * (on the left to the set counter) * and should update the current set with the values of the previous set.
  */
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
@@ -163,6 +167,7 @@ fun SharedTransitionScope.ExerciseCard(
     modifier: Modifier = Modifier,
     animatedVisibilityScope: AnimatedVisibilityScope,
     exerciseWithSets: UiExerciseWithSets,
+    previousPerformances: List<String>? = null,
     workout: Boolean = false,
     idSetWithRunningStopwatch: Long? = null,
     addSet: (Long) -> Unit,
@@ -177,7 +182,8 @@ fun SharedTransitionScope.ExerciseCard(
     updateSetLoad: (Double, Long) -> Unit,
     updateSetCompleted: (Boolean, Long) -> Unit,
     showInfo: (InfoMode) -> Unit,
-    updateIdSetWithRunningStopwatch: (Long?) -> Unit = NoOpUpdate
+    updateIdSetWithRunningStopwatch: (Long?) -> Unit = {},
+    applyPreviousSetPerformance: (Long) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -389,15 +395,22 @@ fun SharedTransitionScope.ExerciseCard(
                 //Headline set
                 Row(
                     modifier = Modifier
-                        .height(40.dp)
+                        .padding(10.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
+                    horizontalArrangement = if (previousPerformances != null) Arrangement.SpaceBetween else Arrangement.SpaceAround
                 ) {
                     Text(
                         text = stringResource(id = R.string.set),
                         color = MaterialTheme.colorScheme.secondary
                     )
+
+                    if (previousPerformances != null) {
+                        Text(
+                            text = "Previous",
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                     if (exerciseWithSets.exercise.setMode == SetMode.DURATION) {
                         Text(
                             text = stringResource(R.string.time),
@@ -442,6 +455,7 @@ fun SharedTransitionScope.ExerciseCard(
                         Set(
                             i = i,
                             set = set,
+                            previousSet = previousPerformances?.getOrNull(i),
                             setHeight = setHeight,
                             lastIndex = exerciseWithSets.sets.lastIndex,
                             setMode = exerciseWithSets.exercise.setMode,
@@ -453,7 +467,8 @@ fun SharedTransitionScope.ExerciseCard(
                             updateSetTime = updateSetTime,
                             updateSetReps = updateSetReps,
                             updateSetLoad = updateSetLoad,
-                            updateSetCompleted = updateSetCompleted
+                            updateSetCompleted = updateSetCompleted,
+                            applyPreviousSet = applyPreviousSetPerformance
                         )
                     }
                 }
@@ -470,10 +485,12 @@ fun SharedTransitionScope.ExerciseCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LazyItemScope.Set(
     i: Int,
     set: UiSet,
+    previousSet: String? = null,
     lastIndex: Int,
     setHeight: Int,
     setMode: SetMode,
@@ -485,11 +502,12 @@ private fun LazyItemScope.Set(
     updateSetReps: (Int, Long) -> Unit,
     updateSetLoad: (Double, Long) -> Unit,
     updateSetCompleted: (Boolean, Long) -> Unit,
-    updateIdSetWithRunningStopwatch: (Long?) -> Unit
+    updateIdSetWithRunningStopwatch: (Long?) -> Unit,
+    applyPreviousSet: (Long) -> Unit
 ) {
     val timeValue by rememberUpdatedState(set.elapsedTime)
     val repValue by rememberUpdatedState(set.reps.toString())
-    var weightValue by remember { mutableStateOf(set.load.toString()) }
+    var weightValue by remember(set.load) { mutableStateOf(set.load.toString()) }
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
@@ -563,13 +581,33 @@ private fun LazyItemScope.Set(
                 .height(setHeight.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = if (previousSet != null) Arrangement.SpaceBetween else Arrangement.SpaceAround
         ) {
             Text(
                 text = "${i + 1}",
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(start = 20.dp, end = 10.dp)
+                modifier = Modifier.padding(start = 20.dp)
             )
+
+            previousSet?.let { value ->
+                TextButton(
+                    onClick = { applyPreviousSet(set.id) },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(
+                        text = if (value.contains("*"))
+                            "${
+                                value.substring(
+                                    0,
+                                    value.indexOf("*")
+                                )
+                            }\n${value.substring(value.indexOf("*"))}"
+                        else value,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
 
             if (setMode == SetMode.DURATION) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -598,7 +636,7 @@ private fun LazyItemScope.Set(
                     OutlinedTextField(
                         shape = MaterialTheme.shapes.large,
                         modifier = Modifier.width(80.dp),
-                        value = formatTime(timeValue).substring(3),
+                        value = Formatter.formateSecondsInMinutesAndSeconds(timeValue),
                         onValueChange = { string ->
                             val newTimeValue =
                                 Formatter.parseTimeInputToSeconds(string)
@@ -681,7 +719,7 @@ private fun ExerciseCardPreview() {
                 exercise = UiExercise(
                     notes = "This is a note!",
                     restTime = 90,
-                    setMode = SetMode.DURATION
+                    setMode = SetMode.BODYWEIGHT_WITH_LOAD
                 ),
                 sets = persistentListOf(UiSet(completed = true), UiSet(elapsedTime = 100)),
                 exerciseDC = UiExerciseDC(
@@ -698,6 +736,7 @@ private fun ExerciseCardPreview() {
                 ExerciseCard(
                     animatedVisibilityScope = this,
                     exerciseWithSets = e,
+                    previousPerformances = listOf("10 kg * 10", "10 kg * 10"),
                     addSet = {
                         val newSets = e.sets.toMutableList() + UiSet()
                         e = e.copy(sets = newSets.toImmutableList())

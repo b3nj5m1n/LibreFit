@@ -34,6 +34,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -53,6 +55,7 @@ import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.models.UiWorkout
 import org.librefit.ui.models.mappers.toUi
+import org.librefit.util.Formatter
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -62,7 +65,7 @@ class WorkoutScreenViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val userPreferences: UserPreferencesRepository,
     private val workoutServiceManager: WorkoutServiceManager,
-    workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
 
     private val _idSetWithRunningStopwatch = MutableStateFlow<Long?>(null)
@@ -102,6 +105,93 @@ class WorkoutScreenViewModel @Inject constructor(
 
     private val _exercises = MutableStateFlow<List<UiExerciseWithSets>>(emptyList())
     val exercises = _exercises.asStateFlow()
+
+    val previousPerformances: StateFlow<List<List<String>>> =
+        combine(exercises, workout) { list, w ->
+            list.map { eWs ->
+                val list = workoutRepository.getCompletedWorkoutsWithExercisesWithIdExerciseDC(
+                    idExerciseDC = eWs.exerciseDC.id
+                ).firstOrNull()
+
+                // It tries to find in the completed workouts the previous performance of
+                // the same exercise and in the same routine. If there isn't a linked routine, it takes the
+                // latest workout with that exercise
+                val previousWorkout =
+                    list?.find { it.workout.routineId == w.routineId } ?: list?.firstOrNull()
+                val previousEWS =
+                    previousWorkout?.exercisesWithSets?.find { it.exerciseDC.id == eWs.exerciseDC.id }
+
+                eWs.sets.mapIndexed { index, set ->
+                    val previousSet = previousEWS?.sets?.getOrNull(index)
+                    val reps = previousSet?.reps ?: 0
+                    val load = previousSet?.load ?: 0.0
+                    val time = previousSet?.elapsedTime ?: 0
+
+
+                    when (eWs.exercise.setMode) {
+                        SetMode.LOAD -> "$load ${context.getString(R.string.kg)} * $reps"
+                        SetMode.BODYWEIGHT -> "$reps"
+                        SetMode.BODYWEIGHT_WITH_LOAD -> "$load ${context.getString(R.string.kg)} * $reps"
+                        SetMode.DURATION -> Formatter.formateSecondsInMinutesAndSeconds(time)
+                    }
+
+                }
+            }
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+    fun applyPreviousSetPerformance(setId: Long) {
+        val weightAndRepsRegex = Regex("""^([\d.]+)\s*kg\s*\*\s*(\d+)$""")
+
+        exercises.value.forEachIndexed { index, eWs ->
+            val setToUpdateIndex =
+                eWs.sets.indexOfFirst { it.id == setId }.takeIf { it != -1 } ?: return
+
+            val rawValue =
+                previousPerformances.value.getOrNull(index)?.getOrNull(setToUpdateIndex) ?: return
+
+            when (eWs.exercise.setMode) {
+                SetMode.LOAD -> {
+                    val matchResult = weightAndRepsRegex.matchEntire(rawValue.trim())
+                        ?: error("Invalid format for weightAndRepsRegex: $rawValue")
+                    val (weightStr, repsStr) = matchResult.destructured
+                    val weight = weightStr.toDoubleOrNull()
+                        ?: error("Parsing from string to double error: $weightStr")
+                    val reps =
+                        repsStr.toIntOrNull() ?: error("Parsing from string to int error: $repsStr")
+                    updateSetLoad(weight, setId)
+                    updateSetReps(reps, setId)
+                }
+
+                SetMode.BODYWEIGHT -> {
+                    val reps = rawValue.toIntOrNull() ?: error("Invalid reps: $rawValue")
+                    updateSetReps(reps, setId)
+                }
+
+                SetMode.BODYWEIGHT_WITH_LOAD -> {
+                    val matchResult = weightAndRepsRegex.matchEntire(rawValue.trim())
+                        ?: error("Invalid format for weightAndRepsRegex: $rawValue")
+                    val (weightStr, repsStr) = matchResult.destructured
+                    val weight = weightStr.toDoubleOrNull()
+                        ?: error("Parsing from string to double error: $weightStr")
+                    val reps =
+                        repsStr.toIntOrNull() ?: error("Parsing from string to int error: $repsStr")
+                    updateSetLoad(weight, setId)
+                    updateSetReps(reps, setId)
+                }
+
+                SetMode.DURATION -> {
+                    val (minutes, seconds) = rawValue.split(":")
+                    updateSetTime(minutes.toInt() * 60 + seconds.toInt(), setId)
+                }
+            }
+        }
+
+    }
 
     // A Job to hold the running set's stopwatch coroutine
     private var stopwatchJob: Job? = null
@@ -186,7 +276,9 @@ class WorkoutScreenViewModel @Inject constructor(
                 if (exercise.sets.any { it.id == id }) {
                     exercise.copy(
                         sets = exercise.sets.map {
-                            if (it.id == id) it.copy(elapsedTime = time) else it
+                            if (it.id == id) it.copy(
+                                elapsedTime = time.coerceAtMost(60 * 100) // max = 99:59
+                            ) else it
                         }.toImmutableList()
                     )
                 } else exercise

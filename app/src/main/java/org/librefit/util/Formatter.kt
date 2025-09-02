@@ -145,6 +145,21 @@ object Formatter {
     }
 
     /**
+     * It simply returns the provided [seconds] in minutes and seconds.
+     *
+     * ```
+     * formateSecondsInMinutesAndSeconds(120)  // 02:00
+     * formateSecondsInMinutesAndSeconds(20)   // 00:20
+     * formateSecondsInMinutesAndSeconds(3601) // 60:01
+     * ```
+     */
+    fun formateSecondsInMinutesAndSeconds(seconds: Int): String {
+        val m = (seconds / 60).toString().padStart(2, '0')
+        val s = (seconds % 60).toString().padStart(2, '0')
+        return "$m:$s"
+    }
+
+    /**
      * It returns a string as follows: [boldText]:[text]
      */
     fun formatDetails(boldText: String, text: String): AnnotatedString {
