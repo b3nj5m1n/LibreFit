@@ -713,13 +713,22 @@ private fun ExerciseCardPreview() {
         )
     }
 
+    val previousPerformances = e.sets.map { set ->
+        when (e.exercise.setMode) {
+            SetMode.BODYWEIGHT -> "10"
+            SetMode.DURATION -> Formatter.formateSecondsInMinutesAndSeconds(124)
+            SetMode.BODYWEIGHT_WITH_LOAD -> "12 kg * 10"
+            SetMode.LOAD -> "10 kg * 12"
+        }
+    }
+
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 ExerciseCard(
                     animatedVisibilityScope = this,
                     exerciseWithSets = e,
-                    previousPerformances = listOf("10 kg * 10", "10 kg * 10"),
+                    previousPerformances = previousPerformances,
                     addSet = {
                         val newSets = e.sets.toMutableList() + UiSet()
                         e = e.copy(sets = newSets.toImmutableList())
@@ -728,18 +737,64 @@ private fun ExerciseCardPreview() {
                     onDelete = {},
                     deleteSet = { id ->
                         e = e.copy(sets = e.sets.filter { it.id != id }.toImmutableList())
+                        if (id == currentIdSetWithRunningSet) currentIdSetWithRunningSet = null
                     },
                     showInfo = {},
                     idSetWithRunningStopwatch = currentIdSetWithRunningSet,
                     updateIdSetWithRunningStopwatch = { currentIdSetWithRunningSet = it },
                     workout = true,
-                    updateExerciseNotes = { _, _ -> },
-                    updateExerciseRestTime = { _, _ -> },
-                    updateExerciseSetMode = { _, _ -> },
-                    updateSetTime = { _, _ -> },
-                    updateSetReps = { _, _ -> },
-                    updateSetLoad = { _, _ -> },
-                    updateSetCompleted = { _, _ -> }
+                    updateExerciseNotes = { notes, _ ->
+                        e = e.copy(exercise = e.exercise.copy(notes = notes))
+                    },
+                    updateExerciseRestTime = { restTime, _ ->
+                        e = e.copy(exercise = e.exercise.copy(restTime = restTime))
+                    },
+                    updateExerciseSetMode = { setMode, _ ->
+                        e = e.copy(exercise = e.exercise.copy(setMode = setMode))
+                    },
+                    updateSetTime = { time, id ->
+                        e = e.copy(
+                            sets = e.sets.map {
+                                if (it.id == id) it.copy(elapsedTime = time) else it
+                            }.toImmutableList()
+                        )
+                    },
+                    updateSetReps = { reps, id ->
+                        e = e.copy(
+                            sets = e.sets.map {
+                                if (it.id == id) it.copy(reps = reps) else it
+                            }.toImmutableList()
+                        )
+                    },
+                    updateSetLoad = { load, id ->
+                        e = e.copy(
+                            sets = e.sets.map {
+                                if (it.id == id) it.copy(load = load) else it
+                            }.toImmutableList()
+                        )
+                    },
+                    updateSetCompleted = { completed, id ->
+                        e = e.copy(
+                            sets = e.sets.map {
+                                if (it.id == id) it.copy(completed = completed) else it
+                            }.toImmutableList()
+                        )
+                    },
+                    applyPreviousSetPerformance = { id ->
+                        val index = e.sets.indexOfFirst { it.id == id }
+                        previousPerformances.getOrNull(index)?.let { p ->
+                            e = e.copy(
+                                sets = e.sets.map {
+                                    if (it.id == id) {
+                                        when (e.exercise.setMode) {
+                                            SetMode.BODYWEIGHT -> it.copy(reps = p.toInt())
+                                            else -> it // The missing logic is in the view model
+                                        }
+                                    } else it
+                                }.toImmutableList()
+                            )
+                        }
+                    }
                 )
             }
         }
