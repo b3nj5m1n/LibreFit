@@ -76,6 +76,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
+import org.librefit.enums.exercise.Category
+import org.librefit.enums.exercise.Equipment
 import org.librefit.enums.exercise.FilterValue
 import org.librefit.nav.Route
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -397,13 +399,43 @@ private fun ExercisesScreenPreview() {
                     animatedVisibilityScope = this,
                     addExercises = false,
                     selectedExercisesIdList = setOf(),
-                    filteredExerciseList = List(20) {
+                    filteredExerciseList = listOf(
                         UiExerciseDC(
-                            id = "$it",
-                            name = "Exercise $it",
-                            images = persistentListOf("3_4_Sit-Up/0.jpg")
-                        )
-                    },
+                            id = "1",
+                            name = "3/4 Sit-Up",
+                            images = persistentListOf("3_4_Sit-Up/0.jpg"),
+                            equipment = Equipment.BODY_ONLY,
+                            category = Category.STRENGTH
+                        ),
+                        UiExerciseDC(
+                            id = "2",
+                            name = "90/90 Hamstring",
+                            images = persistentListOf("90_90_Hamstring/0.jpg"),
+                            equipment = Equipment.BODY_ONLY,
+                            category = Category.STRETCHING
+                        ),
+                        UiExerciseDC(
+                            id = "3",
+                            name = "Ab Crunch Machine",
+                            images = persistentListOf("Ab_Crunch_Machine/0.jpg"),
+                            equipment = Equipment.MACHINE,
+                            category = Category.STRENGTH
+                        ),
+                        UiExerciseDC(
+                            id = "4",
+                            name = "Ab Roller",
+                            images = persistentListOf("Ab_Roller/0.jpg"),
+                            equipment = Equipment.OTHER,
+                            category = Category.STRENGTH
+                        ),
+                        UiExerciseDC(
+                            id = "5",
+                            name = "Adductor",
+                            images = persistentListOf("Adductor/0.jpg"),
+                            equipment = Equipment.FOAM_ROLL,
+                            category = Category.STRETCHING
+                        ),
+                    ),
                     query = query,
                     filterValue = filterValue,
                     toggleSelectedExercise = {},
