@@ -90,7 +90,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
-import org.librefit.enums.InfoExerciseMode
 import org.librefit.enums.SetMode
 import org.librefit.enums.chart.BodyweightChart
 import org.librefit.enums.chart.ExerciseChart
@@ -103,6 +102,7 @@ import org.librefit.enums.exercise.Force
 import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
+import org.librefit.enums.pages.InfoExercisePages
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -164,7 +164,7 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
     navController: NavHostController,
     updateExerciseChart: (ExerciseChart) -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { InfoExerciseMode.entries.size })
+    val pagerState = rememberPagerState(pageCount = { InfoExercisePages.entries.size })
     val coroutineScope = rememberCoroutineScope()
 
     val stringId = if (id == 0L) "" else id.toString()
@@ -190,7 +190,7 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
             }
             item {
                 PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
-                    InfoExerciseMode.entries.forEachIndexed { i, enum ->
+                    InfoExercisePages.entries.forEachIndexed { i, enum ->
                         Tab(
                             selected = pagerState.currentPage == i,
                             onClick = {
@@ -202,9 +202,9 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
                                 Text(
                                     text = stringResource(
                                         id = when (enum) {
-                                            InfoExerciseMode.DETAILS -> R.string.details
-                                            InfoExerciseMode.INSTRUCTIONS -> R.string.instructions
-                                            InfoExerciseMode.HISTORY -> R.string.history
+                                            InfoExercisePages.DETAILS -> R.string.details
+                                            InfoExercisePages.INSTRUCTIONS -> R.string.instructions
+                                            InfoExercisePages.HISTORY -> R.string.history
                                         }
                                     )
                                 )
@@ -213,16 +213,16 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
                                 Icon(
                                     painter = painterResource(
                                         id = when (enum) {
-                                            InfoExerciseMode.DETAILS -> R.drawable.ic_badge
-                                            InfoExerciseMode.INSTRUCTIONS -> R.drawable.ic_reference
-                                            InfoExerciseMode.HISTORY -> R.drawable.ic_history
+                                            InfoExercisePages.DETAILS -> R.drawable.ic_badge
+                                            InfoExercisePages.INSTRUCTIONS -> R.drawable.ic_reference
+                                            InfoExercisePages.HISTORY -> R.drawable.ic_history
                                         }
                                     ),
                                     contentDescription = stringResource(
                                         id = when (enum) {
-                                            InfoExerciseMode.DETAILS -> R.string.details
-                                            InfoExerciseMode.INSTRUCTIONS -> R.string.instructions
-                                            InfoExerciseMode.HISTORY -> R.string.history
+                                            InfoExercisePages.DETAILS -> R.string.details
+                                            InfoExercisePages.INSTRUCTIONS -> R.string.instructions
+                                            InfoExercisePages.HISTORY -> R.string.history
                                         }
                                     )
                                 )
@@ -239,15 +239,15 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
                     verticalAlignment = Alignment.Top,
                     modifier = Modifier.wrapContentHeight()
                 ) { pageIndex ->
-                    val enum = InfoExerciseMode.entries[pageIndex]
+                    val enum = InfoExercisePages.entries[pageIndex]
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         when (enum) {
-                            InfoExerciseMode.DETAILS -> DetailsPage(exerciseDC)
-                            InfoExerciseMode.HISTORY -> HistoryPage(
+                            InfoExercisePages.DETAILS -> DetailsPage(exerciseDC)
+                            InfoExercisePages.HISTORY -> HistoryPage(
                                 workoutsWithExercises = workoutsWithExercises,
                                 points = points,
                                 exerciseChart = exerciseChart,
@@ -256,7 +256,7 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
                                 animatedVisibilityScope = animatedVisibilityScope
                             )
 
-                            InfoExerciseMode.INSTRUCTIONS -> InstructionsPage(exerciseDC.instructions)
+                            InfoExercisePages.INSTRUCTIONS -> InstructionsPage(exerciseDC.instructions)
                         }
                     }
                 }
