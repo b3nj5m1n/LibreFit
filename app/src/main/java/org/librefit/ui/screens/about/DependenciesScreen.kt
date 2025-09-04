@@ -33,7 +33,7 @@ import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
-fun LibrariesScreen(navigateBack: () -> Unit) {
+fun DependenciesScreen(navigateBack: () -> Unit) {
     val url = remember { mutableStateOf<String?>(null) }
 
     url.value?.let {
@@ -43,7 +43,7 @@ fun LibrariesScreen(navigateBack: () -> Unit) {
     val libs = rememberLibraries()
 
     LibreFitScaffold(
-        title = AnnotatedString(stringResource(R.string.libraries)),
+        title = AnnotatedString(stringResource(R.string.dependencies)),
         navigateBack = navigateBack
     ) { innerPadding ->
         LibrariesContainer(
@@ -61,6 +61,6 @@ fun LibrariesScreen(navigateBack: () -> Unit) {
 @Composable
 private fun LibrariesScreenPreview() {
     LibreFitTheme(false, true) {
-        LibrariesScreen { }
+        DependenciesScreen { }
     }
 }

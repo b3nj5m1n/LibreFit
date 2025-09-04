@@ -38,7 +38,7 @@ import org.librefit.nav.types.ExerciseDCNavType
 import org.librefit.nav.types.WorkoutWithExercisesAndSetsNavType
 import org.librefit.ui.screens.MainScreen
 import org.librefit.ui.screens.about.AboutScreen
-import org.librefit.ui.screens.about.LibrariesScreen
+import org.librefit.ui.screens.about.DependenciesScreen
 import org.librefit.ui.screens.about.LicenseScreen
 import org.librefit.ui.screens.about.PrivacyScreen
 import org.librefit.ui.screens.beforeSaving.BeforeSavingScreen
@@ -142,7 +142,7 @@ fun NavigationHost() {
                 PrivacyScreen(navigateBack = navController::navigateUp)
             }
             composable<Route.LibrariesScreen> {
-                LibrariesScreen(navigateBack = navController::navigateUp)
+                DependenciesScreen(navigateBack = navController::navigateUp)
             }
             composable<Route.LicenseScreen> {
                 LicenseScreen(navigateBack = navController::navigateUp)

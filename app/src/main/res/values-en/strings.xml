@@ -45,7 +45,7 @@
     <string name="translators">Translators</string>
     <string name="contributed_to">"Contributed to: "</string>
     <string name="version">Version</string>
-    <string name="libraries">Libraries</string>
+    <string name="dependencies">Dependencies</string>
     <string name="lets_build_it_together">Let\'s build it together</string>
     <string name="unlink_routine_question">Unlink routine?</string>
     <string name="unlink_routine_text">Linking routines allows to measure progress of workouts over time. If you unlink this workout from a routine, the latter will not be deleted and any workout linked to that routine will remain unchanged. The unlink will affect only the current workout.</string>
