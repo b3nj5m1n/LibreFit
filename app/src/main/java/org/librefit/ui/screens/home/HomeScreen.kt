@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -62,6 +63,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.librefit.R
+import org.librefit.enums.pages.MainScreenPages
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitAppName.GetAppNameInAnnotatedBuilder
@@ -233,43 +235,66 @@ private fun SharedTransitionScope.HomeScreenContent(
 @Preview
 @Composable
 fun HomeScreenPreview() {
+    val pagerState = rememberPagerState(
+        initialPage = MainScreenPages.HOME.ordinal,
+        pageCount = { MainScreenPages.entries.size }
+    )
+
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
-        SharedTransitionLayout {
-            LibreFitScaffold(
-                title = buildAnnotatedString {
-                    GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)
-                },
-                actions = listOf {},
-                actionsIcons = listOf(painterResource(R.drawable.ic_settings)),
-                actionsElevated = listOf(false),
-                fabIcon = painterResource(R.drawable.ic_add),
-                bottomBar = {
-                    NavigationBar {
+
+        LibreFitScaffold(
+            title = buildAnnotatedString {
+                GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)
+            },
+            actions = listOf({ }, { }),
+            actionsIcons = listOf(
+                painterResource(R.drawable.ic_info),
+                painterResource(R.drawable.ic_settings)
+            ),
+            actionsElevated = listOf(false, false),
+            fabAction = {},
+            fabIcon = painterResource(R.drawable.ic_add),
+            bottomBar = {
+                NavigationBar {
+                    MainScreenPages.entries.forEach { page ->
                         NavigationBarItem(
-                            selected = true,
+                            selected = pagerState.currentPage == page.ordinal,
                             onClick = { },
                             icon = {
                                 Icon(
-                                    painterResource(R.drawable.ic_home),
-                                    stringResource(R.string.home)
+                                    painter = painterResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.drawable.ic_library
+                                            MainScreenPages.HOME -> R.drawable.ic_home
+                                            MainScreenPages.PROFILE -> R.drawable.ic_person
+                                        }
+                                    ),
+                                    contentDescription = stringResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.string.library
+                                            MainScreenPages.HOME -> R.string.home
+                                            MainScreenPages.PROFILE -> R.string.profile
+                                        }
+                                    )
                                 )
                             },
-                            label = { Text(stringResource(R.string.home)) }
-                        )
-                        NavigationBarItem(
-                            selected = false,
-                            onClick = { },
-                            icon = {
-                                Icon(
-                                    painterResource(R.drawable.ic_person),
-                                    stringResource(R.string.profile)
+                            label = {
+                                Text(
+                                    text = stringResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.string.library
+                                            MainScreenPages.HOME -> R.string.home
+                                            MainScreenPages.PROFILE -> R.string.profile
+                                        }
+                                    )
                                 )
-                            },
-                            label = { Text(stringResource(R.string.profile)) }
+                            }
                         )
                     }
                 }
-            ) { innerPadding ->
+            }
+        ) { innerPadding ->
+            SharedTransitionLayout {
                 AnimatedVisibility(visible = true) {
                     HomeScreenContent(
                         innerPadding = innerPadding,

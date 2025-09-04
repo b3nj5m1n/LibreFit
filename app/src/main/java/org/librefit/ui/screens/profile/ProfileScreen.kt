@@ -41,6 +41,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ElevatedCard
@@ -81,6 +82,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import org.librefit.R
 import org.librefit.enums.chart.WorkoutChart
+import org.librefit.enums.pages.MainScreenPages
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitAppName.GetAppNameInAnnotatedBuilder
@@ -471,43 +473,64 @@ private fun ProfileScreenPreview() {
         )
     }
 
+    val pagerState = rememberPagerState(
+        initialPage = MainScreenPages.PROFILE.ordinal,
+        pageCount = { MainScreenPages.entries.size }
+    )
+
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
-        SharedTransitionLayout {
-            LibreFitScaffold(
-                title = buildAnnotatedString {
-                    GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)
-                },
-                actions = listOf {},
-                actionsIcons = listOf(painterResource(R.drawable.ic_settings)),
-                actionsElevated = listOf(false),
-                fabIcon = painterResource(R.drawable.ic_add),
-                bottomBar = {
-                    NavigationBar {
+        LibreFitScaffold(
+            title = buildAnnotatedString {
+                GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)
+            },
+            actions = listOf({ }, { }),
+            actionsIcons = listOf(
+                painterResource(R.drawable.ic_info),
+                painterResource(R.drawable.ic_settings)
+            ),
+            actionsElevated = listOf(false, false),
+            fabIcon = painterResource(R.drawable.ic_add),
+            bottomBar = {
+                NavigationBar {
+                    MainScreenPages.entries.forEach { page ->
                         NavigationBarItem(
-                            selected = false,
+                            selected = pagerState.currentPage == page.ordinal,
                             onClick = { },
                             icon = {
                                 Icon(
-                                    painterResource(R.drawable.ic_home),
-                                    stringResource(R.string.home)
+                                    painter = painterResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.drawable.ic_library
+                                            MainScreenPages.HOME -> R.drawable.ic_home
+                                            MainScreenPages.PROFILE -> R.drawable.ic_person
+                                        }
+                                    ),
+                                    contentDescription = stringResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.string.library
+                                            MainScreenPages.HOME -> R.string.home
+                                            MainScreenPages.PROFILE -> R.string.profile
+                                        }
+                                    )
                                 )
                             },
-                            label = { Text(stringResource(R.string.home)) }
-                        )
-                        NavigationBarItem(
-                            selected = true,
-                            onClick = { },
-                            icon = {
-                                Icon(
-                                    painterResource(R.drawable.ic_person),
-                                    stringResource(R.string.profile)
+                            label = {
+                                Text(
+                                    text = stringResource(
+                                        id = when (page) {
+                                            MainScreenPages.LIBRARY -> R.string.library
+                                            MainScreenPages.HOME -> R.string.home
+                                            MainScreenPages.PROFILE -> R.string.profile
+                                        }
+                                    )
                                 )
-                            },
-                            label = { Text(stringResource(R.string.profile)) }
+                            }
                         )
                     }
                 }
-            ) { innerPadding ->
+            }
+        ) { innerPadding ->
+            SharedTransitionLayout {
                 AnimatedVisibility(visible = true) {
                     ProfileScreenContent(
                         innerPadding = innerPadding,
