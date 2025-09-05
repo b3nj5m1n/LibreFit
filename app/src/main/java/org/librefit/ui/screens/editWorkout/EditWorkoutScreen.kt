@@ -56,6 +56,8 @@ import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SetMode
 import org.librefit.enums.SuccessMessage
+import org.librefit.enums.exercise.Category
+import org.librefit.enums.exercise.Equipment
 import org.librefit.nav.Route
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -326,7 +328,7 @@ private fun EditWorkoutScreenPreview() {
      * Returns `null` when a new routine is created, `true` when a routine is edited and `false` when
      * a past workout is edited
      */
-    val typeOfEdit = false
+    val typeOfEdit = null
 
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
         SharedTransitionLayout {
@@ -337,12 +339,17 @@ private fun EditWorkoutScreenPreview() {
                     typeOfEdit = typeOfEdit,
                     exercisesWithSets = persistentListOf(
                         UiExerciseWithSets(
-                            exercise = UiExercise(restTime = 90, setMode = SetMode.BODYWEIGHT),
-                            exerciseDC = UiExerciseDC(name = "Name exercise"),
-                            sets = persistentListOf(UiSet(), UiSet(completed = true))
+                            exercise = UiExercise(setMode = SetMode.LOAD),
+                            exerciseDC = UiExerciseDC(
+                                name = "Ab Crunch Machine",
+                                images = persistentListOf("Ab_Crunch_Machine/0.jpg"),
+                                equipment = Equipment.MACHINE,
+                                category = Category.STRENGTH
+                            ),
+                            sets = persistentListOf(UiSet())
                         )
                     ),
-                    workout = UiWorkout(title = "Title workout", notes = "This is a note"),
+                    workout = UiWorkout(title = "My routine", notes = ""),
                     isTitleTooLong = false,
                     isTitleEmpty = false,
                     updateTitle = { _ -> },
