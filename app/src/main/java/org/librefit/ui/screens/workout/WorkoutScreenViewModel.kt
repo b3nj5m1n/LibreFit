@@ -333,9 +333,9 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
     fun deleteSet(id: Long) {
-        // If there's the match, then the set has a running stopwatch and it has to be stopped by assign 0
+        // If there's the match, then the set has a running stopwatch and it has to be stopped by assigning null
         if (idSetWithRunningStopwatch.value == id) {
-            _idSetWithRunningStopwatch.update { 0L }
+            _idSetWithRunningStopwatch.update { null }
         }
 
         _exercises.update { currentExercises ->
