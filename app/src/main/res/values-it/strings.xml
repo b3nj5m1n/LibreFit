@@ -219,6 +219,7 @@
     <string name="menu">Menu</string>
     <string name="routine_saved">Routine salvata</string>
     <string name="motivation_4">Tutti i donatori e contributori ottengono la versione supporter e un credito nell\'app e su GitHub.</string>
+    <string name="tut_complete_workout_6">Congratulazioni, hai completato il tuo primo allenamento! Puoi revisionare tutte le tue sessioni precedenti nella schermata Profilo.</string>
     <string name="rest_time_desc">Il periodo di riposo si attiva al completamento di una serie, avviando immediatamente il conto alla rovescia. Al termine del riposo, viene emesso un avviso.</string>
     <string name="add">Aggiungi</string>
     <string name="save">Salva</string>
@@ -279,5 +280,21 @@
     <string name="motivation_1">LibreFit è un progetto di passione, creato da una persona che crede fortemente che il software dovrebbe essere aperto, semplice, bello, e soprattutto, rispettoso della tua privacy.</string>
     <string name="motivation_2">Dedico innumerevoli ore nella progettazione, programmazione, e nella rifinitura di ogni dettaglio per creare la migliore esperienza possibile. È un impegno nei tuoi confronti, l\'utente, e nei confronti di un mondo digitale migliore.</string>
     <string name="motivation_3">LibreFit è possibile solo grazie al tuo supporto, sia donando che contribuendo al codice o alle traduzioni.</string>
+    <string name="help">Aiuto</string>
+    <string name="step">Passo</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="tut_create_routine_headline">Le routine sono dei piani d\'allenamento riutilizzabili. Programma una sola volta i tuoi esercizi, serie e ripetizioni, così da poter iniziare in qualsiasi momento un allenamento dalla tua routine e tracciare facilmente la tua performance e progresso nel tempo.</string>
+    <string name="tut_create_routine_1">Tocca il pulsante + nell\'angolo in basso a destra per iniziare a creare una nuova routine.</string>
+    <string name="tut_create_routine_2">Assegna un titolo alla tua routine e, opzionalmente, una nota, poi tocca il pulsante + in basso a destra per aggiungere gli esercizi.</string>
+    <string name="tut_create_routine_3">Cerca e seleziona gli esercizi che desideri, dopo tocca il pulsante \'Aggiungi\' in alto a destra.</string>
+    <string name="tut_create_routine_4">Aggiusta le serie, ripetizioni e l\'ordine dei tuoi esercizi. Quando sei pronto, tocca il pulsante \'Salva\' in alto a destra.</string>
+    <string name="tut_create_routine_5">Congratulazioni, hai creato la tua prima routine! Ora puoi usarla per iniziare un allenamento.</string>
+    <string name="complete_workout">Completa allenamento</string>
+    <string name="tut_complete_workout_headline">"Quando inizi un allenamento, stai registrando una sessione in tempo reale. LibreFit mostra la tua performance precedente per ogni serie, rendendo facile sfidarti e mirare al sovraccarico progressivo. "</string>
+    <string name="tut_complete_workout_1">Per iniziare la registrazione, inizia un allenamento da una delle tue routine oppure scegli un allenamento vuoto per una sessione spontanea.</string>
+    <string name="tut_complete_workout_2">Se hai iniziato da una routine, i tuoi esercizi programmati saranno precaricati. Puoi comunque aggiungerne altri durante la sessione.</string>
+    <string name="tut_complete_workout_3">Registra il peso e le ripetizioni per ogni serie. Quando segni una serie come completata, il timer di riposo in fondo allo schermo partirà automaticamente.</string>
+    <string name="tut_complete_workout_4">"Il tuo tempo totale d'allenamento è in cima—clicca il pulsante di pausa per prenderti una pausa. Quando hai terminato, tocca il pulsate 'Fatto' in alto a destra. "</string>
+    <string name="tut_complete_workout_5">Nella schermata riassuntiva, puoi modificare il titolo, aggiungere note o cambiare la data. Tocca \'Salva\' in alto a destra per salvare l\'allenamento.</string>
 
 </resources>

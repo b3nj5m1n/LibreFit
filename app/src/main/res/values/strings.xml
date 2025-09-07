@@ -263,6 +263,25 @@
     <string name="motivation_4">All donators and contributors get the supporter version and a credit in the app and on GitHub.</string>
 
 
+    <!-- Tutorial screen-->
+    <string name="step">Step</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="tut_create_routine_headline">Routines are your reusable workout templates. Plan your exercises, sets, and reps once, then start a workout from your routine anytime to easily track your performance and progress over time.</string>
+    <string name="tut_create_routine_1">Tap the + button in the bottom right corner to begin creating a new routine.</string>
+    <string name="tut_create_routine_2">Give your routine a title and an optional note, then tap the + button in the bottom right to add exercises.</string>
+    <string name="tut_create_routine_3">Search for and select your desired exercises, then tap the \'Add\' button in the top right.</string>
+    <string name="tut_create_routine_4">Adjust the sets, reps, and order of your exercises. When you\'re ready, tap the \'Save\' button in the top right.</string>
+    <string name="tut_create_routine_5">Congratulations, you\'ve created your first routine! You can now use it to start a workout.</string>
+    <string name="complete_workout">Complete workout</string>
+    <string name="tut_complete_workout_headline">When you start a workout, you\'re logging a live session. LibreFit shows your past performance for each set, making it easy to challenge yourself and aim for progressive overload.</string>
+    <string name="tut_complete_workout_1">To start logging, begin a workout from one of your routines or choose an empty workout for a spontaneous session.</string>
+    <string name="tut_complete_workout_2">If you started from a routine, your planned exercises will be pre-loaded. You can still add more on the fly.</string>
+    <string name="tut_complete_workout_3">Log the weight and reps for every set. When you mark a set as complete, the rest timer at the bottom of the screen will automatically start.</string>
+    <string name="tut_complete_workout_4">Your total workout time is at the top—tap the pause button to take a break. When finished, tap the \'Done\' button in the top right.</string>
+    <string name="tut_complete_workout_5">On the summary screen, you can edit the title, add notes, or change the date. Tap \'Save\' in the top right to save the workout.</string>
+    <string name="tut_complete_workout_6">Congratulations, you\'ve completed your first workout! You can review all your past sessions in the Profile screen.</string>
+
+
     <!--Info modal bottom sheet-->
     <string name="rest_time_desc">The rest period is activated upon completion of a set, immediately starting the countdown. An alert is issued when the rest ends.</string>
     <string name="type_of_set_desc">- **Load**: A specified number of repetitions performed against an external resistance. *Examples: bench press, dumbbell curls.*\n- **Bodyweight**: A specified number of repetitions performed using the body as a resistance. *Examples: pullups, pushups, sit ups.*\n- **Bodyweight with load**: A specified number of repetitions performed using the body and a load as resistance. *Examples: weighted pullups, weighted dips.*\n- **Duration**: It measures time execution of the reps. *Examples: planks, warm up, stretching.*</string>
