@@ -59,7 +59,6 @@ import androidx.compose.material3.WavyProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +76,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
@@ -117,25 +117,25 @@ fun SharedTransitionScope.WorkoutScreen(
         sharedViewModel.getSelectedExercisesList().forEach(viewModel::addExerciseWithSets)
     }
 
-    val timeElapsed by viewModel.timeElapsed.collectAsState()
+    val timeElapsed by viewModel.timeElapsed.collectAsStateWithLifecycle()
 
-    val isStopwatchPaused by viewModel.isStopwatchPaused.collectAsState()
+    val isStopwatchPaused by viewModel.isStopwatchPaused.collectAsStateWithLifecycle()
 
-    val exercisesWithSets by viewModel.exercises.collectAsState()
+    val exercisesWithSets by viewModel.exercises.collectAsStateWithLifecycle()
 
-    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState()
+    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsStateWithLifecycle()
 
-    val workout by viewModel.workout.collectAsState()
+    val workout by viewModel.workout.collectAsStateWithLifecycle()
 
-    val restTime by viewModel.restTime.collectAsState()
+    val restTime by viewModel.restTime.collectAsStateWithLifecycle()
 
-    val idSetWithRunningStopwatch by viewModel.idSetWithRunningStopwatch.collectAsState()
+    val idSetWithRunningStopwatch by viewModel.idSetWithRunningStopwatch.collectAsStateWithLifecycle()
 
-    val workoutProgress by viewModel.workoutProgress.collectAsState()
+    val workoutProgress by viewModel.workoutProgress.collectAsStateWithLifecycle()
 
-    val previousPerformances by viewModel.previousPerformances.collectAsState()
+    val previousPerformances by viewModel.previousPerformances.collectAsStateWithLifecycle()
 
-    val restTimerProgress by viewModel.restTimerProgress.collectAsState()
+    val restTimerProgress by viewModel.restTimerProgress.collectAsStateWithLifecycle()
     
 
     //It keeps the screen turned on

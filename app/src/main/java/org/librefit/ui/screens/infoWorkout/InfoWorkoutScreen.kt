@@ -38,7 +38,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.collections.immutable.persistentListOf
@@ -92,17 +92,17 @@ fun SharedTransitionScope.InfoWorkoutScreen(
 ) {
     val viewModel: InfoWorkoutScreenViewModel = hiltViewModel()
 
-    val points by viewModel.points.collectAsState()
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
-    val workout by viewModel.workout.collectAsState()
+    val workout by viewModel.workout.collectAsStateWithLifecycle()
 
-    val routine by viewModel.routine.collectAsState()
+    val routine by viewModel.routine.collectAsStateWithLifecycle()
 
-    val exercises by viewModel.exercises.collectAsState()
+    val exercises by viewModel.exercises.collectAsStateWithLifecycle()
 
-    val workoutChartMode by viewModel.workoutChart.collectAsState()
+    val workoutChartMode by viewModel.workoutChart.collectAsStateWithLifecycle()
 
-    val volume by viewModel.volume.collectAsState()
+    val volume by viewModel.volume.collectAsStateWithLifecycle()
 
 
     InfoWorkoutScreenContent(

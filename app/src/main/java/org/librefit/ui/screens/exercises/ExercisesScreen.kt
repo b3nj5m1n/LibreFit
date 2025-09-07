@@ -48,7 +48,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +69,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -100,15 +100,15 @@ fun SharedTransitionScope.ExercisesScreen(
 ) {
     val viewModel: ExercisesScreenViewModel = hiltViewModel()
 
-    val filteredExerciseList by viewModel.filteredExerciseList.collectAsState()
+    val filteredExerciseList by viewModel.filteredExerciseList.collectAsStateWithLifecycle()
 
-    val query by viewModel.query.collectAsState()
+    val query by viewModel.query.collectAsStateWithLifecycle()
 
-    val filterValue by viewModel.filterValue.collectAsState()
+    val filterValue by viewModel.filterValue.collectAsStateWithLifecycle()
 
-    val selectedExercisesList by viewModel.selectedExercises.collectAsState()
+    val selectedExercisesList by viewModel.selectedExercises.collectAsStateWithLifecycle()
 
-    val selectedExercisesIds by viewModel.selectedExerciseIds.collectAsState()
+    val selectedExercisesIds by viewModel.selectedExerciseIds.collectAsStateWithLifecycle()
 
 
 

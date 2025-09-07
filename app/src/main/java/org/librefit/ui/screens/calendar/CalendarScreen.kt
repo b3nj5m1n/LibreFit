@@ -45,7 +45,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -60,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
@@ -84,11 +84,11 @@ fun SharedTransitionScope.CalendarScreen(
 ) {
     val viewModel: CalendarScreenViewModel = hiltViewModel()
 
-    val yearRange by viewModel.yearRange.collectAsState()
+    val yearRange by viewModel.yearRange.collectAsStateWithLifecycle()
 
-    val workoutsFromDate by viewModel.workoutsFromDate.collectAsState()
+    val workoutsFromDate by viewModel.workoutsFromDate.collectAsStateWithLifecycle()
 
-    val selectableDates by viewModel.selectableDates.collectAsState()
+    val selectableDates by viewModel.selectableDates.collectAsStateWithLifecycle()
 
     key(yearRange) {
 

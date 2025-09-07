@@ -35,7 +35,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +47,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.collections.immutable.persistentListOf
@@ -83,9 +83,9 @@ fun SharedTransitionScope.EditWorkoutScreen(
 ) {
     val viewModel: EditWorkoutScreenViewModel = hiltViewModel()
 
-    val workout by viewModel.workout.collectAsState()
+    val workout by viewModel.workout.collectAsStateWithLifecycle()
 
-    val exercises by viewModel.exercises.collectAsState()
+    val exercises by viewModel.exercises.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         sharedViewModel.getSelectedExercisesList().forEach(viewModel::addExerciseWithSets)

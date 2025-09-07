@@ -35,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
@@ -76,19 +76,19 @@ fun SettingsScreen(
     val viewModel: SettingsScreenViewModel = hiltViewModel()
 
 
-    val selectedLanguage by viewModel.language.collectAsState()
+    val selectedLanguage by viewModel.language.collectAsStateWithLifecycle()
 
-    val selectedTheme by viewModel.themeMode.collectAsState()
+    val selectedTheme by viewModel.themeMode.collectAsStateWithLifecycle()
 
-    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsState()
+    val keepWorkoutScreenOn by viewModel.keepScreenOn.collectAsStateWithLifecycle()
 
-    val materialModeOn by viewModel.materialMode.collectAsState()
+    val materialModeOn by viewModel.materialMode.collectAsStateWithLifecycle()
 
-    val restTimerSoundOn by viewModel.restTimerSoundOn.collectAsState()
+    val restTimerSoundOn by viewModel.restTimerSoundOn.collectAsStateWithLifecycle()
 
-    val preferences by viewModel.preferences.collectAsState()
+    val preferences by viewModel.preferences.collectAsStateWithLifecycle()
 
-    val currentPreference by viewModel.currentPreference.collectAsState()
+    val currentPreference by viewModel.currentPreference.collectAsStateWithLifecycle()
 
     preferences?.let {
         PreferenceDialog(

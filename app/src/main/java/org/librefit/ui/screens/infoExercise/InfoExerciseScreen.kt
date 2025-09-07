@@ -61,7 +61,6 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +82,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.collections.immutable.persistentListOf
@@ -133,11 +133,11 @@ fun SharedTransitionScope.InfoExerciseScreen(
 ) {
     val viewModel: InfoExerciseScreenViewModel = hiltViewModel()
 
-    val workoutsWithExercises by viewModel.workoutsWithExercises.collectAsState()
+    val workoutsWithExercises by viewModel.workoutsWithExercises.collectAsStateWithLifecycle()
 
-    val points by viewModel.points.collectAsState()
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
-    val exerciseChart by viewModel.exerciseChart.collectAsState()
+    val exerciseChart by viewModel.exerciseChart.collectAsStateWithLifecycle()
 
     InfoExerciseScreenContent(
         id = id,

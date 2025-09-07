@@ -49,7 +49,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -72,6 +71,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.Measurement
@@ -106,23 +106,23 @@ fun MeasurementScreen(
 ) {
     val viewModel: MeasurementScreenViewModel = hiltViewModel()
 
-    val measurements by viewModel.measurements.collectAsState()
+    val measurements by viewModel.measurements.collectAsStateWithLifecycle()
 
-    val points by viewModel.points.collectAsState()
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
-    val measurementChart by viewModel.measurementChart.collectAsState()
+    val measurementChart by viewModel.measurementChart.collectAsStateWithLifecycle()
 
-    val bodyweight by viewModel.bodyWeight.collectAsState()
+    val bodyweight by viewModel.bodyWeight.collectAsStateWithLifecycle()
 
-    val leanMass by viewModel.leanMass.collectAsState()
+    val leanMass by viewModel.leanMass.collectAsStateWithLifecycle()
 
-    val fatMass by viewModel.fatMass.collectAsState()
+    val fatMass by viewModel.fatMass.collectAsStateWithLifecycle()
 
-    val notes by viewModel.notes.collectAsState()
+    val notes by viewModel.notes.collectAsStateWithLifecycle()
 
-    val measurementCardState by viewModel.measurementCardState.collectAsState()
+    val measurementCardState by viewModel.measurementCardState.collectAsStateWithLifecycle()
 
-    val date by viewModel.date.collectAsState()
+    val date by viewModel.date.collectAsStateWithLifecycle()
 
     val datePickerState = rememberDatePickerState()
     var showDatePickerDialog by remember { mutableStateOf(false) }

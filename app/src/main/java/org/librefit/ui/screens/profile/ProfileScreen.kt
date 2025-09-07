@@ -55,7 +55,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -76,6 +75,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.collections.immutable.persistentListOf
@@ -115,13 +115,13 @@ fun SharedTransitionScope.ProfileScreen(
 ) {
     val viewModel: ProfileScreenViewModel = hiltViewModel()
 
-    val points by viewModel.points.collectAsState()
+    val points by viewModel.points.collectAsStateWithLifecycle()
 
-    val workoutChart by viewModel.workoutChart.collectAsState()
+    val workoutChart by viewModel.workoutChart.collectAsStateWithLifecycle()
 
-    val workoutsWithExercises by viewModel.workoutsWithExercisesUi.collectAsState()
+    val workoutsWithExercises by viewModel.workoutsWithExercisesUi.collectAsStateWithLifecycle()
 
-    val weekStreak by viewModel.weekStreak.collectAsState()
+    val weekStreak by viewModel.weekStreak.collectAsStateWithLifecycle()
 
 
     ProfileScreenContent(

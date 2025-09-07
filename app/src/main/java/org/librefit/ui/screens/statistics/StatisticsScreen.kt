@@ -20,7 +20,6 @@
 package org.librefit.ui.screens.statistics
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
@@ -52,17 +52,17 @@ fun StatisticsScreen(
 ) {
     val viewModel: StatisticsScreenViewModel = hiltViewModel()
 
-    val muscleDistributionPoints by viewModel.muscleDistributionPoints.collectAsState()
+    val muscleDistributionPoints by viewModel.muscleDistributionPoints.collectAsStateWithLifecycle()
 
-    val muscleDistributionLegendIds by viewModel.muscleDistributionLegendIds.collectAsState()
+    val muscleDistributionLegendIds by viewModel.muscleDistributionLegendIds.collectAsStateWithLifecycle()
 
-    val muscleDistributionStatisticsChart by viewModel.muscleDistributionStatisticsChart.collectAsState()
+    val muscleDistributionStatisticsChart by viewModel.muscleDistributionStatisticsChart.collectAsStateWithLifecycle()
 
-    val exercisesDistributionPoints by viewModel.exercisesDistributionPoints.collectAsState()
+    val exercisesDistributionPoints by viewModel.exercisesDistributionPoints.collectAsStateWithLifecycle()
 
-    val exercisesDistributionLegendIds by viewModel.exercisesDistributionLegendIds.collectAsState()
+    val exercisesDistributionLegendIds by viewModel.exercisesDistributionLegendIds.collectAsStateWithLifecycle()
 
-    val exercisesDistributionStatisticsChart by viewModel.exercisesDistributionStatisticsChart.collectAsState()
+    val exercisesDistributionStatisticsChart by viewModel.exercisesDistributionStatisticsChart.collectAsStateWithLifecycle()
 
     StatisticsScreenContent(
         navController = navController,
