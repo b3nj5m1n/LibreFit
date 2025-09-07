@@ -20,7 +20,7 @@
 package org.librefit.enums.pages
 
 /**
- * IMPORTANT: Keep in sync with [org.librefit.ui.screens.shared.TutorialScreen]
+ * IMPORTANT: Keep in sync with [org.librefit.ui.screens.about.TutorialScreen]
  */
 enum class TutorialContent(
     val lazyColumnIndex: Int,

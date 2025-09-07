@@ -41,6 +41,7 @@ import org.librefit.ui.screens.about.AboutScreen
 import org.librefit.ui.screens.about.DependenciesScreen
 import org.librefit.ui.screens.about.LicenseScreen
 import org.librefit.ui.screens.about.PrivacyScreen
+import org.librefit.ui.screens.about.TutorialScreen
 import org.librefit.ui.screens.beforeSaving.BeforeSavingScreen
 import org.librefit.ui.screens.calendar.CalendarScreen
 import org.librefit.ui.screens.editWorkout.EditWorkoutScreen
@@ -53,7 +54,6 @@ import org.librefit.ui.screens.settings.SettingsScreen
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.screens.shared.SuccessScreen
 import org.librefit.ui.screens.shared.SupportScreen
-import org.librefit.ui.screens.shared.TutorialScreen
 import org.librefit.ui.screens.statistics.StatisticsScreen
 import org.librefit.ui.screens.workout.WorkoutScreen
 import kotlin.reflect.typeOf

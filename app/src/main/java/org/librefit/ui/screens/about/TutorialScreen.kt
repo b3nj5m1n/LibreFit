@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.shared
+package org.librefit.ui.screens.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
