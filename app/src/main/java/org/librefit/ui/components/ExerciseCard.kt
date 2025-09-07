@@ -437,7 +437,7 @@ fun SharedTransitionScope.ExerciseCard(
                 //Sets
                 Column(modifier = Modifier.animateContentSize()) {
                     exerciseWithSets.sets.forEachIndexed { i, set ->
-                        key(set) {
+                        key(set.id) {
                             Set(
                                 i = i,
                                 set = set,
