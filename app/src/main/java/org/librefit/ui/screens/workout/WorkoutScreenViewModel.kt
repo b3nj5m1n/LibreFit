@@ -328,7 +328,7 @@ class WorkoutScreenViewModel @Inject constructor(
         }
         val exerciseWithSets = exercises.value.find { e -> e.sets.any { it.id == id } }!!
         if (completed && exerciseWithSets.exercise.restTime != 0) {
-            startRestTimer(exerciseWithSets.exercise.restTime + 1)
+            startRestTimer(exerciseWithSets.exercise.restTime)
         }
     }
 
@@ -401,9 +401,7 @@ class WorkoutScreenViewModel @Inject constructor(
 
     val timeElapsed = WorkoutService.timeElapsed
     val isStopwatchPaused = WorkoutService.isStopwatchPaused
-
-    private val _restTime = MutableStateFlow(0)
-    val restTime = _restTime.asStateFlow()
+    val restTime = WorkoutService.restTime
 
 
     private var initialRestTime = 1
@@ -419,8 +417,6 @@ class WorkoutScreenViewModel @Inject constructor(
     private fun observeChanges() {
         viewModelScope.launch(Dispatchers.Main) {
             WorkoutService.restTime.collect { newRestTime ->
-                _restTime.update { newRestTime.coerceAtLeast(0) }
-
                 // When timer is over and screen is visible, it plays alert sound only by respecting user preference
                 if (initialRestTime != 1 && restTime.value == 0 && isFocused) {
                     if (userPreferences.restTimerSoundOn.value) {

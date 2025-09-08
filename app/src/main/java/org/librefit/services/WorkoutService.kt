@@ -179,6 +179,8 @@ class WorkoutService : Service() {
 
         stopwatchJob = serviceScope.launch {
             while (true) {
+                delay(1000)
+
                 if (!isStopwatchPaused.value) {
                     val currentTime = System.currentTimeMillis()
 
@@ -193,8 +195,6 @@ class WorkoutService : Service() {
                     restTime.value,
                     initialRestTime
                 )
-
-                delay(1000)
             }
         }
     }
@@ -208,10 +208,10 @@ class WorkoutService : Service() {
     private var restTimerJob: Job? = null
 
     private fun startRestTimer() {
-        restTimerJob = CoroutineScope(Dispatchers.Main).launch {
+        restTimerJob = serviceScope.launch {
             while (restTime.value > 0) {
-                _restTime.update { it - 1 }
                 delay(1000)
+                _restTime.update { it - 1 }
             }
             if (!isFocused) {
                 notificationHelper.notifyTimerIsOver()

@@ -163,7 +163,7 @@ class NotificationHelper @Inject constructor(
         val builder = workoutNotificationBuilder
 
         builder
-            .setProgress(initialRestTime, restTime, false)
+            .setProgress(initialRestTime, restTime - 1, false)
             .clearActions()
 
         if (isStopwatchPaused) {
@@ -186,7 +186,9 @@ class NotificationHelper @Inject constructor(
         if (restTime != 0 && initialRestTime != 0) {
             builder
                 .setContentTitle(
-                    appContext.getString(R.string.rest) + ": " + formatTime(restTime).substring(3)
+                    appContext.getString(R.string.rest) + ": " + formatTime(restTime - 1).substring(
+                        3
+                    )
                 )
                 .setContentText(
                     appContext.getString(R.string.time) + ": " + formatTime(
