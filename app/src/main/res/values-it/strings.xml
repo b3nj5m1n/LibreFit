@@ -179,7 +179,7 @@
     <string name="notifications_permission_desc">Consente di inviare notifiche sugli allenamenti in corso e sugli intervalli di riposo.</string>
     <string name="dont_ask_again">Non chiedere di nuovo</string>
     <string name="skip_for_now">Salta per ora</string>
-    <string name="app_works_without_permission">L\'app continuerà a funzionare anche senza questa autorizzazione.</string>
+    <string name="app_works_without_permission">L\'app funzionerà anche senza questa autorizzazione.</string>
     <string name="label_continue">Continua</string>
     <string name="workout">Allenamento</string>
     <string name="navigate_back">Ritorna alla schermata precedente</string>

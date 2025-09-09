@@ -21,6 +21,7 @@ package org.librefit.ui.screens.requestPermission
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,8 +29,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -93,7 +97,7 @@ fun RequestPermissionScreen(
     )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RequestPermissionsScreenContent(
     navController: NavHostController,
@@ -107,7 +111,7 @@ private fun RequestPermissionsScreenContent(
     LibreFitScaffold(
         navigateBack = navController::navigateUp
     ) { innerPadding ->
-        LibreFitLazyColumn(innerPadding, 40.dp) {
+        LibreFitLazyColumn(innerPadding, 30.dp) {
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,38 +127,45 @@ private fun RequestPermissionsScreenContent(
             }
 
             item {
-                Text(
-                    text = stringResource(R.string.best_experience_permissions),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                ElevatedCard(
+                    shape = MaterialTheme.shapes.extraLargeIncreased
                 ) {
                     Column(
-                        modifier = Modifier
-                            .weight(0.9f)
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(30.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.notifications_permission),
-                            style = MaterialTheme.typography.titleMedium
+                            text = stringResource(R.string.best_experience_permissions),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
                         )
-                        Text(
-                            text = stringResource(R.string.notifications_permission_desc),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.notifications_permission),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = stringResource(R.string.notifications_permission_desc),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            Checkbox(
+                                enabled = requestPermissionNextTime,
+                                modifier = Modifier
+                                    .padding(start = 10.dp),
+                                checked = hasNotificationPermission,
+                                onCheckedChange = { launchNotificationPermissionRequest() }
+                            )
+                        }
                     }
-                    Checkbox(
-                        modifier = Modifier
-                            .weight(0.1f)
-                            .padding(start = 10.dp),
-                        checked = hasNotificationPermission,
-                        onCheckedChange = { launchNotificationPermissionRequest() }
-                    )
                 }
             }
 
@@ -172,6 +183,11 @@ private fun RequestPermissionsScreenContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = stringResource(R.string.dont_ask_again),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(Modifier.width(10.dp))
                     Checkbox(
                         enabled = !hasNotificationPermission,
                         checked = !requestPermissionNextTime,
@@ -179,43 +195,55 @@ private fun RequestPermissionsScreenContent(
                             saveRequestPermissionAgainPreference(!it)
                         }
                     )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        text = stringResource(R.string.dont_ask_again),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
                 }
             }
 
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                val interactionSources = remember { List(2) { MutableInteractionSource() } }
+                ButtonGroup(
+                    overflowIndicator = {}
                 ) {
-                    TextButton(
-                        enabled = !hasNotificationPermission && requestPermissionNextTime,
-                        onClick = {
-                            saveRequestPermissionAgainPreference(true)
-                            navigateToWorkoutScreen()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.skip_for_now),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                    TextButton(
-                        enabled = hasNotificationPermission || !requestPermissionNextTime,
-                        colors = ButtonDefaults.buttonColors(),
-                        onClick = {
-                            navigateToWorkoutScreen()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.label_continue),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    customItem(
+                        buttonGroupContent = {
+                            TextButton(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .animateWidth(interactionSources[0]),
+                                enabled = !hasNotificationPermission && requestPermissionNextTime,
+                                interactionSource = interactionSources[0],
+                                onClick = {
+                                    saveRequestPermissionAgainPreference(true)
+                                    navigateToWorkoutScreen()
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.skip_for_now),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        },
+                        menuContent = {}
+                    )
+                    customItem(
+                        buttonGroupContent = {
+                            Button(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .animateWidth(interactionSources[1]),
+                                enabled = hasNotificationPermission || !requestPermissionNextTime,
+                                interactionSource = interactionSources[1],
+                                onClick = {
+                                    navigateToWorkoutScreen()
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.label_continue),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        },
+                        menuContent = {}
+                    )
                 }
             }
         }

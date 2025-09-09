@@ -108,7 +108,7 @@
     <string name="notifications_permission_desc">It allows to send notifications about the ongoing workouts and rest intervals.</string>
     <string name="dont_ask_again">Don\'t ask again</string>
     <string name="skip_for_now">Skip for now</string>
-    <string name="app_works_without_permission">The app will continue to work even without this permission.</string>
+    <string name="app_works_without_permission">The app will work even without this permission.</string>
     <string name="label_continue">Continue</string>
     <string name="workout">Workout</string>
     <string name="quit_workout_question">Quit workout?</string>
