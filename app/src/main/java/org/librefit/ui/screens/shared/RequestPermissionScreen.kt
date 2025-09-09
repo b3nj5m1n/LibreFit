@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.librefit.ui.screens.requestPermission
+package org.librefit.ui.screens.shared
 
 import android.Manifest
 import android.os.Build
@@ -38,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,8 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -67,12 +64,10 @@ import kotlin.random.Random
 @Composable
 fun RequestPermissionScreen(
     navController: NavHostController,
-    workoutId: Long
+    workoutId: Long,
+    requestPermissionNextTime: Boolean,
+    saveRequestPermissionAgainPreference: (Boolean) -> Unit
 ) {
-    val viewModel: RequestPermissionScreenViewModel = hiltViewModel()
-
-    val requestPermissionNextTime by viewModel.requestPermissionNextTime.collectAsStateWithLifecycle()
-
     val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(
             Manifest.permission.POST_NOTIFICATIONS
@@ -87,7 +82,7 @@ fun RequestPermissionScreen(
         requestPermissionNextTime = requestPermissionNextTime,
         hasNotificationPermission = notificationPermissionState?.status?.isGranted != false,
         launchNotificationPermissionRequest = { notificationPermissionState?.launchPermissionRequest() },
-        saveRequestPermissionAgainPreference = viewModel::saveRequestPermissionAgainPreference,
+        saveRequestPermissionAgainPreference = saveRequestPermissionAgainPreference,
         navigateToWorkoutScreen = {
             navController.navigate(Route.WorkoutScreen(workoutId = workoutId)) {
                 launchSingleTop = true

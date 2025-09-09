@@ -22,6 +22,7 @@ package org.librefit.ui.screens.shared
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.repository.UserPreferencesRepository
@@ -31,6 +32,7 @@ import javax.inject.Inject
 class SharedViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
+    // Used by ExercisesScreen and EditWorkout/WorkoutScreen
     private var selectedExercisesList = listOf<ExerciseDC>()
 
     fun getSelectedExercisesList(): List<ExerciseDC> {
@@ -44,6 +46,7 @@ class SharedViewModel @Inject constructor(
     }
 
 
+    // Used by WelcomeScreen
     val showWelcomeScreen = userPreferencesRepository.showWelcomeScreen
 
     fun doNotShowWelcomeScreenAgain() {
@@ -51,6 +54,20 @@ class SharedViewModel @Inject constructor(
             userPreferencesRepository.savePreference(
                 key = UserPreferencesRepository.showWelcomeScreenKey,
                 value = false
+            )
+        }
+    }
+
+
+    // Used by RequestPermissionScreen
+    val requestPermissionNextTime: StateFlow<Boolean> =
+        userPreferencesRepository.requestPermissionsNextTime
+
+    fun saveRequestPermissionAgainPreference(value: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.savePreference(
+                key = UserPreferencesRepository.requestPermissionsNextTimeKey,
+                value = value
             )
         }
     }

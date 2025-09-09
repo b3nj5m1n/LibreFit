@@ -46,15 +46,18 @@ class SharedViewModelTest {
 
     // Controllable flow to simulate repository emission
     private lateinit var showWelcomeScreen: MutableStateFlow<Boolean>
+    private lateinit var requestPermissionNextTime: MutableStateFlow<Boolean>
 
     @Before
     fun setUp() {
         // Arrange: Create a mock for the repository
         userPreferencesRepository = mockk()
         showWelcomeScreen = MutableStateFlow(true)
+        requestPermissionNextTime = MutableStateFlow(true)
 
         // Arrange: Tell the mock what to return when these are accessed
         every { userPreferencesRepository.showWelcomeScreen } returns showWelcomeScreen
+        every { userPreferencesRepository.requestPermissionsNextTime } returns requestPermissionNextTime
         coEvery {
             userPreferencesRepository.savePreference(
                 capture(key),
@@ -66,7 +69,9 @@ class SharedViewModelTest {
                 UserPreferencesRepository.showWelcomeScreenKey -> {
                     showWelcomeScreen.value = value as Boolean
                 }
-
+                UserPreferencesRepository.requestPermissionsNextTimeKey -> {
+                    requestPermissionNextTime.value = value as Boolean
+                }
                 else -> error("Invalid key")
             }
         }
@@ -87,6 +92,11 @@ class SharedViewModelTest {
     @Test
     fun `initial state - show welcome screen is true`() = runTest {
         assertThat(viewModel.showWelcomeScreen.value).isTrue()
+    }
+
+    @Test
+    fun `initial state - request permission again is true`() = runTest {
+        assertThat(viewModel.requestPermissionNextTime.value).isTrue()
     }
 
     @Test
@@ -117,6 +127,20 @@ class SharedViewModelTest {
 
             // Act: update preference
             viewModel.doNotShowWelcomeScreenAgain()
+
+            // Assert: update is correct
+            assertThat(awaitItem()).isFalse()
+        }
+    }
+
+    @Test
+    fun `request permission again updates correctly`() = runTest {
+        viewModel.requestPermissionNextTime.test {
+            // Initial emission
+            assertThat(awaitItem()).isTrue()
+
+            // Act: update preference
+            viewModel.saveRequestPermissionAgainPreference(false)
 
             // Assert: update is correct
             assertThat(awaitItem()).isFalse()

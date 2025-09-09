@@ -53,8 +53,8 @@ import org.librefit.ui.screens.exercises.ExercisesScreen
 import org.librefit.ui.screens.infoExercise.InfoExerciseScreen
 import org.librefit.ui.screens.infoWorkout.InfoWorkoutScreen
 import org.librefit.ui.screens.measurements.MeasurementScreen
-import org.librefit.ui.screens.requestPermission.RequestPermissionScreen
 import org.librefit.ui.screens.settings.SettingsScreen
+import org.librefit.ui.screens.shared.RequestPermissionScreen
 import org.librefit.ui.screens.shared.SharedViewModel
 import org.librefit.ui.screens.shared.SuccessScreen
 import org.librefit.ui.screens.shared.SupportScreen
@@ -71,6 +71,8 @@ fun NavigationHost() {
     val sharedViewModel: SharedViewModel = hiltViewModel()
 
     val showWelcomeScreen by sharedViewModel.showWelcomeScreen.collectAsStateWithLifecycle()
+
+    val requestPermissionNextTime by sharedViewModel.requestPermissionNextTime.collectAsStateWithLifecycle()
 
     val startDestination = remember {
         if (showWelcomeScreen) Route.WelcomeScreen else Route.MainScreen
@@ -159,7 +161,9 @@ fun NavigationHost() {
             composable<Route.RequestPermissionScreen> {
                 RequestPermissionScreen(
                     navController = navController,
-                    workoutId = it.toRoute<Route.RequestPermissionScreen>().workoutId
+                    workoutId = it.toRoute<Route.RequestPermissionScreen>().workoutId,
+                    requestPermissionNextTime = requestPermissionNextTime,
+                    saveRequestPermissionAgainPreference = sharedViewModel::saveRequestPermissionAgainPreference
                 )
             }
             composable<Route.SettingsScreen> {
