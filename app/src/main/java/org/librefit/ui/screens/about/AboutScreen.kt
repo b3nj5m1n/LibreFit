@@ -27,12 +27,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -144,16 +147,16 @@ fun AboutScreen(navController: NavHostController) {
                         )
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_favorite),
                                 contentDescription = null
                             )
+                            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
                             Text(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = 10.dp),
                                 text = stringResource(R.string.lets_build_it_together),
                                 style = MaterialTheme.typography.headlineSmallEmphasized,
                                 textAlign = TextAlign.Center
