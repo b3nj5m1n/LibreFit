@@ -258,12 +258,13 @@ fun HomeScreenPreview() {
             title = buildAnnotatedString {
                 GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)
             },
-            actions = listOf({ }, { }),
+            actions = listOf({ }, { }, { }),
             actionsIcons = listOf(
+                painterResource(R.drawable.ic_favorite),
                 painterResource(R.drawable.ic_info),
                 painterResource(R.drawable.ic_settings)
             ),
-            actionsElevated = listOf(false, false),
+            actionsElevated = listOf(false, false, false),
             fabAction = {},
             fabIcon = painterResource(R.drawable.ic_add),
             bottomBar = {
