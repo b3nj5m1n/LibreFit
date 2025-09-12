@@ -19,14 +19,12 @@
 
 package org.librefit.ui.components
 
-import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -78,10 +76,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +87,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import org.librefit.R
@@ -181,12 +178,6 @@ fun SharedTransitionScope.ExerciseCard(
     updateIdSetWithRunningStopwatch: (Long?) -> Unit = {},
     applyPreviousSetPerformance: (Long) -> Unit = {}
 ) {
-    val context = LocalContext.current
-
-    val image = remember {
-        BitmapFactory.decodeStream(context.assets.open(exerciseWithSets.exerciseDC.images[0]))
-    }.asImageBitmap()
-
     ElevatedCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.extraLarge
@@ -212,8 +203,8 @@ fun SharedTransitionScope.ExerciseCard(
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        bitmap = image,
+                    AsyncImage(
+                        model = "file:///android_asset/${exerciseWithSets.exerciseDC.images[0]}",
                         contentDescription = exerciseWithSets.exerciseDC.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

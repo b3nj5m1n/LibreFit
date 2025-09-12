@@ -19,14 +19,12 @@
 
 package org.librefit.ui.screens.exercises
 
-import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,9 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -71,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.librefit.R
@@ -306,14 +303,6 @@ private fun SharedTransitionScope.ItemExerciseDC(
     onAddToggle: () -> Unit,
     onInfo: () -> Unit,
 ) {
-    val context = LocalContext.current
-
-    val image = remember(exercise.images[0]) {
-        BitmapFactory.decodeStream(
-            context.assets.open(exercise.images[0])
-        ).asImageBitmap()
-    }
-
     ToggleButton(
         checked = isSelected,
         onCheckedChange = {
@@ -334,8 +323,8 @@ private fun SharedTransitionScope.ItemExerciseDC(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
-                bitmap = image,
+            AsyncImage(
+                model = "file:///android_asset/${exercise.images[0]}",
                 contentDescription = exercise.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
