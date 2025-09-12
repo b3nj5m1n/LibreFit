@@ -108,6 +108,7 @@ import org.librefit.enums.exercise.Muscle
 import org.librefit.enums.pages.InfoExercisePages
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
+import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.charts.LibreFitCartesianChart
@@ -177,10 +178,7 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
         BoxWithConstraints(
             modifier = Modifier.padding(innerPadding)
         ) {
-            LazyColumn(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            LibreFitLazyColumn(startEndPadding = 0.dp, bottomSpacer = false) {
                 item {
                     Text(
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp),

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
  * @param verticalSpacing The spacing applied between the items in [LazyColumn]
  * @param startEndPadding The padding applied in the start and in the end of [LazyColumn]
  * @param lazyListState A [LazyListState] to manage the list scroll
+ * @param bottomSpacer If `true`, this lazy column will have a [Spacer] of `100.dp` at the bottom.
  * @param content A lambda with receiver of type [LazyListScope] used to populate the lazy list.
  */
 @Composable
@@ -59,6 +60,7 @@ fun LibreFitLazyColumn(
     verticalSpacing: Dp = 15.dp,
     startEndPadding: Dp = 15.dp,
     lazyListState: LazyListState = rememberLazyListState(),
+    bottomSpacer: Boolean = true,
     content: LazyListScope.() -> Unit
 ) {
     BoxWithConstraints(
@@ -84,11 +86,13 @@ fun LibreFitLazyColumn(
             state = lazyListState
         ) {
             content()
-            item {
-                /**
-                 * Is provides a standard blank space in the bottom of all the necessary lazy columns
-                 */
-                Spacer(Modifier.height(100.dp))
+            if (bottomSpacer) {
+                item {
+                    /**
+                     * Is provides a standard blank space in the bottom of all the necessary lazy columns
+                     */
+                    Spacer(Modifier.height(100.dp))
+                }
             }
         }
     }
