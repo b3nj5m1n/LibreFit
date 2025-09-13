@@ -35,7 +35,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "org.librefit"
+        applicationId = "org.librefit.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -48,8 +48,6 @@ android {
         androidResources {
             localeFilters.addAll(listOf("en", "it"))
         }
-        applicationIdSuffix = "app"
-
     }
 
     buildTypes {
