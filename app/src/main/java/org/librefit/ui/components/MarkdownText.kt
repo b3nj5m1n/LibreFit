@@ -23,6 +23,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,14 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -86,6 +85,7 @@ fun MarkdownText(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
     // Define regex patterns
@@ -127,6 +127,8 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
         }
     }
 
+    val body = MaterialTheme.typography.bodyLarge.toSpanStyle()
+
     for (token in tokens) {
         if (token.start < currentIndex) continue
         appendGapText(token.start)
@@ -137,7 +139,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
                 val styleStart = builder.length
                 builder.append(linkText)
                 builder.addStyle(
-                    SpanStyle(
+                    body.copy(
                         color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     ),
@@ -158,7 +160,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
                 val styleStart = builder.length
                 builder.append(boldContent)
                 builder.addStyle(
-                    SpanStyle(fontWeight = FontWeight.Bold),
+                    body.copy(fontWeight = FontWeight.Bold),
                     styleStart,
                     builder.length
                 )
@@ -169,7 +171,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
                 val styleStart = builder.length
                 builder.append(italicContent)
                 builder.addStyle(
-                    SpanStyle(fontStyle = FontStyle.Italic),
+                    body.copy(fontStyle = FontStyle.Italic),
                     styleStart,
                     builder.length
                 )
@@ -183,9 +185,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
                 when (headingLevel) {
                     1 -> {
                         builder.addStyle(
-                            SpanStyle(
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.Bold,
+                            MaterialTheme.typography.headlineMedium.toSpanStyle().copy(
                                 color = MaterialTheme.colorScheme.primary
                             ),
                             styleStart,
@@ -195,9 +195,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
 
                     2 -> {
                         builder.addStyle(
-                            SpanStyle(
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
+                            MaterialTheme.typography.headlineSmall.toSpanStyle().copy(
                                 color = MaterialTheme.colorScheme.secondary
                             ),
                             styleStart,
@@ -207,9 +205,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
 
                     3 -> {
                         builder.addStyle(
-                            SpanStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
+                            MaterialTheme.typography.titleLarge.toSpanStyle().copy(
                                 color = MaterialTheme.colorScheme.tertiary
                             ),
                             styleStart,
@@ -220,10 +216,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
                     else -> {
                         // default style in case of an unexpected level
                         builder.addStyle(
-                            SpanStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
+                            MaterialTheme.typography.titleMedium.toSpanStyle(),
                             styleStart,
                             builder.length
                         )
@@ -234,7 +227,7 @@ fun parseMarkdownToAnnotatedString(markdown: String): AnnotatedString {
             TokenType.LIST -> {
                 builder.append("• ")
                 builder.append(parseMarkdownToAnnotatedString(token.groups[0]))
-                builder.append("\n")
+                builder.appendLine()
             }
         }
         currentIndex = token.end
