@@ -19,7 +19,6 @@
 
 package org.librefit.ui.screens.about
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,7 +50,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.enums.pages.TutorialContent
@@ -144,20 +143,18 @@ fun TutorialScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Image(
+                            AsyncImage(
                                 modifier = Modifier
                                     .clip(MaterialTheme.shapes.large)
                                     .fillMaxWidth(0.8f),
-                                painter = painterResource(
-                                    id = when (page) {
-                                        0 -> R.drawable.tut_create_routine_1
-                                        1 -> R.drawable.tut_create_routine_2
-                                        2 -> R.drawable.tut_create_routine_3
-                                        3 -> R.drawable.tut_create_routine_4
-                                        4 -> R.drawable.tut_create_routine_5
-                                        else -> error("Invalid page index: $page. Expected: ${0..pages}")
-                                    }
-                                ),
+                                model = when (page) {
+                                    0 -> R.drawable.tut_create_routine_1
+                                    1 -> R.drawable.tut_create_routine_2
+                                    2 -> R.drawable.tut_create_routine_3
+                                    3 -> R.drawable.tut_create_routine_4
+                                    4 -> R.drawable.tut_create_routine_5
+                                    else -> error("Invalid page index: $page. Expected: ${0..pages}")
+                                },
                                 contentDescription = null,
                                 contentScale = ContentScale.FillWidth
                             )
@@ -251,21 +248,19 @@ fun TutorialScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Image(
+                            AsyncImage(
                                 modifier = Modifier
                                     .clip(MaterialTheme.shapes.large)
                                     .fillMaxWidth(0.8f),
-                                painter = painterResource(
-                                    id = when (page) {
-                                        0 -> R.drawable.tut_complete_workout_1
-                                        1 -> R.drawable.tut_complete_workout_2
-                                        2 -> R.drawable.tut_complete_workout_3
-                                        3 -> R.drawable.tut_complete_workout_4
-                                        4 -> R.drawable.tut_complete_workout_5
-                                        5 -> R.drawable.tut_complete_workout_6
-                                        else -> error("Invalid page index: $page. Expected: ${0..pages - 1}")
-                                    }
-                                ),
+                                model = when (page) {
+                                    0 -> R.drawable.tut_complete_workout_1
+                                    1 -> R.drawable.tut_complete_workout_2
+                                    2 -> R.drawable.tut_complete_workout_3
+                                    3 -> R.drawable.tut_complete_workout_4
+                                    4 -> R.drawable.tut_complete_workout_5
+                                    5 -> R.drawable.tut_complete_workout_6
+                                    else -> error("Invalid page index: $page. Expected: ${0..pages - 1}")
+                                },
                                 contentDescription = null,
                                 contentScale = ContentScale.FillWidth
                             )
