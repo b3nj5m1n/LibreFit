@@ -21,8 +21,6 @@ package org.librefit.activities
 
 import android.app.PendingIntent
 import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -48,9 +46,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,6 +65,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.repository.UserPreferencesRepository
 import org.librefit.enums.userPreferences.ThemeMode
@@ -129,7 +131,9 @@ private fun ErrorScreen(
 ) {
     val context = LocalContext.current
 
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val coroutine = rememberCoroutineScope()
+
+    val clipboardManager = LocalClipboard.current
 
     var copied by remember { mutableStateOf(false) }
 
@@ -220,9 +224,12 @@ private fun ErrorScreen(
                             IconButton(
                                 enabled = stackTrace.isNotEmpty(),
                                 onClick = {
-                                    val clip = ClipData.newPlainText("Copied Url", stackTrace)
-                                    clipboardManager.setPrimaryClip(clip)
-                                    copied = true
+                                    coroutine.launch {
+                                        val clipData =
+                                            ClipData.newPlainText("Copied Url", stackTrace)
+                                        clipboardManager.setClipEntry(ClipEntry(clipData))
+                                        copied = true
+                                    }
                                 }
                             ) {
                                 Icon(

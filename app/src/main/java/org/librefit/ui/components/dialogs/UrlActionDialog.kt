@@ -20,18 +20,20 @@
 package org.librefit.ui.components.dialogs
 
 import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.util.Patterns
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
+import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -54,7 +56,9 @@ fun UrlActionDialog(
 
     val context = LocalContext.current
 
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipboardManager = LocalClipboard.current
+
+    val coroutine = rememberCoroutineScope()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -74,9 +78,13 @@ fun UrlActionDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    val clip = ClipData.newPlainText("Copied Url", url)
-                    clipboardManager.setPrimaryClip(clip)
-                    onDismiss
+                    coroutine.launch {
+                        val clipData = ClipData.newPlainText("Copied Url", url)
+                        clipboardManager.setClipEntry(
+                            ClipEntry(clipData)
+                        )
+                        onDismiss()
+                    }
                 }) {
                 Text(stringResource(R.string.copy))
             }
