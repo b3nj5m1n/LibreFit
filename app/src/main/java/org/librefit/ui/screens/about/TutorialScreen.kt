@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -177,12 +178,12 @@ fun TutorialScreen(
 
                 Spacer(Modifier.height(10.dp))
 
-                var sliderPosition by remember { mutableFloatStateOf(pagerState.currentPage.toFloat()) }
+                var sliderPosition by rememberSaveable { mutableFloatStateOf(pagerState.currentPage.toFloat()) }
 
                 // Update slider when user swipe pages (instead of dragging the slider) and perform haptic feedback
                 LaunchedEffect(pagerState.currentPage) {
                     // The if statement avoids execution during first composition and when slider already is in the correct position
-                    if (sliderPosition != pagerState.currentPage.toFloat()) {
+                    if (sliderPosition.roundToInt() != pagerState.currentPage) {
                         sliderPosition = pagerState.currentPage.toFloat()
                         haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                     }
@@ -199,17 +200,19 @@ fun TutorialScreen(
                         Text(stringResource(R.string.step) + ": ${pagerState.currentPage + 1}/${pagerState.pageCount}")
                         Slider(
                             value = sliderPosition,
-                            onValueChange = { sliderPosition = it },
+                            onValueChange = {
+                                sliderPosition = it
+                                if (sliderPosition.roundToInt() != pagerState.currentPage) {
+                                    coroutine.launch {
+                                        pagerState.animateScrollToPage(
+                                            page = sliderPosition.roundToInt(),
+                                        )
+                                    }
+                                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                }
+                            },
                             valueRange = 0f..(pagerState.pageCount.toFloat() - 1),
                             steps = pagerState.pageCount - 2,
-                            onValueChangeFinished = {
-                                coroutine.launch {
-                                    pagerState.animateScrollToPage(
-                                        page = sliderPosition.roundToInt(),
-                                    )
-                                }
-                                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                            }
                         )
                     }
                 }
@@ -284,12 +287,12 @@ fun TutorialScreen(
 
                 Spacer(Modifier.height(10.dp))
 
-                var sliderPosition by remember { mutableFloatStateOf(pagerState.currentPage.toFloat()) }
+                var sliderPosition by rememberSaveable { mutableFloatStateOf(pagerState.currentPage.toFloat()) }
 
                 // Update slider when user swipe pages (instead of dragging the slider) and perform haptic feedback
                 LaunchedEffect(pagerState.currentPage) {
                     // The if statement is used to avoid execution when slider already is in the correct position
-                    if (sliderPosition != pagerState.currentPage.toFloat()) {
+                    if (sliderPosition.roundToInt() != pagerState.currentPage) {
                         sliderPosition = pagerState.currentPage.toFloat()
                         haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                     }
@@ -306,17 +309,19 @@ fun TutorialScreen(
                         Text(stringResource(R.string.step) + ": ${pagerState.currentPage + 1}/${pagerState.pageCount}")
                         Slider(
                             value = sliderPosition,
-                            onValueChange = { sliderPosition = it },
-                            valueRange = 0f..(pagerState.pageCount.toFloat() - 1),
-                            steps = pagerState.pageCount - 2,
-                            onValueChangeFinished = {
-                                coroutine.launch {
-                                    pagerState.animateScrollToPage(
-                                        page = sliderPosition.roundToInt(),
-                                    )
+                            onValueChange = {
+                                sliderPosition = it
+                                if (sliderPosition.roundToInt() != pagerState.currentPage) {
+                                    coroutine.launch {
+                                        pagerState.animateScrollToPage(
+                                            page = sliderPosition.roundToInt(),
+                                        )
+                                    }
+                                    haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                                 }
-                                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                            }
+                            },
+                            valueRange = 0f..(pagerState.pageCount.toFloat() - 1),
+                            steps = pagerState.pageCount - 2
                         )
                     }
                 }
