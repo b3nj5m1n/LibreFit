@@ -90,6 +90,7 @@ class NotificationHelper @Inject constructor(
 
         workoutNotificationBuilder
             .setSmallIcon(R.drawable.ic_notification_monochrome)
+            .setColor(appContext.getColor(R.color.md_theme_primary))
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(contentIntent)
@@ -100,6 +101,7 @@ class NotificationHelper @Inject constructor(
 
         timerNotificationBuilder
             .setSmallIcon(R.drawable.ic_notification_monochrome)
+            .setColor(appContext.getColor(R.color.md_theme_primary))
             .setContentTitle(appContext.getString(R.string.rest_time_is_over))
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setPriority(NotificationCompat.PRIORITY_MAX)
