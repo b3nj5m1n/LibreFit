@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,6 +67,7 @@ import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
+import org.librefit.ui.components.rememberDrawableAspectRatio
 import org.librefit.ui.theme.LibreFitTheme
 import kotlin.math.roundToInt
 
@@ -147,7 +149,19 @@ fun TutorialScreen(
                             AsyncImage(
                                 modifier = Modifier
                                     .clip(MaterialTheme.shapes.large)
-                                    .fillMaxWidth(0.8f),
+                                    .fillMaxWidth(0.8f)
+                                    .aspectRatio(
+                                        rememberDrawableAspectRatio(
+                                            when (page) {
+                                                0 -> R.drawable.tut_create_routine_1
+                                                1 -> R.drawable.tut_create_routine_2
+                                                2 -> R.drawable.tut_create_routine_3
+                                                3 -> R.drawable.tut_create_routine_4
+                                                4 -> R.drawable.tut_create_routine_5
+                                                else -> error("Invalid page index: $page. Expected: ${0..pages}")
+                                            }
+                                        )
+                                    ),
                                 model = when (page) {
                                     0 -> R.drawable.tut_create_routine_1
                                     1 -> R.drawable.tut_create_routine_2
@@ -254,7 +268,20 @@ fun TutorialScreen(
                             AsyncImage(
                                 modifier = Modifier
                                     .clip(MaterialTheme.shapes.large)
-                                    .fillMaxWidth(0.8f),
+                                    .fillMaxWidth(0.8f)
+                                    .aspectRatio(
+                                        rememberDrawableAspectRatio(
+                                            when (page) {
+                                                0 -> R.drawable.tut_complete_workout_1
+                                                1 -> R.drawable.tut_complete_workout_2
+                                                2 -> R.drawable.tut_complete_workout_3
+                                                3 -> R.drawable.tut_complete_workout_4
+                                                4 -> R.drawable.tut_complete_workout_5
+                                                5 -> R.drawable.tut_complete_workout_6
+                                                else -> error("Invalid page index: $page. Expected: ${0..pages - 1}")
+                                            }
+                                        )
+                                    ),
                                 model = when (page) {
                                     0 -> R.drawable.tut_complete_workout_1
                                     1 -> R.drawable.tut_complete_workout_2
