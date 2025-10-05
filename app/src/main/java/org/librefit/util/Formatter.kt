@@ -232,7 +232,7 @@ object Formatter {
 
     /**
      * It is used to process user input in UI components like text fields and return the
-     * corresponding integer.
+     * corresponding number as string.
      *
      * @param string The input string to be converted.
      * @param maxIntegerDigits Takes the first [maxIntegerDigits] from integer part of [string] starting from the left.
@@ -275,7 +275,7 @@ object Formatter {
             sanitized.take(maxIntegerDigits)
         }
 
-        return value.takeIf { it != "." && value.isNotBlank() } ?: ""
+        return value.takeIf { it != "." && it.isNotBlank() } ?: ""
     }
 
     /**
@@ -295,14 +295,14 @@ object Formatter {
         string: String,
         maxValue: Int = Int.MAX_VALUE,
         minValue: Int = Int.MIN_VALUE
-    ): Int {
+    ): Int? {
         require(maxValue >= minValue) { "maxValue must be greater or equal than minValue. maxValue: $maxValue. minValue : $minValue" }
 
         return string
             .filter { it.isDigit() }
-            .ifBlank { "0" }
-            .toInt()
-            .coerceIn(minValue, maxValue)
+            .ifBlank { null }
+            ?.toInt()
+            ?.coerceIn(minValue, maxValue)
     }
 
     /**
