@@ -13,4 +13,12 @@ LibreFit is a free and open-source workout tracker and planner designed with pri
 
 ## License
 
-LibreFit is licensed under the [GNU General Public License v3.0 (GPL-3)](COPYING). Feel free to use, modify, and distribute the software as you see fit.
+LibreFit is licensed under the [GNU General Public License v3.0 (GPL-3)](COPYING) and it is subject
+to these [additional terms](ADDITIONAL_TERMS.md).
+
+In short, this means you are free to use, modify, and distribute the code, but you must:
+
+* **Give credit:** Keep the original copyright notice and attribute the original work to LibreFit.
+* **Mark your changes:** Clearly indicate that your version is a modification of the original.
+* **Do not use the brand:** You cannot use the name "LibreFit" or its logo to promote your modified
+  version.

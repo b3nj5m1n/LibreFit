@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
 #
+# LibreFit is subject to additional terms covering author attribution and
+# trademark usage, as found in the accompanying ADDITIONAL_TERMS.md file.
+#
 
 ##############################################################################
 ##
