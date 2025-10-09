@@ -40,7 +40,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialShapes
@@ -58,15 +57,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -90,17 +86,6 @@ fun SupportScreen(
     isSupporter: Boolean = false,
     updateIsSupporter: (Boolean) -> Unit = {}
 ) {
-    var verificationAppStatus by rememberSaveable {
-        mutableStateOf<SupporterVerificationResult?>(
-            null
-        )
-    }
-
-    var verificationCodeStatus by rememberSaveable {
-        mutableStateOf<SupporterVerificationResult?>(
-            null
-        )
-    }
 
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = if (supporterInfo) 6 else 0
@@ -271,56 +256,61 @@ fun SupportScreen(
                                     textAlign = TextAlign.Center
                                 )
                             } else {
-                                Text(
-                                    text = stringResource(R.string.verify_companion_or_code),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                HorizontalDivider()
-
-                                Text(
-                                    text = stringResource(R.string.companion_app_desc),
-                                    textAlign = TextAlign.Center
-                                )
-
-
-                                val context = LocalContext.current
-                                LibreFitButton(
-                                    text = stringResource(R.string.verify_companion_app),
-                                    onClick = {
-                                        SupporterVerifier.verifyCompanionApp(context = context)
-                                            .let {
-                                                verificationAppStatus = it
-                                                updateIsSupporter(
-                                                    it == SupporterVerificationResult.VALID_COMPANION_APP_SIGNATURE
-                                                )
-                                            }
-                                    }
-                                )
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append(stringResource(R.string.status))
-                                        append(": ")
-                                        withStyle(
-                                            style = MaterialTheme.typography.titleMedium.copy(
-                                                color = verificationAppStatus?.let {
-                                                    if (it == SupporterVerificationResult.VALID_COMPANION_APP_SIGNATURE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                                                } ?: Color.Unspecified).toSpanStyle()) {
-                                            append(
-                                                stringResource(
-                                                    supporterVerificationResultToStringId(
-                                                        verificationAppStatus
-                                                    )
-                                                )
-                                            )
-                                        }
-                                    },
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-
-                                HorizontalDivider()
+//                                Text(
+//                                    text = stringResource(R.string.verify_companion_or_code),
+//                                    style = MaterialTheme.typography.titleLarge,
+//                                    textAlign = TextAlign.Center
+//                                )
+//
+//                                HorizontalDivider()
+//                                var verificationAppStatus by rememberSaveable {
+//                                    mutableStateOf<SupporterVerificationResult?>(
+//                                        null
+//                                    )
+//                                }
+//
+//                                Text(
+//                                    text = stringResource(R.string.companion_app_desc),
+//                                    textAlign = TextAlign.Center
+//                                )
+//
+//
+//                                val context = LocalContext.current
+//                                LibreFitButton(
+//                                    text = stringResource(R.string.verify_companion_app),
+//                                    onClick = {
+//                                        SupporterVerifier.verifyCompanionApp(context = context)
+//                                            .let {
+//                                                verificationAppStatus = it
+//                                                updateIsSupporter(
+//                                                    it == SupporterVerificationResult.VALID_COMPANION_APP_SIGNATURE
+//                                                )
+//                                            }
+//                                    }
+//                                )
+//                                Text(
+//                                    text = buildAnnotatedString {
+//                                        append(stringResource(R.string.status))
+//                                        append(": ")
+//                                        withStyle(
+//                                            style = MaterialTheme.typography.titleMedium.copy(
+//                                                color = verificationAppStatus?.let {
+//                                                    if (it == SupporterVerificationResult.VALID_COMPANION_APP_SIGNATURE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+//                                                } ?: Color.Unspecified).toSpanStyle()) {
+//                                            append(
+//                                                stringResource(
+//                                                    supporterVerificationResultToStringId(
+//                                                        verificationAppStatus
+//                                                    )
+//                                                )
+//                                            )
+//                                        }
+//                                    },
+//                                    textAlign = TextAlign.Center,
+//                                    style = MaterialTheme.typography.bodyLarge
+//                                )
+//
+//                                HorizontalDivider()
 
                                 Text(
                                     text = stringResource(R.string.code_desc),
@@ -328,6 +318,12 @@ fun SupportScreen(
                                 )
 
                                 var code by rememberSaveable { mutableStateOf("") }
+
+                                var verificationCodeStatus by rememberSaveable {
+                                    mutableStateOf<SupporterVerificationResult?>(
+                                        null
+                                    )
+                                }
 
                                 val clipboardManager = LocalClipboard.current
 
