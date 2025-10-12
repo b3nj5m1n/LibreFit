@@ -28,7 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
-import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import org.librefit.R
 import org.librefit.ui.components.LibreFitScaffold
@@ -43,7 +43,7 @@ fun DependenciesScreen(navigateBack: () -> Unit) {
         UrlActionDialog(it) { url.value = null }
     }
 
-    val libs = rememberLibraries()
+    val libs = produceLibraries()
 
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.dependencies)),
