@@ -29,15 +29,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.librefit.db.repository.UserPreferencesRepository
 import org.librefit.db.repository.WorkoutRepository
+import org.librefit.ui.models.mappers.toEntity
 import org.librefit.ui.models.mappers.toUi
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     userPreferences: UserPreferencesRepository,
-    workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
     val requestPermissionNextTime: StateFlow<Boolean> = userPreferences.requestPermissionsNextTime
         .stateIn(
@@ -53,5 +55,22 @@ class HomeScreenViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+
+    val runningWorkout = workoutRepository.runningWorkoutsWithExercisesAndSets
+        .map { list -> list.firstOrNull()?.workout?.toUi() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
+
+    fun deleteRunningWorkout() {
+        viewModelScope.launch {
+            runningWorkout.value?.let {
+                workoutRepository.deleteWorkout(it.toEntity())
+            }
+        }
+    }
 
 }

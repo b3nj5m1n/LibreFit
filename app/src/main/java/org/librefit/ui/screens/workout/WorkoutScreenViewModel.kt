@@ -31,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
+import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.UserPreferencesRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
@@ -57,11 +60,13 @@ import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.models.UiWorkout
+import org.librefit.ui.models.mappers.toEntity
 import org.librefit.ui.models.mappers.toUi
 import org.librefit.util.Formatter
 import javax.inject.Inject
 import kotlin.random.Random
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class WorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -206,10 +211,13 @@ class WorkoutScreenViewModel @Inject constructor(
                     workoutRepository.getWorkoutWithExercisesAndSets(workoutId)
 
                 _workout.update {
-                    workoutWithExercisesAndSets.workout.copy(
-                        id = 0,
-                        state = WorkoutState.RUNNING
-                    )
+                    workoutWithExercisesAndSets.workout
+                }
+
+                // Delete previous running workout from db as it will be resaved later (see down below)
+                if (workoutWithExercisesAndSets.workout.state == WorkoutState.RUNNING) {
+                    workoutRepository.deleteWorkout(workoutWithExercisesAndSets.workout.toEntity())
+                    workoutServiceManager.setInitialTimeElapsed(workoutWithExercisesAndSets.workout.timeElapsed)
                 }
 
                 _exercises.update {
@@ -475,4 +483,26 @@ class WorkoutScreenViewModel @Inject constructor(
 
 
     val keepScreenOn = userPreferences.workoutScreenOn
+
+
+    val runningWorkoutState = combine(
+        workout, exercises, timeElapsed
+    ) { w, e, t -> Triple(w, e, t) }
+        .debounce(500L)
+
+    var id = 0L
+    suspend fun saveRunningWorkout(state: Triple<UiWorkout, List<UiExerciseWithSets>, Int>) {
+        val (w, e, t) = state
+        id = workoutRepository.addWorkoutWithExercisesAndSets(
+            WorkoutWithExercisesAndSets(
+                workout = w.copy(
+                    id = id,
+                    state = WorkoutState.RUNNING,
+                    timeElapsed = t
+                ).toEntity(),
+                exercisesWithSets = e.map { it.toEntity() },
+            )
+        )
+
+    }
 }

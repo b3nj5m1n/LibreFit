@@ -57,6 +57,10 @@ class WorkoutRepository @Inject constructor(
     val completedWorkoutsWithExercisesAndSets =
         workoutDao.getWorkoutsWithExercisesAndSetsByStateAndOrderedByCompleted(WorkoutState.COMPLETED)
 
+    val runningWorkoutsWithExercisesAndSets = workoutDao.getWorkoutsWithExercisesAndSetsByState(
+        WorkoutState.RUNNING
+    )
+
 
 
     suspend fun getWorkoutWithExercisesAndSets(workoutID: Long): UiWorkoutWithExercisesAndSets {
@@ -74,6 +78,10 @@ class WorkoutRepository @Inject constructor(
 
     suspend fun deleteWorkout(workout: Workout) {
         workoutDao.deleteWorkout(workout)
+    }
+
+    suspend fun deleteAllRunningWorkouts() {
+        workoutDao.deleteAllWorkoutsByState(WorkoutState.RUNNING)
     }
 
 
@@ -94,8 +102,8 @@ class WorkoutRepository @Inject constructor(
      */
     suspend fun addWorkoutWithExercisesAndSets(
         workoutWithExercisesAndSets: WorkoutWithExercisesAndSets
-    ) {
-        workoutDao.addWorkoutWithExercisesAndSets(workoutWithExercisesAndSets)
+    ): Long {
+        return workoutDao.addWorkoutWithExercisesAndSets(workoutWithExercisesAndSets)
     }
 
 

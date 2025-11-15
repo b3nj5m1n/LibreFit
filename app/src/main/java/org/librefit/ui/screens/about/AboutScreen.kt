@@ -135,7 +135,7 @@ fun AboutScreen(navController: NavHostController) {
                         )
                     )
 
-                    val a = Brush.radialGradient(
+                    val brush = Brush.radialGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.primary,
                             MaterialTheme.colorScheme.inversePrimary,
@@ -154,7 +154,7 @@ fun AboutScreen(navController: NavHostController) {
                         contentPadding = ButtonDefaults.MediumContentPadding,
                         border = BorderStroke(
                             width = 4.dp,
-                            brush = a
+                            brush = brush
                         )
                     ) {
                         Row(

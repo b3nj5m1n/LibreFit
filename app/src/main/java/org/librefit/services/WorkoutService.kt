@@ -103,6 +103,7 @@ class WorkoutService : Service() {
         const val EXTRA_INITIAL_REST_TIME = "EXTRA_INITIAL_REST_TIME"
         const val EXTRA_ADD_TEN_SECONDS = "EXTRA_ADD_TEN_SECONDS"
         const val EXTRA_IS_FOCUSED = "EXTRA_IS_FOCUSED"
+        const val EXTRA_SET_ELAPSED_TIME = "EXTRA_SET_ELAPSED_TIME"
     }
 
     private var initialRestTime = 0
@@ -153,6 +154,11 @@ class WorkoutService : Service() {
             }
 
             WorkoutServiceActions.STOP_SERVICE -> stopService()
+            WorkoutServiceActions.SET_ELAPSED_TIME -> {
+                _timeElapsed.update {
+                    it + (intent?.getIntExtra(EXTRA_SET_ELAPSED_TIME, 0) ?: 0)
+                }
+            }
         }
 
         return START_STICKY
@@ -175,9 +181,6 @@ class WorkoutService : Service() {
 
         _isStopwatchPaused.update { false }
 
-        val startTime = System.currentTimeMillis()
-        val pastTime = timeElapsed.value
-
         stopwatchJob?.cancel()
 
         stopwatchJob = serviceScope.launch {
@@ -185,10 +188,9 @@ class WorkoutService : Service() {
                 delay(1000)
 
                 if (!isStopwatchPaused.value) {
-                    val currentTime = System.currentTimeMillis()
-
                     _timeElapsed.update {
-                        (currentTime - startTime).toInt() / 1000 + pastTime
+                        // TODO: use a more accurate calculation
+                        it + 1
                     }
                 }
 

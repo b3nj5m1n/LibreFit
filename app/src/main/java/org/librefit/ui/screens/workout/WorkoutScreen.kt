@@ -65,7 +65,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -81,6 +80,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
@@ -94,7 +94,6 @@ import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.DumbbellLottie
-import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
@@ -158,53 +157,28 @@ fun SharedTransitionScope.WorkoutScreen(
     }
 
 
+    val infoMode = remember { mutableStateOf(InfoMode.DISMISS) }
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
-
-    if (showConfirmDialog) {
-        ConfirmDialog(
-            title = stringResource(R.string.quit_workout_question),
-            text = stringResource(R.string.quit_workout_text),
-            confirmText = stringResource(R.string.quit_dialog),
-            onConfirm = {
-                viewModel.stopWorkoutService()
-                navController.navigateUp()
-                showConfirmDialog = false
-            },
-            onDismiss = { showConfirmDialog = false }
-        )
-    }
-
-
-    var infoMode by remember { mutableStateOf(InfoMode.DISMISS) }
-
-    InfoModalBottomSheet(infoMode) { infoMode = InfoMode.DISMISS }
+    InfoModalBottomSheet(infoMode.value) { infoMode.value = InfoMode.DISMISS }
 
 
     BackHandler {
-        if (!showConfirmDialog && exercisesWithSets.isNotEmpty()) {
-            showConfirmDialog = true
-        } else {
-            viewModel.stopWorkoutService()
-            navController.navigateUp()
-        }
+        viewModel.stopWorkoutService()
+        navController.navigateUp()
     }
 
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.workout)),
         navigateBack = {
-            if (exercisesWithSets.isEmpty()) {
-                viewModel.stopWorkoutService()
-                navController.navigateUp()
-            } else {
-                showConfirmDialog = true
-            }
+            viewModel.stopWorkoutService()
+            navController.navigateUp()
         },
         actions = listOf {
             navController.navigate(
                 Route.BeforeSavingScreen(
                     WorkoutWithExercisesAndSets(
                         workout = workout.copy(
+                            id = 0,
                             timeElapsed = timeElapsed,
                             completed = LocalDateTime.now()
                         ).toEntity(),
@@ -255,7 +229,7 @@ fun SharedTransitionScope.WorkoutScreen(
                 updateExerciseRestTime = viewModel::updateExerciseRestTime,
                 updateExerciseSetMode = viewModel::updateExerciseSetMode,
                 deleteExercise = viewModel::deleteExercise,
-                showInfo = { infoMode = it },
+                showInfo = { infoMode.value = it },
                 applyPreviousSetPerformance = viewModel::applyPreviousSetPerformance
             )
         }
@@ -266,6 +240,17 @@ fun SharedTransitionScope.WorkoutScreen(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    // Save state of running workout when this screen is the primary focus
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.runningWorkoutState.collect {
+                viewModel.saveRunningWorkout(it)
+            }
+        }
+    }
+
+
+    // Keep track of focus to play alter sound or not
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {

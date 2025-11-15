@@ -89,6 +89,8 @@
     <string name="screen_on_desc">Lo schermo rimane accesso durante l\'allenamento</string>
     <string name="screen_off_desc">Lo schermo non rimane accesso durante l\'allenamento</string>
     <string name="language_italian">Italiano</string>
+    <string name="resume_workout">Riprendi allenamento</string>
+    <string name="discard_running_workout_and_select_routine_text">Per iniziare questa routine, l\'attuale allenamento in corso deve essere scartato. Sei sicuro di volerlo scartare? Questa azione non può essere annullata.</string>
     <string name="past_workouts">Allenamenti precedenti</string>
     <string name="coming_soon">Prossimamente</string>
     <string name="add_to_empty_workout">Inizia aggiungendo un esercizio al tuo allenamento</string>
@@ -333,5 +335,7 @@
     <string name="missing_dot_separator">Punto separatore mancante</string>
     <string name="invalid_public_key_encoding">Codifica della chiave pubblica non valida</string>
     <string name="paste">Incolla</string>
+    <string name="discard_running_workout_question">Scartare allenamento in corso?</string>
+    <string name="delete_running_workout_text">Sei sicuro di voler scartare questo allenamento in corso? Questa azione non può essere annullata.</string>
 
 </resources>

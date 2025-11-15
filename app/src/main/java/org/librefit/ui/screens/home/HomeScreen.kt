@@ -29,6 +29,12 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +54,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -73,8 +81,10 @@ import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.models.UiWorkout
 import org.librefit.ui.theme.LibreFitTheme
+import org.librefit.util.Formatter
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -99,11 +109,15 @@ fun SharedTransitionScope.HomeScreen(
 
     val routines by viewModel.routines.collectAsStateWithLifecycle()
 
+    val runningWorkout by viewModel.runningWorkout.collectAsStateWithLifecycle()
+
     HomeScreenContent(
         innerPadding = innerPadding,
         navController = navController,
+        runningWorkout = runningWorkout,
         routines = routines,
         animatedVisibilityScope = animatedVisibilityScope,
+        deleteRunningWorkout = viewModel::deleteRunningWorkout,
         navigateToRoutine = { workoutId ->
             val hasNotificationPermission = notificationPermissionState?.status?.isGranted != false
 
@@ -131,21 +145,110 @@ private fun SharedTransitionScope.HomeScreenContent(
     innerPadding: PaddingValues,
     navController: NavHostController,
     routines: List<UiWorkout>,
+    runningWorkout: UiWorkout?,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    deleteRunningWorkout: () -> Unit,
     navigateToRoutine: (Long) -> Unit
 ) {
+    val showConfirmDeleteRunningWorkoutDialog = remember { mutableStateOf(false) }
+
+    if (showConfirmDeleteRunningWorkoutDialog.value) {
+        ConfirmDialog(
+            title = stringResource(R.string.discard_running_workout_question),
+            text = stringResource(R.string.delete_running_workout_text),
+            confirmText = stringResource(R.string.discard_dialog),
+            onConfirm = {
+                deleteRunningWorkout()
+                showConfirmDeleteRunningWorkoutDialog.value = false
+            },
+            onDismiss = {
+                showConfirmDeleteRunningWorkoutDialog.value = false
+            }
+        )
+    }
+
+    // It is triggered when there's an unsaved, running workout but user taps a routine
+    val routineIdToStart = remember { mutableStateOf<Long?>(null) }
+
+    if (routineIdToStart.value != null) {
+        ConfirmDialog(
+            title = stringResource(R.string.discard_running_workout_question),
+            text = stringResource(R.string.discard_running_workout_and_select_routine_text),
+            confirmText = stringResource(R.string.discard_dialog),
+            onConfirm = {
+                deleteRunningWorkout()
+                // Just a safe get method for routine id
+                routineIdToStart.value?.let {
+                    navigateToRoutine(it)
+                }
+                routineIdToStart.value = null
+            },
+            onDismiss = {
+                routineIdToStart.value = null
+            }
+        )
+    }
 
     LibreFitLazyColumn(innerPadding) {
         // TODO: implement workout resume
         item {
-            //"Start empty workout" button
-            LibreFitButton(
-                text = stringResource(id = R.string.start_empty_workout),
-                icon = painterResource(R.drawable.ic_play_arrow),
-                onClick = {
-                    navigateToRoutine(0)
-                },
+            val infiniteTransition = rememberInfiniteTransition()
+            val animatedColor = infiniteTransition.animateColor(
+                initialValue = MaterialTheme.colorScheme.secondary.copy(alpha = 0f),
+                targetValue = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1000),
+                    repeatMode = RepeatMode.Reverse
+                ),
             )
+            ElevatedCard(
+                shape = MaterialTheme.shapes.extraLarge,
+                modifier = Modifier.border(
+                    width = if (runningWorkout != null) 2.dp else 0.dp,
+                    color = animatedColor.value,
+                    shape = MaterialTheme.shapes.extraLarge
+                )
+            ) {
+                LibreFitButton(
+                    text = stringResource(if (runningWorkout != null) R.string.resume_workout else R.string.start_empty_workout),
+                    icon = painterResource(R.drawable.ic_play_arrow),
+                    onClick = {
+                        navigateToRoutine(runningWorkout?.id ?: 0)
+                    },
+                )
+                AnimatedVisibility(runningWorkout != null) {
+                    Column(
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(R.string.elapsed_time) + ": " + Formatter.formatTime(
+                                    runningWorkout?.timeElapsed ?: 0
+                                )
+                            )
+
+                            IconButton(
+                                enabled = runningWorkout != null,
+                                onClick = {
+                                    showConfirmDeleteRunningWorkoutDialog.value = true
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_delete),
+                                    contentDescription = stringResource(R.string.delete)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -238,7 +341,11 @@ private fun SharedTransitionScope.HomeScreenContent(
                         icon = painterResource(R.drawable.ic_play_arrow),
                         elevated = false
                     ) {
-                        navigateToRoutine(routine.id)
+                        if (runningWorkout != null) {
+                            routineIdToStart.value = routine.id
+                        } else {
+                            navigateToRoutine(routine.id)
+                        }
                     }
                 }
             }
@@ -254,6 +361,8 @@ fun HomeScreenPreview() {
         initialPage = MainScreenPages.HOME.ordinal,
         pageCount = { MainScreenPages.entries.size }
     )
+
+    val runningWorkout = remember { mutableStateOf<UiWorkout?>(UiWorkout(timeElapsed = 1000)) }
 
     LibreFitTheme(dynamicColor = false, darkTheme = true) {
 
@@ -315,6 +424,7 @@ fun HomeScreenPreview() {
                     HomeScreenContent(
                         innerPadding = innerPadding,
                         navController = rememberNavController(),
+                        runningWorkout = runningWorkout.value,
                         routines = (0..0).map { i ->
                             UiWorkout(
                                 id = i.toLong(),
@@ -322,6 +432,7 @@ fun HomeScreenPreview() {
                             )
                         },
                         navigateToRoutine = {},
+                        deleteRunningWorkout = { runningWorkout.value = null },
                         animatedVisibilityScope = this
                     )
                 }

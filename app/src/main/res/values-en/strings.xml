@@ -94,6 +94,8 @@
     <string name="language">Language</string>
     <string name="language_english">English</string>
     <string name="language_italian">Italian</string>
+    <string name="resume_workout">Resume workout</string>
+    <string name="discard_running_workout_and_select_routine_text">To start this routine, the current unsaved, ongoing workout has to be dismissed. Are you sure you want to discard it? This action cannot be undone.</string>
     <string name="past_workouts">Past workouts</string>
     <string name="coming_soon">Coming soon</string>
     <string name="nothing_to_show">Nothing to show yet</string>
@@ -334,6 +336,8 @@
     <string name="missing_dot_separator">Missing dot separator</string>
     <string name="invalid_public_key_encoding">Invalid public key\'s encoding</string>
     <string name="paste">Paste</string>
+    <string name="discard_running_workout_question">Discard running workout?</string>
+    <string name="delete_running_workout_text">Are you sure you want to discard this unsaved, ongoing workout? This action cannot be undone.</string>
 
 
 </resources>

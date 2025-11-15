@@ -42,8 +42,19 @@ interface WorkoutDao {
     /**
      * Returns a flow that emits a stream of [org.librefit.db.entity.Workout]s filtered by [state]
      */
-    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY title")
+    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY created")
     fun getWorkoutsByState(state: WorkoutState): Flow<List<Workout>>
+
+    @Transaction
+    @Query("SELECT * FROM workouts WHERE state = :state ORDER BY created")
+    fun getWorkoutsWithExercisesAndSetsByState(state: WorkoutState): Flow<List<WorkoutWithExercisesAndSets>>
+
+    /**
+     * BE CAREFUL WITH THIS FUNCTION BECAUSE IT CAN DELETE ALL USER PROGRESS.
+     * It is currently used to delete the running workout without having its id or instance
+     */
+    @Query("DELETE FROM workouts WHERE state = :state")
+    suspend fun deleteAllWorkoutsByState(state: WorkoutState)
 
     /**
      * Returns a flow that emits a stream of [Workout]s which have the requested [state]. They are
@@ -53,7 +64,7 @@ interface WorkoutDao {
     fun getWorkoutsByStateAndOrderedByCompleted(state: WorkoutState): Flow<List<Workout>>
 
     @Query("SELECT * FROM workouts WHERE id = :id")
-    fun getWorkout(id: Long): Workout
+    suspend fun getWorkout(id: Long): Workout
 
     @Transaction
     @Query("SELECT * FROM workouts WHERE id = :id")
@@ -148,7 +159,7 @@ interface WorkoutDao {
     @Transaction
     suspend fun addWorkoutWithExercisesAndSets(
         workoutWithExercisesAndSets: WorkoutWithExercisesAndSets
-    ) {
+    ): Long {
         val workout = workoutWithExercisesAndSets.workout
 
         val workoutId = if (workout.id == 0L) {
@@ -207,6 +218,7 @@ interface WorkoutDao {
                 }
             }
         }
+        return workoutId
     }
 
     /**

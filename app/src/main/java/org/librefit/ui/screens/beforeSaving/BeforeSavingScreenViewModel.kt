@@ -165,9 +165,11 @@ class BeforeSavingScreenViewModel @Inject constructor(
         workoutServiceManager.stopService()
 
         viewModelScope.launch {
+            workoutRepository.deleteAllRunningWorkouts()
+
             workoutRepository.addWorkoutWithExercisesAndSets(
                 WorkoutWithExercisesAndSets(
-                    workout = workout.value.copy(state = WorkoutState.COMPLETED).toEntity(),
+                    workout = workout.value.copy(id = 0, state = WorkoutState.COMPLETED).toEntity(),
                     exercisesWithSets = exercises.map { exercise ->
                         exercise.toEntity().copy(
                             sets = exercise.toEntity().sets.map {

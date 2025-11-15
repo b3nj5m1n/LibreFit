@@ -124,6 +124,10 @@
     <string name="start_routine">Start routine</string>
     <string name="confirm_delete">Are you certain you want to delete this? This action cannot be reversed.</string>
     <string name="start_creating_routine">Start by creating a new routine</string>
+    <string name="resume_workout">Resume workout</string>
+    <string name="discard_running_workout_question">Discard running workout?</string>
+    <string name="delete_running_workout_text">Are you sure you want to discard this unsaved, ongoing workout? This action cannot be undone.</string>
+    <string name="discard_running_workout_and_select_routine_text">To start this routine, the current unsaved, ongoing workout has to be dismissed. Are you sure you want to discard it? This action cannot be undone.</string>
 
 
     <!--Info workout screen-->
