@@ -29,13 +29,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
 import org.librefit.db.AppDatabase
 import org.librefit.db.dao.DatasetDao
 import org.librefit.db.dao.MeasurementDao
 import org.librefit.db.dao.WorkoutDao
-import org.librefit.di.qualifiers.ApplicationScope
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Module
@@ -46,21 +43,14 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext appContext: Context,
-        daoProvider: Provider<DatasetDao>,
-        @ApplicationScope applicationScope: CoroutineScope
+        callback: AppDatabase.Companion.PrepopulateCallback
     ): AppDatabase {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
             AppDatabase.NAME
         )
-            .addCallback(
-                AppDatabase.Companion.PrepopulateCallback(
-                    appContext,
-                    daoProvider,
-                    applicationScope
-                )
-            )
+            .addCallback(callback)
             .build()
     }
 

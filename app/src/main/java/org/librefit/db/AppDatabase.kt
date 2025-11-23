@@ -30,6 +30,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +45,8 @@ import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.entity.Measurement
 import org.librefit.db.entity.Set
 import org.librefit.db.entity.Workout
+import org.librefit.di.qualifiers.ApplicationScope
+import javax.inject.Inject
 import javax.inject.Provider
 
 @Database(
@@ -56,10 +59,10 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val NAME = "librefit_database"
 
-        class PrepopulateCallback(
-            private val context: Context,
+        class PrepopulateCallback @Inject constructor(
+            @param:ApplicationContext private val context: Context,
             private val daoProvider: Provider<DatasetDao>,
-            private val scope: CoroutineScope
+            @param:ApplicationScope private val scope: CoroutineScope
         ) : Callback() {
 
             override fun onCreate(db: SupportSQLiteDatabase) {
