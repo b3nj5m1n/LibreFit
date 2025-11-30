@@ -60,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -279,8 +280,8 @@ private fun SharedTransitionScope.ExercisesScreenContent(
             //Filtered list of exercises sorted by matching score
             itemsIndexed(
                 items = filteredExerciseList,
-                key = { index, exercise -> exercise.id }
-            ) { index, exercise ->
+                key = { _, exercise -> exercise.id }
+            ) { _, exercise ->
                 ItemExerciseDC(
                     modifier = Modifier.animateItem(),
                     addExercises = addExercises,
@@ -326,10 +327,13 @@ private fun SharedTransitionScope.ItemExerciseDC(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val model = remember { exercise.images.getOrNull(0) }
             AsyncImage(
-                model = "file:///android_asset/${exercise.images[0]}",
+                model = model?.let { "file:///android_asset/${it}" },
+                fallback = painterResource(R.drawable.no_image),
                 contentDescription = exercise.name,
                 contentScale = ContentScale.Crop,
+                colorFilter = if (model == null) ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant) else null,
                 modifier = Modifier
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(exercise.id),

@@ -22,7 +22,6 @@
 
 package org.librefit.ui.screens.infoExercise
 
-import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -30,6 +29,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -67,6 +68,7 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -76,9 +78,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -91,6 +93,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -116,6 +119,7 @@ import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.charts.LibreFitCartesianChart
 import org.librefit.ui.components.charts.Point
+import org.librefit.ui.components.rememberAssetAspectRatio
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiExerciseWithSets
@@ -684,27 +688,16 @@ private fun SharedTransitionScope.AlternatingImages(
     exercise: UiExerciseDC,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val context = LocalContext.current
-
-    val firstBitmap = remember {
-        BitmapFactory.decodeStream(context.assets.open(exercise.images[0]))
-    }
-    val secondBitmap = remember {
-        BitmapFactory.decodeStream(context.assets.open(exercise.images[1]))
-    }
-
-    var currentBitmap by remember { mutableStateOf(firstBitmap) }
+    var currentImageIndex by remember { mutableIntStateOf(0) }
 
     var isRunning by rememberSaveable { mutableStateOf(true) }
 
 
     LaunchedEffect(Unit) {
-        var i = 0
-        while (true) {
+        while (exercise.images.isNotEmpty()) {
             delay(1000)
             if (isRunning) {
-                i++
-                currentBitmap = if (i % 2 == 0) firstBitmap else secondBitmap
+                currentImageIndex = (currentImageIndex + 1) % exercise.images.size
             }
         }
     }
@@ -713,31 +706,45 @@ private fun SharedTransitionScope.AlternatingImages(
         modifier = Modifier.padding(15.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
-        Image(
-            bitmap = currentBitmap.asImageBitmap(),
+        val model = remember(currentImageIndex) { exercise.images.getOrNull(currentImageIndex) }
+        AsyncImage(
+            model = model?.let { "file:///android_asset/${it}" },
+            fallback = painterResource(R.drawable.no_image),
             contentDescription = exercise.name,
             contentScale = ContentScale.Crop,
+            colorFilter = if (model == null) ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant) else null,
+            filterQuality = FilterQuality.High,
             modifier = Modifier
                 .sharedElement(
                     sharedContentState = rememberSharedContentState(stringId + exercise.id),
                     animatedVisibilityScope = animatedVisibilityScope
                 )
+                .aspectRatio(
+                    ratio = rememberAssetAspectRatio(model, 16f / 9)
+                )
                 .fillMaxWidth()
-                .clip(MaterialTheme.shapes.extraLarge),
+                .clip(MaterialTheme.shapes.extraLarge)
+                .border(
+                    width = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    MaterialTheme.shapes.extraLarge
+                ),
         )
 
-        ToggleButton(
-            checked = isRunning,
-            modifier = Modifier.padding(5.dp),
-            onCheckedChange = { isRunning = it },
-            shapes = ToggleButtonDefaults.shapes()
-        ) {
-            Icon(
-                painter = painterResource(
-                    if (isRunning) R.drawable.ic_pause else R.drawable.ic_play_arrow
-                ),
-                contentDescription = stringResource(if (isRunning) R.string.pause else R.string.resume),
-            )
+        if (exercise.images.isNotEmpty()) {
+            ToggleButton(
+                checked = isRunning,
+                modifier = Modifier.padding(10.dp),
+                onCheckedChange = { isRunning = it },
+                shapes = ToggleButtonDefaults.shapes()
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if (isRunning) R.drawable.ic_pause else R.drawable.ic_play_arrow
+                    ),
+                    contentDescription = stringResource(if (isRunning) R.string.pause else R.string.resume),
+                )
+            }
         }
     }
 }
