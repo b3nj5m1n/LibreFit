@@ -91,13 +91,17 @@ fun PreferenceDialog(
                             .clip(MaterialTheme.shapes.large)
                             .padding(5.dp)
                             .clickable {
+                                onDismiss()
                                 updatePreference(preference)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = preference == currentPreference,
-                            onClick = { updatePreference(preference) }
+                            onClick = {
+                                onDismiss()
+                                updatePreference(preference)
+                            }
                         )
                         Spacer(Modifier.width(10.dp))
                         Text(stringResource(Formatter.preferenceToStringId(preference)))
