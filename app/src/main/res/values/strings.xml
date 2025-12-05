@@ -308,7 +308,7 @@
     <string name="motivation_2">I pour countless hours into designing, coding, and refining every detail to create the best possible experience. It\'s a commitment to you, the user, and to a better digital world.</string>
     <string name="motivation_3">LibreFit is only possible with your support, whether by donating or by contributing to code or translations.</string>
     <string name="motivation_4">All donators and contributors get the supporter version and a credit in the app and on GitHub.</string>
-    <string name="url_donate" translatable="false">https://librefit.org/support</string>
+    <string name="url_donate" translatable="false">https://librefit.org/donate</string>
     <string name="url_contribute" translatable="false">https://github.com/LibreFitOrg/LibreFit/main/CONTRIBUTING.md</string>
 
 

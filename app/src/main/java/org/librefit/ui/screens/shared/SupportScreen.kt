@@ -26,7 +26,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,6 +65,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.graphics.shapes.RoundedPolygon
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
@@ -88,6 +88,16 @@ fun SupportScreen(
     isSupporter: Boolean = false,
     updateIsSupporter: (Boolean) -> Unit = {}
 ) {
+    val shapes = remember {
+        listOf(
+            MaterialShapes.Pentagon,
+            MaterialShapes.Arch,
+            MaterialShapes.Gem,
+            MaterialShapes.Slanted,
+            MaterialShapes.Cookie7Sided,
+            MaterialShapes.Pill,
+        ).shuffled()
+    }
 
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = if (supporterInfo) 6 else 0
@@ -241,12 +251,13 @@ fun SupportScreen(
                         ) {
                             SupporterVersionItem(
                                 icon = painterResource(id = R.drawable.ic_material),
-                                text = stringResource(R.string.material_you)
+                                text = stringResource(R.string.material_you),
+                                shape = shapes.getOrElse(0) { MaterialShapes.Slanted }
                             )
                             SupporterVersionItem(
                                 icon = painterResource(id = R.drawable.ic_edit),
                                 text = stringResource(R.string.create_exercises),
-                                enabled = false
+                                shape = shapes.getOrElse(1) { MaterialShapes.Slanted }
                             )
                         }
                     }
@@ -413,30 +424,19 @@ fun SupportScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun FlowRowScope.SupporterVersionItem(
-    icon: Painter, text: String, enabled: Boolean = true
+private fun SupporterVersionItem(
+    icon: Painter, text: String, enabled: Boolean = true, shape: RoundedPolygon
 ) {
-    val shape = remember {
-        listOf(
-            MaterialShapes.Pentagon,
-            MaterialShapes.Arch,
-            MaterialShapes.Gem,
-            MaterialShapes.Slanted,
-            MaterialShapes.Cookie7Sided,
-            MaterialShapes.Pill,
-        ).random()
-    }
     ElevatedCard(
-        modifier = Modifier
-            .size(150.dp)
-            .weight(1f),
+        modifier = Modifier.size(150.dp),
         shape = shape.toShape(),
         enabled = enabled,
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainerHigh)
         ),
-        onClick = {}) {
+        onClick = {}
+    ) {
         Column(
             modifier = Modifier
                 .padding(20.dp)
