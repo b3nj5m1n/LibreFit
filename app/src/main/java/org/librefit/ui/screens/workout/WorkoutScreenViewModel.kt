@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -48,6 +49,7 @@ import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.UserPreferencesRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.PreviousPerformanceSet
@@ -73,7 +75,8 @@ class WorkoutScreenViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val userPreferences: UserPreferencesRepository,
     private val workoutServiceManager: WorkoutServiceManager,
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val datasetRepository: DatasetRepository
 ) : ViewModel() {
 
     private val _idSetWithRunningStopwatch = MutableStateFlow<Long?>(null)
@@ -227,6 +230,26 @@ class WorkoutScreenViewModel @Inject constructor(
                     }
                 }
             }
+        }
+
+        // Keep updated the exerciseDCs based on user changes
+        viewModelScope.launch {
+            datasetRepository.customExercises
+                .distinctUntilChanged()
+                .collect { customExercises ->
+                    _exercises.update { exercises ->
+                        exercises.mapNotNull { exercise ->
+                            if (exercise.exerciseDC.isCustomExercise) {
+                                // Fetch updated exerciseDC from DB. If it's deleted, delete also the associated exercises (by returning null in a mapNotNull)
+                                customExercises.find { it.id == exercise.exerciseDC.id }?.let {
+                                    exercise.copy(exerciseDC = it.toUi())
+                                }
+                            } else {
+                                exercise
+                            }
+                        }
+                    }
+                }
         }
     }
 

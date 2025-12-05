@@ -43,6 +43,12 @@ sealed class Route {
     object CalendarScreen
 
     @Serializable
+    data class EditExerciseScreen(
+        val id: Long = 0,
+        val exerciseDCid: String = ""
+    )
+
+    @Serializable
     data class EditWorkoutScreen(
         val workoutId: Long
     )

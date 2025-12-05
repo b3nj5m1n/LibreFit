@@ -51,6 +51,7 @@ import org.librefit.ui.screens.about.TutorialScreen
 import org.librefit.ui.screens.about.WelcomeScreen
 import org.librefit.ui.screens.beforeSaving.BeforeSavingScreen
 import org.librefit.ui.screens.calendar.CalendarScreen
+import org.librefit.ui.screens.editExercise.EditExerciseScreen
 import org.librefit.ui.screens.editWorkout.EditWorkoutScreen
 import org.librefit.ui.screens.exercises.ExercisesScreen
 import org.librefit.ui.screens.infoExercise.InfoExerciseScreen
@@ -111,6 +112,14 @@ fun NavigationHost() {
                     animatedVisibilityScope = this
                 )
             }
+            composable<Route.EditExerciseScreen> {
+                EditExerciseScreen(
+                    navController = navController,
+                    id = it.toRoute<Route.EditExerciseScreen>().id,
+                    exerciseDCid = it.toRoute<Route.EditExerciseScreen>().exerciseDCid,
+                    animatedVisibilityScope = this
+                )
+            }
             composable<Route.EditWorkoutScreen> {
                 EditWorkoutScreen(
                     sharedViewModel = sharedViewModel,
@@ -133,7 +142,6 @@ fun NavigationHost() {
             ) {
                 InfoExerciseScreen(
                     id = it.toRoute<Route.InfoExerciseScreen>().id,
-                    exerciseDC = it.toRoute<Route.InfoExerciseScreen>().exerciseDC,
                     animatedVisibilityScope = this,
                     navController = navController
                 )

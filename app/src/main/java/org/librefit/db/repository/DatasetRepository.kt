@@ -30,6 +30,7 @@ import com.squareup.moshi.Types
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -109,5 +110,23 @@ class DatasetRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    val customExercises = datasetDao.getCustomExercises()
+
+    suspend fun upsertExercise(exerciseDC: ExerciseDC) {
+        datasetDao.upsertExercise(exerciseDC)
+    }
+
+    suspend fun deleteExercise(exerciseDC: ExerciseDC) {
+        datasetDao.deleteExercise(exerciseDC)
+    }
+
+    suspend fun getExerciseFromId(id: String): UiExerciseDC? {
+        return datasetDao.getExerciseFromId(id)?.toUi()
+    }
+
+    fun getExerciseFlowFromId(id: String): Flow<UiExerciseDC?> {
+        return datasetDao.getExerciseFlowFromId(id).map { it?.toUi() }
     }
 }

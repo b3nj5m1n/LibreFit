@@ -153,6 +153,7 @@ private fun LazyListScope.successScreenContent(
                 text = when (message) {
                     SuccessMessage.ROUTINE_SAVED -> stringResource(R.string.routine_saved)
                     SuccessMessage.WORKOUT_SAVED -> stringResource(R.string.workout_saved)
+                    SuccessMessage.EXERCISE_SAVED -> stringResource(R.string.exercise_saved)
                 },
                 style = MaterialTheme.typography.displaySmallEmphasized,
                 textAlign = TextAlign.Center
@@ -248,8 +249,8 @@ private fun LazyListScope.successScreenContent(
                 }
                 LibreFitButton(
                     onClick = navigateBack,
-                    text = stringResource(R.string.home),
-                    icon = painterResource(R.drawable.ic_home),
+                    text = stringResource(R.string.label_continue),
+                    icon = painterResource(R.drawable.ic_arrow_forward),
                     elevated = false
                 )
             }

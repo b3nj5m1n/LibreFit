@@ -57,6 +57,12 @@ import kotlin.random.Random
             parentColumns = ["id"],
             childColumns = ["workoutId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = ExerciseDC::class,
+            parentColumns = ["id"],
+            childColumns = ["idExerciseDC"],
+            onDelete = ForeignKey.CASCADE // Delete exercise when its respective exerciseDC is deleted
         )
     ],
     indices = [Index(value = ["workoutId"])]

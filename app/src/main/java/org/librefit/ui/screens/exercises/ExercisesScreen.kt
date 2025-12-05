@@ -35,13 +35,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -49,11 +49,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -73,7 +71,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.exercise.Category
@@ -154,6 +151,9 @@ fun SharedTransitionScope.ExercisesScreen(
         navigateBack = navController::navigateUp,
         navigateToInfoExercise = {
             navController.navigate(Route.InfoExerciseScreen(0L, it)) { launchSingleTop = true }
+        },
+        navigateToEditExercise = {
+            navController.navigate(Route.EditExerciseScreen()) { launchSingleTop = true }
         }
     )
 
@@ -173,27 +173,9 @@ private fun SharedTransitionScope.ExercisesScreenContent(
     updateFilter: (FilterValue) -> Unit,
     actions: List<() -> Unit>,
     navigateBack: () -> Unit,
-    navigateToInfoExercise: (ExerciseDC) -> Unit
+    navigateToInfoExercise: (ExerciseDC) -> Unit,
+    navigateToEditExercise: () -> Unit
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
-
-
-    val lazyListState = rememberLazyListState()
-
-    val isAtTop by remember {
-        derivedStateOf {
-            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
-        }
-    }
-
-    val scrollToTop: () -> Unit = remember {
-        {
-            coroutineScope.launch {
-                lazyListState.animateScrollToItem(0)
-            }
-        }
-    }
 
 
     var isFilterExpanded by rememberSaveable { mutableStateOf(false) }
@@ -205,12 +187,11 @@ private fun SharedTransitionScope.ExercisesScreenContent(
         actions = actions,
         actionsDescription = listOf(stringResource(R.string.add)),
         actionsEnabled = listOf(selectedExercisesIdList.isNotEmpty()),
-        fabAction = if (isAtTop) null else scrollToTop,
-        fabIcon = painterResource(R.drawable.ic_keyboard_double_arrow_up),
+        fabAction = navigateToEditExercise,
+        fabIcon = painterResource(R.drawable.ic_add),
     ) { innerPadding ->
         LibreFitLazyColumn(
-            innerPadding = innerPadding,
-            lazyListState = lazyListState
+            innerPadding = innerPadding
         ) {
             // Search bar
             item {
@@ -333,7 +314,7 @@ private fun SharedTransitionScope.ItemExerciseDC(
                 fallback = painterResource(R.drawable.no_image),
                 contentDescription = exercise.name,
                 contentScale = ContentScale.Crop,
-                colorFilter = if (model == null) ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant) else null,
+                colorFilter = if (model == null) ColorFilter.tint(LocalContentColor.current) else null,
                 modifier = Modifier
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(exercise.id),
@@ -445,7 +426,8 @@ private fun ExercisesScreenPreview() {
                     updateFilter = { filterValue = it },
                     actions = listOf {},
                     navigateBack = {},
-                    navigateToInfoExercise = {}
+                    navigateToInfoExercise = {},
+                    navigateToEditExercise = {}
                 )
             }
         }

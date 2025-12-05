@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (c) 2025. LibreFit
+  ~
+  ~ This file is part of LibreFit
+  ~
+  ~ LibreFit is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ LibreFit is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  ~ LibreFit is subject to additional terms covering author attribution and
+  ~ trademark usage, as found in the accompanying ADDITIONAL_TERMS.md file.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <path
+        android:pathData="M647,520L160,520v-80h487L423,216l57,-56 320,320 -320,320 -57,-56 224,-224Z"
+        android:fillColor="#e3e3e3" />
+</vector>

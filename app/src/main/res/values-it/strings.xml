@@ -63,6 +63,7 @@
     <string name="creation_date">Data di creazione</string>
     <string name="label_when">Quando</string>
     <string name="select_date">Seleziona data</string>
+    <string name="edit_exercise">Modifica esercizio</string>
     <string name="start_adding_exercises">Inizia aggiungendo un esercizio alla tua routine</string>
     <string name="exit_create_routine">Sei sicuro di voler uscire? La tua routine non sarà salvata</string>
     <string name="title">Titolo</string>
@@ -246,6 +247,7 @@
     <string name="delete_routine_text">Sei sicuro di voler eliminare questa routine? Questa azione non può essere annullata</string>
     <string name="history">Storico</string>
     <string name="second_abbreviation">s</string>
+    <string name="delete_exercise_from_dataset_desc">Attenzione: tutti gli esercizi associati verrano cancellati! Questa azione non può essere annullata.</string>
     <string name="body_weight">Peso corporeo</string>
     <string name="fat_mass">Massa grassa</string>
     <string name="quit_routine_creation_question">Interrompere creazione routine?</string>
@@ -318,6 +320,7 @@
     <string name="verify_code">Verifica codice</string>
     <string name="code_desc">Incolla il codice e clicca il bottone qui sotto.</string>
     <string name="verify_companion_or_code">Verifica o l\'app companion o il codice.</string>
+    <string name="exercise_saved">Esercizio salvato</string>
     <string name="valid_companion_app_signature">App companion valida</string>
     <string name="invalid_companion_app_signature">App companion non valida</string>
     <string name="librefit_app_not_found">LibreFit non trovato</string>
@@ -337,5 +340,8 @@
     <string name="paste">Incolla</string>
     <string name="discard_running_workout_question">Scartare allenamento in corso?</string>
     <string name="delete_running_workout_text">Sei sicuro di voler scartare questo allenamento in corso? Questa azione non può essere annullata.</string>
+    <string name="create_exercise">Crea esercizio</string>
+    <string name="delete_exercise_from_dataset">Eliminare esercizio dal dataset?</string>
+    <string name="name">Nome</string>
 
 </resources>

@@ -79,6 +79,10 @@
     <string name="label_when">When</string>
     <string name="select_date">Select date</string>
 
+    <!--Edit exercise screen-->
+    <string name="create_exercise">Create exercise</string>
+    <string name="edit_exercise">Edit exercise</string>
+
 
     <!--Edit workout screen-->
     <string name="start_adding_exercises">Start by adding an exercise to your routine</string>
@@ -163,6 +167,8 @@
     <string name="session_volume">Session volume</string>
     <string name="one_rep_max">One rep max</string>
     <string name="second_abbreviation">s</string>
+    <string name="delete_exercise_from_dataset">Delete exercise from dataset?</string>
+    <string name="delete_exercise_from_dataset_desc">Warning: all associated exercises will be deleted! This action cannot be reversed.</string>
 
 
     <!--Measurement screen-->
@@ -274,6 +280,7 @@
     <string name="verify_code">Verify code</string>
     <string name="code_desc">Paste the code and click the button below.</string>
     <string name="verify_companion_or_code">Verify or the companion app or the code.</string>
+    <string name="exercise_saved">Exercise saved</string>
 
     <string name="valid_companion_app_signature">Valid companion app</string>
     <string name="invalid_companion_app_signature">Invalid companion app</string>
@@ -436,5 +443,6 @@
     <string name="others">Others</string>
     <string name="help">Help</string>
     <string name="paste">Paste</string>
+    <string name="name">Name</string>
 
 </resources>

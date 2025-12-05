@@ -24,5 +24,6 @@ package org.librefit.enums
 
 enum class SuccessMessage {
     WORKOUT_SAVED,
-    ROUTINE_SAVED
+    ROUTINE_SAVED,
+    EXERCISE_SAVED
 }

@@ -22,6 +22,7 @@
 
 package org.librefit.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -38,8 +39,11 @@ import org.librefit.db.entity.Workout
 
 @Database(
     entities = [Workout::class, Exercise::class, Set::class, Measurement::class, ExerciseDC::class],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 @TypeConverters(LocalDateTimeConverter::class, ExerciseDCConverter::class)
 abstract class AppDatabase : RoomDatabase() {

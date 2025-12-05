@@ -98,7 +98,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.librefit.R
-import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.SetMode
 import org.librefit.enums.chart.BodyweightChart
 import org.librefit.enums.chart.ExerciseChart
@@ -119,13 +118,13 @@ import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.EmptyLottie
 import org.librefit.ui.components.charts.LibreFitCartesianChart
 import org.librefit.ui.components.charts.Point
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.rememberAssetAspectRatio
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiWorkout
 import org.librefit.ui.models.UiWorkoutWithExercisesAndSets
-import org.librefit.ui.models.mappers.toUi
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatDetails
@@ -137,7 +136,6 @@ import kotlin.random.Random
 @Composable
 fun SharedTransitionScope.InfoExerciseScreen(
     id: Long,
-    exerciseDC: ExerciseDC,
     animatedVisibilityScope: AnimatedVisibilityScope,
     navController: NavHostController
 ) {
@@ -149,15 +147,18 @@ fun SharedTransitionScope.InfoExerciseScreen(
 
     val exerciseChart by viewModel.exerciseChart.collectAsStateWithLifecycle()
 
+    val uiExerciseDC by viewModel.uiExerciseDC.collectAsStateWithLifecycle()
+
     InfoExerciseScreenContent(
         id = id,
-        exerciseDC = exerciseDC.toUi(),
+        exerciseDC = uiExerciseDC,
         animatedVisibilityScope = animatedVisibilityScope,
         workoutsWithExercises = workoutsWithExercises,
         points = points,
         exerciseChart = exerciseChart,
         navController = navController,
-        updateExerciseChart = viewModel::updateExerciseChart
+        updateExerciseChart = viewModel::updateExerciseChart,
+        deleteExercise = viewModel::deleteExercise
     )
 
 }
@@ -172,15 +173,59 @@ private fun SharedTransitionScope.InfoExerciseScreenContent(
     points: List<Point>,
     exerciseChart: ExerciseChart,
     navController: NavHostController,
-    updateExerciseChart: (ExerciseChart) -> Unit
+    updateExerciseChart: (ExerciseChart) -> Unit,
+    deleteExercise: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { InfoExercisePages.entries.size })
     val coroutineScope = rememberCoroutineScope()
 
-    val stringId = remember { if (id == 0L) "" else id.toString() }
+    val stringId = remember(id) { if (id == 0L) "" else id.toString() }
+
+    val showConfirmDeleteDialog = remember { mutableStateOf(false) }
+
+    if (showConfirmDeleteDialog.value) {
+        ConfirmDialog(
+            title = stringResource(R.string.delete_exercise_from_dataset),
+            text = stringResource(R.string.delete_exercise_from_dataset_desc),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                navController.navigateUp()
+                showConfirmDeleteDialog.value = false
+                deleteExercise()
+            },
+            onDismiss = {
+                showConfirmDeleteDialog.value = false
+            }
+        )
+    }
 
     LibreFitScaffold(
-        navigateBack = navController::navigateUp
+        navigateBack = navController::navigateUp,
+        actions = if (exerciseDC.isCustomExercise) {
+            listOf(
+                {
+                    navController.navigate(
+                        Route.EditExerciseScreen(
+                            id = id,
+                            exerciseDCid = exerciseDC.id
+                        )
+                    ) {
+                        launchSingleTop = true
+                    }
+                },
+                {
+                    showConfirmDeleteDialog.value = true
+                }
+            )
+        } else {
+            emptyList()
+        },
+        actionsIcons = if (exerciseDC.isCustomExercise) {
+            listOf(painterResource(R.drawable.ic_edit), painterResource(R.drawable.ic_delete))
+        } else {
+            emptyList()
+        },
+        actionsElevated = listOf(false, false)
     ) { innerPadding ->
         BoxWithConstraints(
             modifier = Modifier.padding(innerPadding)
@@ -352,8 +397,8 @@ private fun DetailsPage(
             }
         }
 
-        item {
-            if (exercise.primaryMuscles.isNotEmpty()) {
+        if (exercise.primaryMuscles.isNotEmpty()) {
+            item {
                 HeadlineText(text = stringResource(id = R.string.primary_muscles))
                 LazyRow(
                     modifier = Modifier.padding(top = 10.dp),
@@ -392,8 +437,8 @@ private fun DetailsPage(
             }
         }
 
-        item {
-            if (exercise.secondaryMuscles.isNotEmpty()) {
+        if (exercise.secondaryMuscles.isNotEmpty()) {
+            item {
                 HeadlineText(text = stringResource(id = R.string.secondary_muscles))
                 LazyRow(
                     modifier = Modifier.padding(top = 10.dp),
@@ -809,7 +854,8 @@ private fun InfoExercisePreview() {
                     ),
                     points = emptyList(),
                     navController = rememberNavController(),
-                    updateExerciseChart = {}
+                    updateExerciseChart = {},
+                    deleteExercise = {}
                 )
             }
         }

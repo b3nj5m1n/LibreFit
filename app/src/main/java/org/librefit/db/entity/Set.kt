@@ -58,14 +58,14 @@ import kotlin.random.Random
             entity = Exercise::class,
             parentColumns = ["id"],
             childColumns = ["exerciseId"],
-            onDelete = ForeignKey.Companion.CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["exerciseId"])]
 )
 @Serializable
 data class Set(
-    @PrimaryKey(true) val id: Long = Random.Default.nextLong(),
+    @PrimaryKey(true) val id: Long = Random.nextLong(),
     val load: Double = 0.0,
     val reps: Int = 0,
     val elapsedTime: Int = 0,

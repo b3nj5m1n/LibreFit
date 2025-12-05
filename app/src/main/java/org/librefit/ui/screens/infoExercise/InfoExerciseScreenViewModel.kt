@@ -27,6 +27,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,8 +37,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.librefit.db.entity.ExerciseDC
+import org.librefit.db.repository.DatasetRepository
 import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.chart.BodyweightChart
 import org.librefit.enums.chart.ExerciseChart
@@ -50,6 +53,7 @@ import org.librefit.helpers.DataHelper
 import org.librefit.ui.components.charts.Point
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiWorkoutWithExercisesAndSets
+import org.librefit.ui.models.mappers.toEntity
 import org.librefit.ui.models.mappers.toUi
 import javax.inject.Inject
 
@@ -57,7 +61,8 @@ import javax.inject.Inject
 class InfoExerciseScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     workoutRepository: WorkoutRepository,
-    dataHelper: DataHelper
+    dataHelper: DataHelper,
+    private val datasetRepository: DatasetRepository
 ) : ViewModel() {
 
     companion object {
@@ -69,9 +74,25 @@ class InfoExerciseScreenViewModel @Inject constructor(
 
 
     private val exerciseDC: UiExerciseDC = exerciseDCjson
-        .let { it ->
+        .let {
             Json.decodeFromString<ExerciseDC>(Uri.decode(it)).toUi()
         }
+
+    // Keeps track of changes (e.g. the user edits the exercise)
+    val uiExerciseDC = datasetRepository.getExerciseFlowFromId(exerciseDC.id)
+        .map { it ?: exerciseDC }
+        .distinctUntilChanged()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = exerciseDC
+        )
+
+    fun deleteExercise() {
+        viewModelScope.launch(Dispatchers.IO) {
+            datasetRepository.deleteExercise(uiExerciseDC.value.toEntity())
+        }
+    }
 
     val workoutsWithExercises: StateFlow<List<UiWorkoutWithExercisesAndSets>> = workoutRepository
         .getCompletedWorkoutsWithExercisesWithIdExerciseDC(exerciseDC.id)
