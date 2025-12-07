@@ -293,6 +293,7 @@
     <string name="motivation_2">Dedico innumerevoli ore nella progettazione, programmazione, e nella rifinitura di ogni dettaglio per creare la migliore esperienza possibile. È un impegno nei tuoi confronti, l\'utente, e nei confronti di un mondo digitale migliore.</string>
     <string name="motivation_3">LibreFit è possibile solo grazie al tuo supporto, sia donando che contribuendo al codice o alle traduzioni.</string>
     <string name="help">Aiuto</string>
+    <string name="insert_code">Inserisci codice</string>
     <string name="step">Passo</string>
     <string name="tutorial">Tutorial</string>
     <string name="tut_create_routine_headline">Le routine sono dei piani d\'allenamento riutilizzabili. Programma una sola volta i tuoi esercizi, serie e ripetizioni, così da poter iniziare in qualsiasi momento un allenamento dalla tua routine e tracciare facilmente la tua performance e progresso nel tempo.</string>

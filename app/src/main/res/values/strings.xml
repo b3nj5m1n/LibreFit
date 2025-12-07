@@ -310,6 +310,7 @@
     <string name="motivation_4">All donators and contributors get the supporter version and a credit in the app and on GitHub.</string>
     <string name="url_donate" translatable="false">https://librefit.org/donate</string>
     <string name="url_contribute" translatable="false">https://github.com/LibreFitOrg/LibreFit/main/CONTRIBUTING.md</string>
+    <string name="insert_code">Insert code</string>
 
 
     <!-- Tutorial screen-->

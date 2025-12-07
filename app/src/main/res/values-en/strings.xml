@@ -294,6 +294,7 @@
     <string name="motivation_2">I pour countless hours into designing, coding, and refining every detail to create the best possible experience. It\'s a commitment to you, the user, and to a better digital world.</string>
     <string name="motivation_3">LibreFit is only possible with your support, whether by donating or by contributing to code or translations.</string>
     <string name="help">Help</string>
+    <string name="insert_code">Insert code</string>
     <string name="step">Step</string>
     <string name="tutorial">Tutorial</string>
     <string name="tut_create_routine_headline">Routines are your reusable workout templates. Plan your exercises, sets, and reps once, then start a workout from your routine anytime to easily track your performance and progress over time.</string>

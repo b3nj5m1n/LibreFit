@@ -24,6 +24,7 @@ package org.librefit.ui.screens.shared
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -76,6 +77,7 @@ import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
+import org.librefit.ui.components.animations.CongratsLottie
 import org.librefit.ui.components.animations.PulsingHeartLottie
 import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
@@ -278,11 +280,16 @@ fun SupportScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             if (isSupporterState) {
-                                Text(
-                                    text = stringResource(R.string.thank_supporter),
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    textAlign = TextAlign.Center
-                                )
+                                Box(
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.thank_supporter),
+                                        style = MaterialTheme.typography.displaySmall,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    CongratsLottie()
+                                }
                             } else {
 //                                Text(
 //                                    text = stringResource(R.string.verify_companion_or_code),
@@ -358,7 +365,7 @@ fun SupportScreen(
                                 OutlinedTextField(
                                     value = code,
                                     label = {
-                                        Text("Insert code")
+                                        Text(stringResource(R.string.insert_code))
                                     },
                                     onValueChange = {
                                         verificationCodeStatus = null
