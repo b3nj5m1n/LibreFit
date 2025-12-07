@@ -33,6 +33,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,6 +77,7 @@ import org.librefit.R
  * must be passed in order to show the FAB.
  * @param fabDescription An optional string that provides a description of the [fabIcon] and [fabAction]
  * for accessibility purposes. Read mode at [Icon] and [FloatingActionButton]
+ * @param fabText If this string is passed, the fab becomes [ExtendedFloatingActionButton].
  * @param bottomBar The bottom bar of the scaffold. By default there's no bottom bar.
  * @param content A composable lambda that defines the main content of the screen.
  */
@@ -92,6 +94,7 @@ fun LibreFitScaffold(
     fabAction: (() -> Unit)? = null,
     fabIcon: Painter? = null,
     fabDescription: String? = null,
+    fabText: String? = null,
     bottomBar: @Composable (() -> Unit)? = null,
     content: @Composable ((PaddingValues) -> Unit),
 ) {
@@ -197,12 +200,20 @@ fun LibreFitScaffold(
                     enter = slideInHorizontally(initialOffsetX = { it * 2 }),
                     exit = slideOutHorizontally(targetOffsetX = { it * 2 })
                 ) {
-                    FloatingActionButton(
-                        onClick = { fabAction?.invoke() }
-                    ) {
-                        Icon(
-                            painter = fabIcon,
-                            contentDescription = fabDescription
+                    if (fabText == null) {
+                        FloatingActionButton(
+                            onClick = { fabAction?.invoke() },
+                        ) {
+                            Icon(
+                                painter = fabIcon,
+                                contentDescription = fabDescription
+                            )
+                        }
+                    } else {
+                        ExtendedFloatingActionButton(
+                            text = { Text(fabText) },
+                            icon = { Icon(fabIcon, contentDescription = fabDescription) },
+                            onClick = { fabAction?.invoke() }
                         )
                     }
                 }

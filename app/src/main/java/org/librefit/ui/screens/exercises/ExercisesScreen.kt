@@ -192,6 +192,7 @@ private fun SharedTransitionScope.ExercisesScreenContent(
         actionsDescription = listOf(stringResource(R.string.add)),
         actionsEnabled = listOf(selectedExercisesIdList.isNotEmpty()),
         fabAction = navigateToEditExercise,
+        fabText = stringResource(R.string.create_exercise),
         fabIcon = painterResource(R.drawable.ic_add),
     ) { innerPadding ->
         LibreFitLazyColumn(
