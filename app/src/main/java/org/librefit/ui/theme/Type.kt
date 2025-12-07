@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.tooling.preview.Preview
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 
@@ -147,7 +148,7 @@ val AppTypography = Typography(
 @Composable
 private fun TypographyPreview() {
     val showOnlyEmphasized: Boolean? = true
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitScaffold { innerPadding ->
             LibreFitLazyColumn(innerPadding = innerPadding) {
                 if (showOnlyEmphasized != true) {

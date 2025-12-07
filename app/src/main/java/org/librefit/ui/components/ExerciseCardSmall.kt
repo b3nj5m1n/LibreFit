@@ -65,6 +65,7 @@ import coil3.compose.AsyncImage
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
 import org.librefit.enums.SetMode
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiExerciseWithSets
@@ -260,7 +261,7 @@ fun SharedTransitionScope.ExerciseCardSmall(
 @Preview
 @Composable
 private fun ExerciseCardSmallPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 ExerciseCardSmall(

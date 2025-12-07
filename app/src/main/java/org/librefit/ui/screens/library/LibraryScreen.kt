@@ -50,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.enums.pages.MainScreenPages
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.GetAppNameInAnnotatedBuilder
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.morphShape.AnimatedMorphShapes
@@ -132,7 +133,7 @@ private fun LibraryScreenPreview() {
         initialPage = MainScreenPages.LIBRARY.ordinal,
         pageCount = { MainScreenPages.entries.size }
     )
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitScaffold(
             title = buildAnnotatedString {
                 GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)

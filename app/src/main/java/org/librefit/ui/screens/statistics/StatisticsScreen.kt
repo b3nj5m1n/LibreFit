@@ -39,6 +39,7 @@ import org.librefit.R
 import org.librefit.enums.InfoMode
 import org.librefit.enums.chart.StatisticsChart
 import org.librefit.enums.exercise.Muscle
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
@@ -190,7 +191,7 @@ fun StatisticsScreenPreview() {
             )
         )
 
-        LibreFitTheme(dynamicColor = false, darkTheme = true) {
+        LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
             StatisticsScreenContent(
                 navController = rememberNavController(),
                 muscleDistributionPoints = muscleDistributionPoints,

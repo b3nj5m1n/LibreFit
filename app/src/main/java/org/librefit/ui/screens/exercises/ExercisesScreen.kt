@@ -76,6 +76,7 @@ import org.librefit.db.entity.ExerciseDC
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.enums.exercise.FilterValue
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
@@ -380,7 +381,7 @@ private fun ExercisesScreenPreview() {
 
     var filterValue by remember { mutableStateOf(FilterValue()) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 ExercisesScreenContent(

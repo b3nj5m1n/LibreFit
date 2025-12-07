@@ -81,6 +81,7 @@ import org.librefit.enums.exercise.Force
 import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
@@ -414,7 +415,7 @@ private fun EditExerciseScreenContentPreview() {
     val e = ExerciseDC(
         primaryMuscles = listOf(Muscle.FOREARMS, Muscle.ABDOMINALS)
     )
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(true) {
                 EditExerciseScreenContent(

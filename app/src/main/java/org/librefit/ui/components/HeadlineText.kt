@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.enums.InfoMode
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet
 import org.librefit.ui.theme.LibreFitTheme
 
@@ -100,7 +101,7 @@ fun HeadlineText(
 @Preview
 @Composable
 private fun HeadlineTextPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitScaffold(title = AnnotatedString("HeadlineText showcase")) { innerPadding ->
             LazyColumn(
                 contentPadding = innerPadding,

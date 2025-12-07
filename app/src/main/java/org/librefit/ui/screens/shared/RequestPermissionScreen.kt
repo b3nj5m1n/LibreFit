@@ -55,6 +55,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
@@ -253,7 +254,7 @@ private fun RequestPermissionsScreenContent(
 @Composable
 private fun RequestPermissionsScreenPreview() {
     val hasNotificationPermission = remember { mutableStateOf(false) }
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         RequestPermissionsScreenContent(
             navController = rememberNavController(),
             requestPermissionNextTime = Random.nextBoolean(),

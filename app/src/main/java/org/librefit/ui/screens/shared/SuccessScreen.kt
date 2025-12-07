@@ -73,6 +73,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.SuccessMessage
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.GetAppNameInAnnotatedBuilder
 import org.librefit.ui.components.LibreFitButton
@@ -261,7 +262,7 @@ private fun LazyListScope.successScreenContent(
 @Preview
 @Composable
 private fun SuccessScreenPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SuccessScreen(SuccessMessage.WORKOUT_SAVED, rememberNavController())
     }
 }

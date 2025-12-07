@@ -70,6 +70,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
 import org.librefit.enums.supporter.SupporterVerificationResult
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.GetAppNameInAnnotatedBuilder
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitButton
@@ -483,7 +484,7 @@ private fun supporterVerificationResultToStringId(supporterVerificationResult: S
 private fun SupportScreenPreview() {
     var isSupporter by remember { mutableStateOf(false) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SupportScreen(
             navHostController = rememberNavController(),
             supporterInfo = true,

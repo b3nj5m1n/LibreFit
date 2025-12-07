@@ -61,6 +61,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
 import org.librefit.enums.chart.WorkoutChart
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.ExerciseCardSmall
 import org.librefit.ui.components.HeadlineText
@@ -411,7 +412,7 @@ private fun SharedTransitionScope.InfoWorkoutScreenContent(
 private fun InfoRoutineScreenPreview() {
     var routine by remember { mutableStateOf(UiWorkout(title = "Title routine")) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 InfoWorkoutScreenContent(

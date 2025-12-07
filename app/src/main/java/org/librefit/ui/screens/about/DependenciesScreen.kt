@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.dialogs.UrlActionDialog
 import org.librefit.ui.theme.LibreFitTheme
@@ -63,7 +64,7 @@ fun DependenciesScreen(navigateBack: () -> Unit) {
 @Preview
 @Composable
 private fun LibrariesScreenPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         DependenciesScreen { }
     }
 }

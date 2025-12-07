@@ -75,6 +75,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.librefit.R
 import org.librefit.enums.pages.MainScreenPages
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.GetAppNameInAnnotatedBuilder
 import org.librefit.ui.components.HeadlineText
@@ -364,7 +365,7 @@ fun HomeScreenPreview() {
 
     val runningWorkout = remember { mutableStateOf<UiWorkout?>(UiWorkout(timeElapsed = 1000)) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
 
         LibreFitScaffold(
             title = buildAnnotatedString {

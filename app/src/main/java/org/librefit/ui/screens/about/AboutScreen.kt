@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.AppNameText
 import org.librefit.ui.components.HeadlineText
@@ -330,7 +331,7 @@ private fun AboutItem(
 @Preview
 @Composable
 private fun AboutScreenPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         AboutScreen(rememberNavController())
     }
 }

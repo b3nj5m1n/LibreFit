@@ -110,6 +110,7 @@ import org.librefit.enums.chart.StatisticsChart
 import org.librefit.enums.chart.TimeChart
 import org.librefit.enums.chart.WeightedBodyweightChart
 import org.librefit.enums.chart.WorkoutChart
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.theme.LibreFitTheme
@@ -500,7 +501,7 @@ private fun LibreFitCartesianChartPreview() {
     val legendList =
         listOf("First item", "Second item", "Third item", "Fourth item").take(numRandomEntries + 1)
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitCartesianChart(
             format = DecimalFormat("#.# %"),
             points = (0..10).map {

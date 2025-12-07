@@ -86,6 +86,7 @@ import org.librefit.R
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.enums.pages.MainScreenPages
 import org.librefit.enums.pages.TutorialContent
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.GetAppNameInAnnotatedBuilder
 import org.librefit.ui.components.HeadlineText
@@ -499,7 +500,7 @@ private fun ProfileScreenPreview() {
         pageCount = { MainScreenPages.entries.size }
     )
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitScaffold(
             title = buildAnnotatedString {
                 GetAppNameInAnnotatedBuilder(MaterialTheme.typography.titleLargeEmphasized)

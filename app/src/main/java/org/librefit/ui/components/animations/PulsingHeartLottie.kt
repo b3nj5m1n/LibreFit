@@ -32,6 +32,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
@@ -53,7 +54,7 @@ fun PulsingHeartLottie(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun DonationLottiePreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         PulsingHeartLottie()
     }
 }

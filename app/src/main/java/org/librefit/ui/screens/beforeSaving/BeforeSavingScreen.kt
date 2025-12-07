@@ -67,6 +67,7 @@ import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
 import org.librefit.enums.InfoMode
 import org.librefit.enums.SuccessMessage
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitButton
@@ -467,7 +468,7 @@ private fun BeforeSavingScreenPreview() {
 
     val volume = e.sumOf { eWs -> eWs.sets.sumOf { it.load * it.reps } }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 BeforeSavingScreenContent(

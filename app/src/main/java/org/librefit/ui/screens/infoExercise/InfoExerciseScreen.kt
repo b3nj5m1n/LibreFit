@@ -111,6 +111,7 @@ import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
 import org.librefit.enums.pages.InfoExercisePages
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -798,7 +799,7 @@ private fun SharedTransitionScope.AlternatingImages(
 @Preview
 @Composable
 private fun InfoExercisePreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 InfoExerciseScreenContent(

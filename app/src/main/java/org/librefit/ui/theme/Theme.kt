@@ -38,6 +38,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import org.librefit.enums.userPreferences.ThemeMode
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -283,16 +284,21 @@ private val darkScheme = darkColorScheme(
 @Composable
 fun LibreFitTheme(
     dynamicColor: Boolean,
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
     content: @Composable () -> Unit
 ) {
+    val useDarkTheme = when (themeMode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
 
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     val colors = when {
-        useDynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        useDynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-        darkTheme -> darkScheme
+        useDynamicColor && useDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
+        useDynamicColor && !useDarkTheme -> dynamicLightColorScheme(LocalContext.current)
+        useDarkTheme -> darkScheme
         else -> lightScheme
     }
 
@@ -309,7 +315,7 @@ fun LibreFitTheme(
 
                 //Changes status color bar according to the theme mode
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-                    !darkTheme
+                    !useDarkTheme
 
             }
         }

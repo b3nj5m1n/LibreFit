@@ -31,7 +31,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -108,11 +107,7 @@ class ErrorActivity : ComponentActivity() {
         setContent {
             LibreFitTheme(
                 dynamicColor = dynamicColor,
-                darkTheme = when (theme) {
-                    ThemeMode.DARK -> true
-                    ThemeMode.LIGHT -> false
-                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                }
+                themeMode = theme
             )  {
                 ErrorScreen(
                     stackTrace = stackTrace,
@@ -263,7 +258,7 @@ private fun ErrorScreen(
 @Preview
 @Composable
 private fun ErrorScreenPreview() {
-    LibreFitTheme(dynamicColor = false,darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         ErrorScreen(
             stackTrace = if (Random.nextBoolean())
                 "This is a very long long long long long stack trace\n".repeat(50) else "",

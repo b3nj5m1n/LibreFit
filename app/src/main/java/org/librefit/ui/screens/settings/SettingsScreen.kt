@@ -299,7 +299,7 @@ fun SettingsScreenPreview() {
 
     val theme = ThemeMode.entries.random()
 
-    LibreFitTheme(dynamicColor = materialModeOn, darkTheme = theme != ThemeMode.LIGHT) {
+    LibreFitTheme(dynamicColor = materialModeOn, themeMode = theme) {
         SettingsScreenContent(
             navController = rememberNavController(),
             selectedTheme = theme,

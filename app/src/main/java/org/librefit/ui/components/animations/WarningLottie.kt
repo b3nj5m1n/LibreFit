@@ -30,6 +30,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
@@ -50,7 +51,7 @@ fun WarningLottie() {
 @Preview
 @Composable
 private fun WarningLottiePreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         WarningLottie()
     }
 }

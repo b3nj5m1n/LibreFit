@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
 import org.librefit.enums.InfoMode
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.MarkdownText
 import org.librefit.ui.components.animations.AlarmLottie
 import org.librefit.ui.components.animations.StatsLottie
@@ -119,7 +120,7 @@ fun InfoModalBottomSheet(
 @Preview
 @Composable
 private fun InfoModalBottomSheetPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         InfoModalBottomSheet(InfoMode.EXERCISES_DISTRIBUTION) { }
     }
 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.MarkdownText
@@ -92,7 +93,7 @@ fun LicenseScreen(navigateBack: () -> Unit) {
 @Preview
 @Composable
 private fun LicenseScreenPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LicenseScreen { }
     }
 }

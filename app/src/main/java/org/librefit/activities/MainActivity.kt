@@ -26,13 +26,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import org.librefit.db.repository.UserPreferencesRepository
-import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.NavigationHost
 import org.librefit.services.WorkoutServiceManager
 import org.librefit.ui.theme.LibreFitTheme
@@ -60,11 +58,7 @@ class MainActivity : AppCompatActivity() {
 
             LibreFitTheme(
                 dynamicColor = dynamicColor,
-                darkTheme = when (theme) {
-                    ThemeMode.DARK -> true
-                    ThemeMode.LIGHT -> false
-                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                }
+                themeMode = theme
             ) {
                 NavigationHost()
             }

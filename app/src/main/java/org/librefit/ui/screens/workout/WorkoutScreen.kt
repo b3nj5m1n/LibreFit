@@ -90,6 +90,7 @@ import org.librefit.enums.PreviousPerformanceSet
 import org.librefit.enums.SetMode
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.nav.Route
 import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -522,7 +523,7 @@ private fun WorkoutScreenPreview() {
         )
     )
     val workoutProgress = e.sumOf { it.sets.count { s -> s.completed } } to e.sumOf { it.sets.size }
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         SharedTransitionLayout {
             AnimatedVisibility(true) {
                 LibreFitScaffold(

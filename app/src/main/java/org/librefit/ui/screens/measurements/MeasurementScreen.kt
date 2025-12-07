@@ -80,6 +80,7 @@ import org.librefit.R
 import org.librefit.db.entity.Measurement
 import org.librefit.enums.MeasurementCardState
 import org.librefit.enums.chart.MeasurementChart
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.components.HeadlineText
 import org.librefit.ui.components.LibreFitButton
 import org.librefit.ui.components.LibreFitLazyColumn
@@ -592,7 +593,7 @@ private fun MeasurementScreenPreview() {
 
     val idMeasurement = remember { mutableLongStateOf(0L) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         MeasurementScreenContent(
             measurements = measurements,
             listChartData = measurements.map {

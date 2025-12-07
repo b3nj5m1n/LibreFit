@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.theme.LibreFitTheme
 import kotlin.random.Random
 
@@ -103,7 +104,7 @@ fun LibreFitButton(
 @Preview
 @Composable
 private fun LibreFitButtonPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         LibreFitButton(
             text = stringResource(R.string.start_routine),
             icon = painterResource(R.drawable.ic_play_arrow),

@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import kotlinx.coroutines.launch
 import org.librefit.R
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.theme.LibreFitTheme
 
 /**
@@ -99,7 +100,7 @@ fun UrlActionDialog(
 @Preview
 @Composable
 private fun UrlActionDialogPreview() {
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         UrlActionDialog("https://example.com") {}
     }
 }

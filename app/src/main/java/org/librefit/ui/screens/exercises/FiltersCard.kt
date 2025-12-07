@@ -69,6 +69,7 @@ import org.librefit.enums.exercise.Force
 import org.librefit.enums.exercise.Level
 import org.librefit.enums.exercise.Mechanic
 import org.librefit.enums.exercise.Muscle
+import org.librefit.enums.userPreferences.ThemeMode
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter.exerciseEnumToStringId
 import kotlin.reflect.KClass
@@ -265,7 +266,7 @@ fun FiltersCardPreview() {
 
     var isFilterExpanded by remember { mutableStateOf(true) }
 
-    LibreFitTheme(dynamicColor = false, darkTheme = true) {
+    LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {
         FiltersCard(
             isFilterExpanded = isFilterExpanded,
             updateCardExpansion = { isFilterExpanded = !isFilterExpanded },
