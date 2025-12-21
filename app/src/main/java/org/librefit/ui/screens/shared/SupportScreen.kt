@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025. LibreFit
+ * Copyright (c) 2025. LibreFit Team
  *
  * This file is part of LibreFit
  *
@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  *
  * LibreFit is subject to additional terms covering author attribution and
- * trademark usage, as found in the accompanying ADDITIONAL_TERMS.md file.
+ * trademark usage, as found in the accompanying ADDITIONAL_TERMS.md and TRADEMARK_POLICY.md.
  */
 
 package org.librefit.ui.screens.shared
@@ -47,7 +47,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -440,8 +439,8 @@ private fun SupporterVersionItem(
         shape = shape.toShape(),
         enabled = enabled,
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            contentColor = contentColorFor(MaterialTheme.colorScheme.surfaceContainerHigh)
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
         onClick = {}
     ) {
