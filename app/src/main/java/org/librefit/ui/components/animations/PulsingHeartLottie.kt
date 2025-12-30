@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025. LibreFit
+ * Copyright (c) 2025. LibreFit Team
  *
  * This file is part of LibreFit
  *
@@ -17,7 +17,7 @@
  * along with LibreFit.  If not, see <https://www.gnu.org/licenses/>.
  *
  * LibreFit is subject to additional terms covering author attribution and
- * trademark usage, as found in the accompanying ADDITIONAL_TERMS.md file.
+ * trademark usage, as found in the accompanying ADDITIONAL_TERMS.md and TRADEMARK_POLICY.md.
  */
 
 package org.librefit.ui.components.animations
@@ -37,7 +37,7 @@ import org.librefit.ui.theme.LibreFitTheme
 
 @Composable
 fun PulsingHeartLottie(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pulsing_heart))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pulsing_heart_lottie))
 
     val progress by animateLottieCompositionAsState(
         composition = composition,
