@@ -115,7 +115,7 @@ fun LibreFitScaffold(
                         val haptic = LocalHapticFeedback.current
 
                         val interactionSources =
-                            remember { List(actions.size) { MutableInteractionSource() } }
+                            remember(actions.size) { List(actions.size) { MutableInteractionSource() } }
                         ButtonGroup(
                             overflowIndicator = {},
                         ) {
@@ -132,13 +132,17 @@ fun LibreFitScaffold(
                                     buttonGroupContent = {
                                         if (icon != null) {
                                             IconButton(
-                                                modifier = Modifier.animateWidth(interactionSources[index]),
+                                                modifier = interactionSources.getOrNull(index)
+                                                    ?.let { Modifier.animateWidth(it) }
+                                                    ?: Modifier,
                                                 onClick = {
                                                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                                     action()
                                                 },
                                                 shapes = IconButtonDefaults.shapes(),
-                                                interactionSource = interactionSources[index],
+                                                interactionSource = interactionSources.getOrNull(
+                                                    index
+                                                ),
                                                 enabled = enabled,
                                                 colors = if (elevated)
                                                     IconButtonDefaults.filledIconButtonColors() else
@@ -152,13 +156,17 @@ fun LibreFitScaffold(
                                         }
                                         if (description != null) {
                                             Button(
-                                                modifier = Modifier.animateWidth(interactionSources[index]),
+                                                modifier = interactionSources.getOrNull(index)
+                                                    ?.let { Modifier.animateWidth(it) }
+                                                    ?: Modifier,
                                                 onClick = {
                                                     haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                                     action()
                                                 },
                                                 shapes = ButtonDefaults.shapes(),
-                                                interactionSource = interactionSources[index],
+                                                interactionSource = interactionSources.getOrNull(
+                                                    index
+                                                ),
                                                 enabled = enabled,
                                                 colors = if (elevated)
                                                     ButtonDefaults.buttonColors() else
