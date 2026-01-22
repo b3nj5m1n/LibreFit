@@ -312,7 +312,7 @@ private fun SharedTransitionScope.EditExerciseScreenContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RowScope.EditExercisePropertyItem(
     label: String,
@@ -343,7 +343,7 @@ private fun RowScope.EditExercisePropertyItem(
                 .focusable()
         ) {
             OutlinedTextField(
-                shape = MaterialTheme.shapes.large,
+                shape = MaterialTheme.shapes.largeIncreased,
                 readOnly = true,
                 value = if (values.isEmpty() || values.all { it == null }) {
                     ""
