@@ -6,12 +6,12 @@
  * see the ADDITIONAL_TERMS.md and TRADEMARK_POLICY.md files in the project root.
  */
 
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.JavaVersion.VERSION_17
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
@@ -19,7 +19,7 @@ plugins {
     alias(libs.plugins.about.libraries)
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "org.librefit"
     compileSdk = 36
 
@@ -50,6 +50,16 @@ android {
         debug {
             applicationIdSuffix = ".debug"
         }
+        sourceSets {
+            named("release") {
+                kotlin.directories += "build/generated/ksp/release/kotlin"
+                kotlin.directories += "build/generated/ksp/release/java"
+            }
+            named("debug") {
+                kotlin.directories += "build/generated/ksp/debug/kotlin"
+                kotlin.directories += "build/generated/ksp/debug/java"
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = VERSION_17
@@ -71,7 +81,7 @@ ksp {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 
