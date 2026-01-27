@@ -335,5 +335,6 @@
     <string name="name">Nome</string>
     <string name="stick_status_bar">Fissa barra di stato</string>
     <string name="stick_status_bar_desc">La barra di stato dell\'allenamento in corso sarà fissa in cima allo schermo</string>
+    <string name="edit">Modifica</string>
 
 </resources>

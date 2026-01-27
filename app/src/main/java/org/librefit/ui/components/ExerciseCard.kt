@@ -43,6 +43,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -60,6 +61,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -243,42 +245,64 @@ fun SharedTransitionScope.ExerciseCard(
 
             //Rest timer slider
             var restTime by remember { mutableIntStateOf(exerciseWithSets.exercise.restTime) }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    // Read more at InfoModalBottomSheet
-                    onClick = { showInfo(InfoMode.REST_TIMER) }
+            var showSlider by rememberSaveable { mutableStateOf(false) }
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_info),
-                        contentDescription = stringResource(R.string.info)
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            // Read more at InfoModalBottomSheet
+                            onClick = { showInfo(InfoMode.REST_TIMER) }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_info),
+                                contentDescription = stringResource(R.string.info)
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.rest_time) + ": " + restTime
+                                    + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
+                    }
+                    IconToggleButton(
+                        checked = showSlider,
+                        onCheckedChange = {
+                            showSlider = it
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(if (showSlider) R.drawable.ic_check else R.drawable.ic_edit),
+                            contentDescription = stringResource(if (showSlider) R.string.save else R.string.edit)
+                        )
+                    }
+                }
+                AnimatedVisibility(visible = showSlider) {
+                    val haptic = LocalHapticFeedback.current
+                    Slider(
+                        value = restTime.toFloat(),
+                        onValueChange = {
+                            // By dividing first and then multiplying by 5, it rounds to the closest number multiple of 5
+                            restTime = (it / 5).roundToInt() * 5
+                            haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                        },
+                        onValueChangeFinished = {
+                            updateExerciseRestTime(
+                                restTime,
+                                exerciseWithSets.exercise.id
+                            )
+                        },
+                        valueRange = 0f..300f,
+                        // 19 steps means values multiple of 5
+                        steps = 19
                     )
                 }
-                Text(stringResource(R.string.rest_time) + ": " + restTime
-                        + " " + stringResource(R.string.seconds).replaceFirstChar { it.lowercase() })
             }
 
-            val haptic = LocalHapticFeedback.current
-            Slider(
-                value = restTime.toFloat(),
-                onValueChange = {
-                    // By dividing first and then multiplying by 5, it rounds to the closest number multiple of 5
-                    restTime = (it / 5).roundToInt() * 5
-                    haptic.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
-                },
-                onValueChangeFinished = {
-                    updateExerciseRestTime(
-                        restTime,
-                        exerciseWithSets.exercise.id
-                    )
-                },
-                valueRange = 0f..300f,
-                // 19 steps means values multiple of 5
-                steps = 19
-            )
 
             HorizontalDivider()
 

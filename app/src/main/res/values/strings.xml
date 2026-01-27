@@ -436,5 +436,6 @@
     <string name="help">Help</string>
     <string name="paste">Paste</string>
     <string name="name">Name</string>
+    <string name="edit">Edit</string>
 
 </resources>
