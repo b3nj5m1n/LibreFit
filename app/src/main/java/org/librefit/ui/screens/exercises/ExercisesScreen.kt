@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -307,6 +308,7 @@ private fun SharedTransitionScope.ItemExerciseDC(
                 contentDescription = exercise.name,
                 contentScale = ContentScale.Crop,
                 colorFilter = if (model == null) ColorFilter.tint(LocalContentColor.current) else null,
+                filterQuality = FilterQuality.High,
                 modifier = Modifier
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(exercise.id),
