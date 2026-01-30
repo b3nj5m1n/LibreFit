@@ -64,6 +64,7 @@
     <string name="no_exercise_found">Nessun esercizio trovato</string>
     <string name="filters">Filtri</string>
     <string name="warning">Attenzione</string>
+    <string name="delete_exercise_question">Eliminare esercizio?</string>
     <string name="appearance">Aspetto</string>
     <string name="theme">Tema</string>
     <string name="follow_system">Sistema</string>
@@ -261,6 +262,7 @@
     <string name="month">Mese</string>
     <string name="months">Mesi</string>
     <string name="year">Anno</string>
+    <string name="warning_delete_exercise_from_routine">Attenzione! Eliminare esercizi da routine esistenti causerà lo scollegamento degli esercizi presenti negli allenamenti derivati dalla routine.</string>
     <string name="application_encountered_error">L\'applicazione ha riscontrato un errore imprevisto</string>
     <string name="restart_app">Riavvia</string>
     <string name="report_github">Segnala su GitHub</string>

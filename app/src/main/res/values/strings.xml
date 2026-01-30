@@ -87,6 +87,7 @@
     <string name="edit_routine">Edit routine</string>
     <string name="edit_workout">Edit workout</string>
     <string name="quit_routine_creation_question">Quit routine creation?</string>
+    <string name="warning_delete_exercise_from_routine">Warning! Deleting exercises from existing routines will unlink all exercises of derivative workouts.</string>
 
 
     <!-- Error screen-->
@@ -210,6 +211,7 @@
     <string name="add_to_empty_workout">Start by adding an exercise to your workout</string>
     <string name="elapsed_time">Elapsed time</string>
     <string name="new_workout">New workout</string>
+    <string name="delete_exercise_question">Delete exercise?</string>
 
 
     <!--Settings screen-->

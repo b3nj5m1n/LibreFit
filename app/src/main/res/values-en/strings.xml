@@ -66,6 +66,7 @@
     <string name="no_exercise_found">No exercise found</string>
     <string name="filters">Filters</string>
     <string name="warning">Warning</string>
+    <string name="delete_exercise_question">Delete exercise?</string>
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
     <string name="follow_system">System</string>
@@ -261,6 +262,7 @@
     <string name="month">Month</string>
     <string name="months">Months</string>
     <string name="year">Year</string>
+    <string name="warning_delete_exercise_from_routine">Warning! Deleting exercises from existing routines will unlink all exercises of derivative workouts.</string>
     <string name="application_encountered_error">The application has encountered an unexpected error</string>
     <string name="restart_app">Restart</string>
     <string name="report_github">Report on GitHub</string>

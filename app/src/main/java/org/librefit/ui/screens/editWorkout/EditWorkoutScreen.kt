@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +80,23 @@ fun SharedTransitionScope.EditWorkoutScreen(
         sharedViewModel.getSelectedExercisesList().forEach(viewModel::addExerciseWithSets)
     }
 
+    val idExerciseToDelete = rememberSaveable { mutableStateOf<Long?>(null) }
+
+    idExerciseToDelete.value?.let {
+        ConfirmDialog(
+            title = stringResource(R.string.delete_exercise_question),
+            text = stringResource(if (viewModel.getTypeOfEdit() == true) R.string.warning_delete_exercise_from_routine else R.string.confirm_delete),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                viewModel.deleteExercise(it)
+                idExerciseToDelete.value = null
+            },
+            onDismiss = {
+                idExerciseToDelete.value = null
+            }
+        )
+    }
+
     EditWorkoutScreenContent(
         navController = navController,
         animatedVisibilityScope = animatedVisibilityScope,
@@ -95,7 +113,9 @@ fun SharedTransitionScope.EditWorkoutScreen(
         updateSetCompleted = viewModel::updateSetCompleted,
         deleteSet = viewModel::deleteSet,
         addSetToExercise = viewModel::addSetToExercise,
-        deleteExercise = viewModel::deleteExercise,
+        deleteExercise = { id ->
+            idExerciseToDelete.value = id
+        },
         updateExerciseNotes = viewModel::updateExerciseNotes,
         updateExerciseRestTime = viewModel::updateExerciseRestTime,
         updateExerciseSetMode = viewModel::updateExerciseSetMode,

@@ -52,6 +52,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -82,6 +83,7 @@ import org.librefit.ui.components.ExerciseCard
 import org.librefit.ui.components.LibreFitLazyColumn
 import org.librefit.ui.components.LibreFitScaffold
 import org.librefit.ui.components.animations.DumbbellLottie
+import org.librefit.ui.components.dialogs.ConfirmDialog
 import org.librefit.ui.components.modalBottomSheets.InfoModalBottomSheet
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseDC
@@ -150,6 +152,24 @@ fun SharedTransitionScope.WorkoutScreen(
     InfoModalBottomSheet(infoMode.value) { infoMode.value = InfoMode.DISMISS }
 
 
+    val idExerciseToDelete = rememberSaveable { mutableStateOf<Long?>(null) }
+
+    idExerciseToDelete.value?.let {
+        ConfirmDialog(
+            title = stringResource(R.string.delete_exercise_question),
+            text = stringResource(R.string.confirm_delete),
+            confirmText = stringResource(R.string.delete),
+            onConfirm = {
+                viewModel.deleteExercise(it)
+                idExerciseToDelete.value = null
+            },
+            onDismiss = {
+                idExerciseToDelete.value = null
+            }
+        )
+    }
+
+
     BackHandler {
         viewModel.stopWorkoutService()
         navController.navigateUp()
@@ -210,7 +230,9 @@ fun SharedTransitionScope.WorkoutScreen(
                 updateExerciseNotes = viewModel::updateExerciseNotes,
                 updateExerciseRestTime = viewModel::updateExerciseRestTime,
                 updateExerciseSetMode = viewModel::updateExerciseSetMode,
-                deleteExercise = viewModel::deleteExercise,
+                deleteExercise = { id ->
+                    idExerciseToDelete.value = id
+                },
                 showInfo = { infoMode.value = it },
                 applyPreviousSetPerformance = viewModel::applyPreviousSetPerformance
             )
