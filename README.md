@@ -2,7 +2,7 @@
     <img src="assets/logo.svg" alt="Logo" style="width: 50%">
 </div>
 
-# LibreFit - A free and private workout tracker
+# LibreFit - The free and private workout tracker
 
 LibreFit is a free and open-source workout tracker designed with privacy in mind.
 

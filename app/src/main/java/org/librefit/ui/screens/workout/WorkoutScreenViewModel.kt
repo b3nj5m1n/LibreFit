@@ -64,6 +64,10 @@ class WorkoutScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val datasetRepository: DatasetRepository
 ) : ViewModel() {
+    private val _idsOfSetsWithStopwatchNotStartedAtLeastOnce =
+        MutableStateFlow<Set<Long>>(emptySet())
+    val idsOfSetsWithStopwatchNotStartedAtLeastOnce =
+        _idsOfSetsWithStopwatchNotStartedAtLeastOnce.asStateFlow()
 
     private val _idSetWithRunningStopwatch = MutableStateFlow<Long?>(null)
     val idSetWithRunningStopwatch = _idSetWithRunningStopwatch.asStateFlow()
@@ -74,7 +78,15 @@ class WorkoutScreenViewModel @Inject constructor(
 
     private suspend fun startSetStopwatch(set: UiSet) {
         val startTime = System.currentTimeMillis()
-        val initialElapsedTime = set.elapsedTime
+        val id = set.id
+        val initialElapsedTime = if (id in idsOfSetsWithStopwatchNotStartedAtLeastOnce.value) {
+            _idsOfSetsWithStopwatchNotStartedAtLeastOnce.update { set ->
+                set.filter { it != id }.toSet()
+            }
+            0
+        } else {
+            set.elapsedTime
+        }
 
         // The loop is infinite, but the coroutine will be stopped when its Job is cancelled
         while (true) {
@@ -200,6 +212,10 @@ class WorkoutScreenViewModel @Inject constructor(
                 _exercises.update {
                     workoutWithExercisesAndSets.exercisesWithSets
                 }
+
+                _idsOfSetsWithStopwatchNotStartedAtLeastOnce.update {
+                    exercises.value.flatMap { it.sets }.map { it.id }.toSet()
+                }
             }
         }
 
@@ -263,17 +279,22 @@ class WorkoutScreenViewModel @Inject constructor(
     }
 
     fun addSetToExercise(exerciseId: Long) {
+        val newId = Random.nextLong()
         _exercises.update { exercises ->
             exercises.map { exercise ->
                 if (exercise.exercise.id == exerciseId) {
                     val newSet = exercise.sets
-                        .lastOrNull()?.copy(id = Random.nextLong())
+                        .lastOrNull()?.copy(id = newId)
                         ?: UiSet()
 
                     val newSets = exercise.sets.toMutableList() + newSet
                     exercise.copy(sets = newSets.toImmutableList())
                 } else exercise
             }
+        }
+
+        _idsOfSetsWithStopwatchNotStartedAtLeastOnce.update {
+            it + newId
         }
     }
 
