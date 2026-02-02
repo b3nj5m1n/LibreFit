@@ -27,6 +27,10 @@ configure<ApplicationExtension> {
         buildConfig = true
     }
 
+    lint {
+        checkGeneratedSources = false
+    }
+
     defaultConfig {
         applicationId = "org.librefit.app"
         minSdk = 26
