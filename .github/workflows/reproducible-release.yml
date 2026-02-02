@@ -41,6 +41,6 @@ jobs:
         with:
           files: |
             repro-out/app-release-unsigned.apk
-            repro-out/release-signed.apk
+              repro-out/app-release.apk
           body: |
             ## TODO
