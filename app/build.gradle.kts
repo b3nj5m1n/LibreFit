@@ -9,6 +9,8 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.JavaVersion.VERSION_17
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +20,15 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.about.libraries)
 }
+
+
+val versionProps = Properties().apply {
+    load(FileInputStream(rootProject.file("version.properties")))
+}
+val vMajor = versionProps.getProperty("major").toInt()
+val vMinor = versionProps.getProperty("minor").toInt()
+val vPatch = versionProps.getProperty("patch").toInt()
+val vBuild = versionProps.getProperty("build").toInt()
 
 configure<ApplicationExtension> {
     namespace = "org.librefit"
@@ -35,8 +46,9 @@ configure<ApplicationExtension> {
         applicationId = "org.librefit.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.0"
+
+        versionName = "$vMajor.$vMinor.$vPatch"
+        versionCode = (vMajor * 1_000_000) + (vMinor * 10_000) + (vPatch * 100) + vBuild
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -50,18 +62,17 @@ configure<ApplicationExtension> {
         val timestamp = System.getenv("SOURCE_DATE_EPOCH")?.toLongOrNull() ?: 1700000000L
         buildConfigField("long", "BUILD_TIME", "${timestamp}L")
 
-        // Disable vector->PNG generation (legacy adapter), which is non-deterministic.
+        // Disable vector->PNG generation (legacy adapter), which is non-deterministic
         vectorDrawables.generatedDensities()
     }
 
     buildTypes {
         release {
             // Disable VCS Info (AGP 8.3+).
-            // If the git repo isn't perfectly clean, this injects diffs.
+            // If the git repo isn't perfectly clean, this injects diffs
             vcsInfo.include = false
 
-            // Note: If verification fails, try setting isShrinkResources = false.
-            // It is a common source of instability.
+            // It is a common source of instability
             isShrinkResources = true
 
             isMinifyEnabled = true
