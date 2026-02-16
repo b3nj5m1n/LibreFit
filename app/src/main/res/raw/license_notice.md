@@ -1,4 +1,4 @@
-LibreFit is free software, licensed under the [GNU General Public License v3.0 (GPL-3)](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text), and is subject to [additional terms](https://github.com/IamDg/blob/main/ADDITIONAL_TERMS.md).
+LibreFit is free software, licensed under the [GNU General Public License v3.0 (GPL-3)](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text), and is subject to [additional terms](https://github.com/LibreFitOrg/LibreFit/blob/main/ADDITIONAL_TERMS.md).
 
 In short, this means you are free to use, modify, and distribute the code, but you must:
 
