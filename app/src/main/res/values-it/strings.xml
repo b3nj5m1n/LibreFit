@@ -237,6 +237,7 @@
     <string name="history">Storico</string>
     <string name="second_abbreviation">s</string>
     <string name="delete_exercise_from_dataset_desc">Attenzione: tutti gli esercizi associati verrano cancellati! Questa azione non può essere annullata.</string>
+    <string name="ai_images_warning">⚠️ Le immagini generate dall\'IA sono continuamente revisionate ma possono contenere imprecisioni e/o artefatti. Per una descrizione più accurata dell\'esercizio, consultare le relative istruzioni.</string>
     <string name="body_weight">Peso corporeo</string>
     <string name="fat_mass">Massa grassa</string>
     <string name="quit_routine_creation_question">Interrompere creazione routine?</string>

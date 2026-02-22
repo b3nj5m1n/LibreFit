@@ -41,6 +41,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -745,6 +746,8 @@ private fun SharedTransitionScope.AlternatingImages(
 
     var isRunning by rememberSaveable { mutableStateOf(true) }
 
+    var showWarning by rememberSaveable { mutableStateOf(false) }
+
 
     LaunchedEffect(exercise.images) {
         while (exercise.images.isNotEmpty()) {
@@ -755,48 +758,81 @@ private fun SharedTransitionScope.AlternatingImages(
         }
     }
 
-    Box(
-        modifier = Modifier.padding(15.dp),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        val model = remember(currentImageIndex) { exercise.images.getOrNull(currentImageIndex) }
-        AsyncImage(
-            model = model?.let { "file:///android_asset/${it}" },
-            fallback = painterResource(R.drawable.no_image),
-            contentDescription = exercise.name,
-            contentScale = ContentScale.Crop,
-            colorFilter = if (model == null) ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant) else null,
-            filterQuality = FilterQuality.High,
-            modifier = Modifier
-                .sharedElement(
-                    sharedContentState = rememberSharedContentState(stringId + exercise.id),
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
-                .aspectRatio(
-                    ratio = rememberAssetAspectRatio(model, 16f / 9)
-                )
-                .fillMaxWidth()
-                .clip(MaterialTheme.shapes.extraLarge)
-                .border(
-                    width = 0.5.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    MaterialTheme.shapes.extraLarge
-                ),
-        )
-
-        if (exercise.images.isNotEmpty()) {
-            ToggleButton(
-                checked = isRunning,
-                modifier = Modifier.padding(10.dp),
-                onCheckedChange = { isRunning = it },
-                shapes = ToggleButtonDefaults.shapes()
-            ) {
-                Icon(
-                    painter = painterResource(
-                        if (isRunning) R.drawable.ic_pause else R.drawable.ic_play_arrow
+    Column {
+        Box(
+            modifier = Modifier.padding(15.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            val model = remember(currentImageIndex) { exercise.images.getOrNull(currentImageIndex) }
+            AsyncImage(
+                model = model?.let { "file:///android_asset/${it}" },
+                fallback = painterResource(R.drawable.no_image),
+                contentDescription = exercise.name,
+                contentScale = ContentScale.Crop,
+                colorFilter = if (model == null) ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant) else null,
+                filterQuality = FilterQuality.High,
+                modifier = Modifier
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(stringId + exercise.id),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                    .aspectRatio(
+                        ratio = rememberAssetAspectRatio(model, 16f / 9)
+                    )
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        MaterialTheme.shapes.extraLarge
                     ),
-                    contentDescription = stringResource(if (isRunning) R.string.pause else R.string.resume),
-                )
+            )
+
+            if (exercise.images.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    FilledTonalIconToggleButton(
+                        checked = showWarning,
+                        modifier = Modifier.padding(10.dp),
+                        onCheckedChange = { showWarning = it },
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_warning),
+                            contentDescription = stringResource(R.string.warning),
+                        )
+                    }
+
+                    ToggleButton(
+                        checked = isRunning,
+                        modifier = Modifier.padding(10.dp),
+                        onCheckedChange = { isRunning = it },
+                        shapes = ToggleButtonDefaults.shapes()
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                if (isRunning) R.drawable.ic_pause else R.drawable.ic_play_arrow
+                            ),
+                            contentDescription = stringResource(if (isRunning) R.string.pause else R.string.resume),
+                        )
+                    }
+                }
+            }
+        }
+        if (exercise.images.isNotEmpty()) {
+            AnimatedVisibility(visible = showWarning) {
+                OutlinedCard(
+                    modifier = Modifier.padding(start= 15.dp, end= 15.dp),
+                    shape = MaterialTheme.shapes.large
+                ){
+                    Column(Modifier.padding(10.dp)) {
+                        Text(
+                            text = stringResource(R.string.ai_images_warning),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
             }
         }
     }
