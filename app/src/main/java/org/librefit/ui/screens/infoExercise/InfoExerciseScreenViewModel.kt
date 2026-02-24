@@ -11,6 +11,7 @@ package org.librefit.ui.screens.infoExercise
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,7 @@ import org.librefit.enums.chart.WeightedBodyweightChart
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
 import org.librefit.helpers.DataHelper
+import org.librefit.nav.Route
 import org.librefit.ui.components.charts.Point
 import org.librefit.ui.models.UiExerciseDC
 import org.librefit.ui.models.UiWorkoutWithExercisesAndSets
@@ -49,16 +51,11 @@ class InfoExerciseScreenViewModel @Inject constructor(
     private val datasetRepository: DatasetRepository
 ) : ViewModel() {
 
-    companion object {
-        private const val ID_EXERCISE_DC_KEY = "idExerciseDC"
-    }
-
-    private val idExerciseDC = savedStateHandle.get<String>(ID_EXERCISE_DC_KEY)
-        ?: error("ID_EXERCISE_DC_KEY does not match `Route.InfoExerciseScreen` parameter")
+    private val idExerciseDC = savedStateHandle.toRoute<Route.InfoExerciseScreen>().idExerciseDC
 
     // Keeps track of changes (e.g. the user edits the exercise)
     val uiExerciseDC = datasetRepository.getExerciseFlowFromId(idExerciseDC)
-        .map { it ?: error("Invalid `exerciseDCid`: $idExerciseDC") }
+        .map { checkNotNull(it) {"Invalid `idExerciseDC`: $idExerciseDC" } }
         .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,

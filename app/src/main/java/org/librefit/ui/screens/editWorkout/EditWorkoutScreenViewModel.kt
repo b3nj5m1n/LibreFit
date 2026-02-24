@@ -11,6 +11,7 @@ package org.librefit.ui.screens.editWorkout
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutState
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
+import org.librefit.nav.Route
 import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
@@ -40,12 +42,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository
 ) : ViewModel() {
 
-    companion object {
-        private const val WORKOUT_ID_KEY = "workoutId"
-    }
-
-    private val workoutId = savedStateHandle.get<Long>(WORKOUT_ID_KEY)
-        ?: error("WORKOUT_ID_KEY does not match `Route.EditWorkoutScreen` parameter")
+    private val workoutId = savedStateHandle.toRoute<Route.EditWorkoutScreen>().workoutId
 
 
     private val _isRoutine = MutableStateFlow(false)

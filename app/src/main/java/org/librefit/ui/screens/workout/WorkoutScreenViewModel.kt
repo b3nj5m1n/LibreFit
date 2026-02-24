@@ -13,6 +13,7 @@ import android.media.MediaPlayer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toImmutableList
@@ -43,6 +44,7 @@ import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutState
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
+import org.librefit.nav.Route
 import org.librefit.services.WorkoutService
 import org.librefit.services.WorkoutServiceManager
 import org.librefit.ui.models.UiExercise
@@ -99,14 +101,7 @@ class WorkoutScreenViewModel @Inject constructor(
         }
     }
 
-
-
-    companion object {
-        private const val WORKOUT_ID_KEY = "workoutId"
-    }
-
-    private val workoutId = savedStateHandle.get<Long>(WORKOUT_ID_KEY)
-        ?: error("WORKOUT_ID_KEY does not match `Route.WorkoutScreen` parameter")
+    private val workoutId = savedStateHandle.toRoute<Route.WorkoutScreen>().workoutId
 
 
     private val _workout = MutableStateFlow(UiWorkout())

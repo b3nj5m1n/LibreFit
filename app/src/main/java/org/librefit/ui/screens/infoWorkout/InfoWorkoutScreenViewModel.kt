@@ -11,6 +11,7 @@ package org.librefit.ui.screens.infoWorkout
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.WorkoutState
 import org.librefit.enums.chart.WorkoutChart
 import org.librefit.helpers.DataHelper
+import org.librefit.nav.Route
 import org.librefit.ui.components.charts.Point
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiWorkout
@@ -43,13 +45,8 @@ class InfoWorkoutScreenViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     dataHelper: DataHelper
 ) : ViewModel() {
-    companion object {
-        private const val WORKOUT_ID_KEY = "workoutId"
-    }
 
-    private val workoutId = savedStateHandle.get<Long>(WORKOUT_ID_KEY)
-        ?: error("WORKOUT_ID_KEY does not match `Route.InfoWorkoutScreen` parameter")
-
+    private val workoutId = savedStateHandle.toRoute<Route.InfoWorkoutScreen>().workoutId
 
     private val _volume = MutableStateFlow("")
     val volume = _volume.asStateFlow()

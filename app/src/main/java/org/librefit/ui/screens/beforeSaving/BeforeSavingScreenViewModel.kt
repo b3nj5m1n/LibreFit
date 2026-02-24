@@ -11,6 +11,7 @@ package org.librefit.ui.screens.beforeSaving
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import org.librefit.db.repository.WorkoutRepository
 import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutState
 import org.librefit.helpers.DataHelper
+import org.librefit.nav.Route
 import org.librefit.services.WorkoutServiceManager
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiWorkout
@@ -43,13 +45,7 @@ class BeforeSavingScreenViewModel @Inject constructor(
     private val dataHelper: DataHelper
 ) : ViewModel() {
 
-    companion object {
-        private const val RUNNING_WORKOUT_ID_KEY = "runningWorkoutId"
-    }
-
-
-    private val runningWorkoutId = savedStateHandle.get<Long>(RUNNING_WORKOUT_ID_KEY)
-        ?: error("RUNNING_WORKOUT_ID_KEY does not match `Route.BeforeSavingScreen` parameter")
+    private val runningWorkoutId = savedStateHandle.toRoute<Route.BeforeSavingScreen>().runningWorkoutId
 
 
     private val _exercises = MutableStateFlow<List<UiExerciseWithSets>>(emptyList())

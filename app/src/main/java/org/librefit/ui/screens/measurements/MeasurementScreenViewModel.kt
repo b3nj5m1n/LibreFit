@@ -192,8 +192,9 @@ class MeasurementScreenViewModel @Inject constructor(
                 Measurement(
                     id = if (measurementCardState.value == MeasurementCardState.EDIT)
                         idMeasurement.value else 0L,
-                    bodyWeight = bodyWeight.value.toDoubleOrNull()
-                        ?: error("Bodyweight must be a double when saving a new measurement"),
+                    bodyWeight = checkNotNull(bodyWeight.value.toDoubleOrNull()) {
+                        "Bodyweight must be a double when saving a new measurement. Actual value: ${bodyWeight.value}"
+                    },
                     notes = notes.value,
                     muscleMassPercentage = leanMass.value ?: 0,
                     bodyFatPercentage = fatMass.value ?: 0,
