@@ -17,8 +17,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,15 +35,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -109,59 +113,80 @@ fun AboutScreen(navController: NavHostController) {
             }
 
             item {
-                BoxWithConstraints {
-                    val spaceMaxWidth = with(LocalDensity.current) { maxWidth.toPx() }
-
-                    val infiniteTransition = rememberInfiniteTransition()
-                    val animationProgress = infiniteTransition.animateFloat(
-                        initialValue = 0.1f,
-                        targetValue = spaceMaxWidth * 5,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(2000),
-                            repeatMode = RepeatMode.Restart
-                        )
+                // Animated button
+                val infiniteTransition = rememberInfiniteTransition()
+                val animationProgress by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 10f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(3000),
+                        repeatMode = RepeatMode.Restart
                     )
+                )
 
-                    val brush = Brush.radialGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.inversePrimary,
-                            MaterialTheme.colorScheme.primary
-                        ),
-                        radius = animationProgress.value
-                    )
+                val color1 = MaterialTheme.colorScheme.primary
+                val color2 = MaterialTheme.colorScheme.inversePrimary
+                val colors = remember(color1, color2) {
+                    listOf(color1, color2, color1)
+                }
 
-                    Button(
-                        onClick = {
-                            navController.navigate(Route.SupportScreen()) {
-                                launchSingleTop = true
-                            }
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                        contentPadding = ButtonDefaults.MediumContentPadding,
-                        border = BorderStroke(
-                            width = 4.dp,
-                            brush = brush
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_favorite),
-                                contentDescription = null
+                val shape = ButtonDefaults.shape
+                val pressedShape = ButtonDefaults.pressedShape
+
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+
+                Button(
+                    onClick = {
+                        navController.navigate(Route.SupportScreen()) {
+                            launchSingleTop = true
+                        }
+                    },
+                    shapes = ButtonDefaults.shapes(),
+                    contentPadding = ButtonDefaults.MediumContentPadding,
+                    interactionSource = interactionSource,
+                    modifier = Modifier.drawWithCache {
+
+                        // Everything inside onDrawWithContent runs in the draw phase so reading 'animationProgress' here will not cause recomposition
+                        onDrawWithContent {
+                            drawContent() // Draw the button first
+
+                            // Calculate the radius using the exact size of the button
+                            val radius = (size.width * animationProgress).coerceAtLeast(0.1f)
+
+                            val brush = Brush.radialGradient(
+                                colors = colors,
+                                radius = radius,
+                                center = center
                             )
-                            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-                            Text(
-                                text = stringResource(R.string.lets_build_it_together),
-                                style = MaterialTheme.typography.headlineSmallEmphasized,
-                                textAlign = TextAlign.Center
+
+                            // Draw the animated border
+                            drawOutline(
+                                outline = (if(isPressed) pressedShape else shape).createOutline(size, layoutDirection, this),
+                                brush = brush,
+                                style = Stroke(width = 10f)
                             )
                         }
                     }
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_favorite),
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                        Text(
+                            text = stringResource(R.string.lets_build_it_together),
+                            style = MaterialTheme.typography.headlineSmallEmphasized,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
+
             }
 
             item {
@@ -314,7 +339,7 @@ private fun AboutItem(
 }
 
 
-@Preview
+@Preview(locale = "en")
 @Composable
 private fun AboutScreenPreview() {
     LibreFitTheme(dynamicColor = false, themeMode = ThemeMode.DARK) {

@@ -20,7 +20,6 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,6 +43,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -158,17 +161,14 @@ private fun SharedTransitionScope.HomeScreenContent(
     // It is triggered when there's an unsaved, running workout but user taps a routine
     val routineIdToStart = remember { mutableStateOf<Long?>(null) }
 
-    if (routineIdToStart.value != null) {
+    routineIdToStart.value?.let {
         ConfirmDialog(
             title = stringResource(R.string.discard_running_workout_question),
             text = stringResource(R.string.discard_running_workout_and_select_routine_text),
             confirmText = stringResource(R.string.discard_dialog),
             onConfirm = {
                 deleteRunningWorkout()
-                // Just a safe get method for routine id
-                routineIdToStart.value?.let {
-                    navigateToRoutine(it)
-                }
+                navigateToRoutine(it)
                 routineIdToStart.value = null
             },
             onDismiss = {
@@ -180,21 +180,30 @@ private fun SharedTransitionScope.HomeScreenContent(
     LibreFitLazyColumn(innerPadding) {
         item {
             val infiniteTransition = rememberInfiniteTransition()
-            val animatedColor = infiniteTransition.animateColor(
-                initialValue = MaterialTheme.colorScheme.secondary.copy(alpha = 0f),
+            val animatedColor by infiniteTransition.animateColor(
+                initialValue = Color.Transparent,
                 targetValue = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
                 animationSpec = infiniteRepeatable(
                     animation = tween(1000),
                     repeatMode = RepeatMode.Reverse
                 ),
             )
+            val shape = MaterialTheme.shapes.extraLarge
             ElevatedCard(
-                shape = MaterialTheme.shapes.extraLarge,
-                modifier = Modifier.border(
-                    width = if (runningWorkout != null) 2.dp else 0.dp,
-                    color = animatedColor.value,
-                    shape = MaterialTheme.shapes.extraLarge
-                )
+                shape = shape,
+                modifier = Modifier.drawWithCache {
+                    onDrawWithContent {
+                        drawContent()
+
+                        if (runningWorkout != null) {
+                            drawOutline(
+                                outline = shape.createOutline(size, layoutDirection, this),
+                                color = animatedColor,
+                                style = Stroke(width = 5f)
+                            )
+                        }
+                    }
+                }
             ) {
                 LibreFitButton(
                     text = stringResource(if (runningWorkout != null) R.string.resume_workout else R.string.start_empty_workout),
@@ -341,7 +350,7 @@ private fun SharedTransitionScope.HomeScreenContent(
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
-@Preview(device = "id:medium_phone")
+@Preview(device = "id:medium_phone", locale = "en")
 @Composable
 fun HomeScreenPreview() {
     val pagerState = rememberPagerState(
