@@ -129,12 +129,13 @@ fun SharedTransitionScope.MainScreen(
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-            beyondViewportPageCount = 1
+            beyondViewportPageCount = 1,
+            contentPadding = innerPadding
         ) { pageIndex ->
             when (pageIndex) {
-                0 -> LibraryScreen(innerPadding)
-                1 -> HomeScreen(innerPadding, navController, animatedVisibilityScope)
-                2 -> ProfileScreen(innerPadding, navController, animatedVisibilityScope)
+                0 -> LibraryScreen()
+                1 -> HomeScreen(navController, animatedVisibilityScope)
+                2 -> ProfileScreen(navController, animatedVisibilityScope)
                 else -> error("Invalid page index in main screen: $pageIndex. Number of pages: ${pagerState.pageCount}")
             }
         }

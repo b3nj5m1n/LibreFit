@@ -10,9 +10,8 @@ package org.librefit.ui.screens.library
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -44,9 +43,7 @@ import org.librefit.ui.theme.LibreFitTheme
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun LibraryScreen(
-    innerPadding: PaddingValues
-) {
+fun LibraryScreen() {
     //TODO: implement archived routines
 
     //TODO: implement a default routine
@@ -88,9 +85,7 @@ fun LibraryScreen(
         label = "ColorAnimation"
     )
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         AnimatedMorphShapes(
@@ -171,7 +166,12 @@ private fun LibraryScreenPreview() {
                 }
             }
         ) { innerPadding ->
-            LibraryScreen(innerPadding)
+            HorizontalPager(
+                state = rememberPagerState { 0 },
+                contentPadding = innerPadding
+            ) {
+                LibraryScreen()
+            }
         }
     }
 }

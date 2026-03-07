@@ -22,12 +22,12 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -83,7 +83,6 @@ import kotlin.random.Random
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.HomeScreen(
-    innerPadding: PaddingValues,
     navController: NavHostController,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -107,7 +106,6 @@ fun SharedTransitionScope.HomeScreen(
     val runningWorkout by viewModel.runningWorkout.collectAsStateWithLifecycle()
 
     HomeScreenContent(
-        innerPadding = innerPadding,
         navController = navController,
         runningWorkout = runningWorkout,
         routines = routines,
@@ -139,7 +137,6 @@ fun SharedTransitionScope.HomeScreen(
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SharedTransitionScope.HomeScreenContent(
-    innerPadding: PaddingValues,
     navController: NavHostController,
     routines: List<UiWorkout>,
     runningWorkout: UiWorkout?,
@@ -199,7 +196,7 @@ private fun SharedTransitionScope.HomeScreenContent(
         )
     }
 
-    LibreFitLazyColumn(innerPadding) {
+    LibreFitLazyColumn {
         item {
             val infiniteTransition = rememberInfiniteTransition()
             val animatedColor by infiniteTransition.animateColor(
@@ -438,32 +435,36 @@ fun HomeScreenPreview() {
                 }
             }
         ) { innerPadding ->
-            SharedTransitionLayout {
-                AnimatedVisibility(visible = true) {
-                    HomeScreenContent(
-                        innerPadding = innerPadding,
-                        navController = rememberNavController(),
-                        runningWorkout = runningWorkout.value,
-                        showKeepAndroidOpen = false,
-                        onKeepAndroidOpenCheckboxChange = {},
-                        routines = listOf(
-                            UiWorkout(
-                                id = Random.nextLong(),
-                                title = "\uD83C\uDFCB Upper body"
+            HorizontalPager(
+                state = rememberPagerState { 0 },
+                contentPadding = innerPadding
+            ) {
+                SharedTransitionLayout {
+                    AnimatedVisibility(visible = true) {
+                        HomeScreenContent(
+                            navController = rememberNavController(),
+                            runningWorkout = runningWorkout.value,
+                            showKeepAndroidOpen = false,
+                            onKeepAndroidOpenCheckboxChange = {},
+                            routines = listOf(
+                                UiWorkout(
+                                    id = Random.nextLong(),
+                                    title = "\uD83C\uDFCB Upper body"
+                                ),
+                                UiWorkout(
+                                    id = Random.nextLong(),
+                                    title = "\uD83D\uDD31 Lower body"
+                                ),
+                                UiWorkout(
+                                    id = Random.nextLong(),
+                                    title = "\uD83C\uDFC3 Tempo run"
+                                )
                             ),
-                            UiWorkout(
-                                id = Random.nextLong(),
-                                title = "\uD83D\uDD31 Lower body"
-                            ),
-                            UiWorkout(
-                                id = Random.nextLong(),
-                                title = "\uD83C\uDFC3 Tempo run"
-                            )
-                        ),
-                        navigateToRoutine = {},
-                        deleteRunningWorkout = { runningWorkout.value = null },
-                        animatedVisibilityScope = this
-                    )
+                            navigateToRoutine = {},
+                            deleteRunningWorkout = { runningWorkout.value = null },
+                            animatedVisibilityScope = this
+                        )
+                    }
                 }
             }
         }

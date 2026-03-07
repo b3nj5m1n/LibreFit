@@ -21,13 +21,13 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
@@ -98,7 +98,6 @@ import kotlin.random.Random
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.ProfileScreen(
-    innerPadding: PaddingValues,
     navController: NavHostController,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -115,7 +114,6 @@ fun SharedTransitionScope.ProfileScreen(
 
     ProfileScreenContent(
         animatedVisibilityScope = animatedVisibilityScope,
-        innerPadding = innerPadding,
         navController = navController,
         weekStreak = weekStreak,
         points = points,
@@ -129,7 +127,6 @@ fun SharedTransitionScope.ProfileScreen(
 @Composable
 private fun SharedTransitionScope.ProfileScreenContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    innerPadding: PaddingValues,
     navController: NavHostController,
     weekStreak: Int,
     points: List<Point>,
@@ -138,7 +135,7 @@ private fun SharedTransitionScope.ProfileScreenContent(
     updateChartMode: (WorkoutChart) -> Unit
 ) {
 
-    LibreFitLazyColumn(innerPadding) {
+    LibreFitLazyColumn {
         item {
             Spacer(Modifier.height(10.dp))
             StreakCard(weekStreak)
@@ -520,6 +517,33 @@ private fun ProfileScreenPreview() {
             ),
             exercisesWithSets = persistentListOf()
         ),
+        UiWorkoutWithExercisesAndSets(
+            workout = UiWorkout(
+                id = Random.nextLong(),
+                title = "\uD83C\uDFCB Upper body",
+                completed = LocalDateTime.now(),
+                timeElapsed = 3689
+            ),
+            exercisesWithSets = persistentListOf()
+        ),
+        UiWorkoutWithExercisesAndSets(
+            workout = UiWorkout(
+                id = Random.nextLong(),
+                title = "\uD83C\uDFC3 Tempo run",
+                completed = LocalDateTime.now().minusDays(2L),
+                timeElapsed = 1245
+            ),
+            exercisesWithSets = persistentListOf()
+        ),
+        UiWorkoutWithExercisesAndSets(
+            workout = UiWorkout(
+                id = Random.nextLong(),
+                title = "\uD83D\uDD31 Lower body",
+                completed = LocalDateTime.now().minusDays(4L),
+                timeElapsed = 3984
+            ),
+            exercisesWithSets = persistentListOf()
+        ),
     )
 
     val listChartData = workoutsWithExercises.map {
@@ -588,20 +612,24 @@ private fun ProfileScreenPreview() {
                 }
             }
         ) { innerPadding ->
-            SharedTransitionLayout {
-                AnimatedVisibility(visible = true) {
-                    ProfileScreenContent(
-                        innerPadding = innerPadding,
-                        navController = rememberNavController(),
-                        weekStreak = 0,
-                        points = listChartData,
-                        workoutChart = WorkoutChart.DURATION,
-                        workoutsWithExercises = workoutsWithExercises,
-                        updateChartMode = {},
-                        animatedVisibilityScope = this
-                    )
-                }
+            HorizontalPager(
+                state = rememberPagerState { 0 },
+                contentPadding = innerPadding
+            ) {
+                SharedTransitionLayout {
+                    AnimatedVisibility(visible = true) {
+                        ProfileScreenContent(
+                            navController = rememberNavController(),
+                            weekStreak = 0,
+                            points = listChartData,
+                            workoutChart = WorkoutChart.DURATION,
+                            workoutsWithExercises = workoutsWithExercises,
+                            updateChartMode = {},
+                            animatedVisibilityScope = this
+                        )
+                    }
 
+                }
             }
         }
     }
