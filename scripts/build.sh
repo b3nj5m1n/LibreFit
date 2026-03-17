@@ -10,8 +10,8 @@
 set -e
 
 # Output config
-OUTPUT_DIR="repro-out"
-APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
+OUTPUT_DIR="apks"
+APK_PATH="app/build/outputs/apk/release/LibreFit-release-unsigned.apk"
 rm -rf "$OUTPUT_DIR" && mkdir -p "$OUTPUT_DIR"
 
 echo "🏗️  Building Unsigned APK..."
@@ -42,11 +42,11 @@ docker run --rm \
 
 
 if [ -f "$APK_PATH" ]; then
-    cp "$APK_PATH" "$OUTPUT_DIR/app-release-unsigned.apk"
-    echo "✅ Build Successful: $OUTPUT_DIR/app-release-unsigned.apk"
+    cp "$APK_PATH" "$OUTPUT_DIR/LibreFit-unsigned.apk"
+    echo "✅ Build Successful: $OUTPUT_DIR/LibreFit-unsigned.apk"
     # Print Hash for logs
     echo "🔒 SHA-256:"
-    sha256sum "$OUTPUT_DIR/app-release-unsigned.apk"
+    sha256sum "$OUTPUT_DIR/LibreFit-unsigned.apk"
 else
     echo "❌ Build Failed: APK not found."
     exit 1

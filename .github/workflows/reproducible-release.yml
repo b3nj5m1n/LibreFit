@@ -36,13 +36,14 @@ jobs:
           chmod +x scripts/sign-release.sh
           ./scripts/sign-release.sh
 
-      - name: Upload artifacts if not releasing # This is just for testing the manual run
+      # This is just for testing the manual run
+      - name: Upload artifacts if not releasing
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v4
         with:
           path: |
-            repro-out/app-release-unsigned.apk
-            repro-out/app-release.apk
+            apks/LibreFit-unsigned.apk
+            apks/LibreFit.apk
 
       # It extracts notes from CHANGELOG.md by default
       - name: Extract release notes
@@ -54,7 +55,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            repro-out/app-release-unsigned.apk
-            repro-out/app-release.apk
+            apks/LibreFit-unsigned.apk
+            apks/LibreFit.apk
           body: ${{ steps.extract_notes.outputs.release_notes }}
           append_body: true # List new contributors

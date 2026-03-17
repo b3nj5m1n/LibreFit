@@ -10,9 +10,9 @@
 set -e
 
 # Config
-INPUT_APK="repro-out/app-release-unsigned.apk"
-ALIGNED_APK="repro-out/app-release-aligned.apk"
-FINAL_APK="repro-out/app-release.apk"
+INPUT_APK="apks/LibreFit-unsigned.apk"
+ALIGNED_APK="apks/LibreFit-aligned.apk"
+FINAL_APK="apks/LibreFit.apk"
 
 # Secrets (passed via environment)
 KEYSTORE_PATH="release.jks"
@@ -30,9 +30,9 @@ if docker --version | grep -qi "podman"; then
     CONTAINER_ARGS="--userns=keep-id"
     PERMISSION_FIX=""
 else
-    # Docker: Runs as root. Chown the 'repro-out' folder at the end so files aren't locked as root on the host.
+    # Docker: Runs as root. Chown the 'apks' folder at the end so files aren't locked as root on the host.
     CONTAINER_ARGS=""
-    PERMISSION_FIX="chown -R $(id -u):$(id -g) repro-out"
+    PERMISSION_FIX="chown -R $(id -u):$(id -g) apks"
 fi
 
 docker run --rm \
@@ -47,7 +47,7 @@ docker run --rm \
         # Align to 16KB (Capital P is required for build tools 36)
         zipalign -f -P 16 -v 4 $INPUT_APK $ALIGNED_APK
 
-        # Sign with Preservation: --alignment-preserved prevents apksigner from changing the padding bytes
+        # Sign with preservation: --alignment-preserved prevents apksigner from changing the padding bytes
         apksigner sign \
             --ks $KEYSTORE_PATH \
             --ks-key-alias $ALIAS \

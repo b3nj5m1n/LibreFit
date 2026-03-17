@@ -110,6 +110,10 @@ configure<ApplicationExtension> {
     }
 }
 
+base {
+    archivesName.set("LibreFit")
+}
+
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
