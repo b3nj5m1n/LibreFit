@@ -12,17 +12,11 @@ exercise paired with **images** and step-by-step **instructions** covering setup
 Schedule single **sessions**, filter **exercises** by equipment, **muscle** group or difficulty with one tap.
 During workouts, **track** every set, rep, rest interval, and load in **real time**.
 
-> [!IMPORTANT]
-> LibreFit is a passion project, built by one person who believes software should be open, simple, beautiful, and above all, respectful of your privacy.
->
-> I pour countless hours into designing, coding, and refining every detail to create the best possible experience. It's a commitment to you, the user, and to a better digital world.
->
-> LibreFit is only possible with your [support](README.md#-lets-build-librefit-together).
-
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="160" alt="Screenshot 1"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="160" alt="Screenshot 2"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="160" alt="Screenshot 3"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="160" alt="Screenshot 4"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" width="160" alt="Screenshot 5">
 
 ## Table of Contents
 
+- 💡 [Motivation](README.md#-motivation)
 - 🚀 [Features](README.md#-features)
 - 📥 [Install](README.md#-install)
 - 🤝 [Let's Build LibreFit Together](README.md#-lets-build-librefit-together)
@@ -34,6 +28,14 @@ During workouts, **track** every set, rep, rest interval, and load in **real tim
     - ™️ [Branding](README.md#-branding)
     - 📷 [Images of exercises](README.md#-images-of-exercises)
 - 👥 [Credits](README.md#-credits)
+
+## 💡 Motivation
+
+LibreFit is a passion project, built by one person who believes **software** should be **open**, **simple**, **beautiful**, and above all, **respectful of your privacy**.
+
+I pour countless hours into designing, coding, and refining every detail to create the best possible experience. It's a commitment to you, the user, and to a **better digital world**.
+
+LibreFit is only possible with your [support](README.md#-lets-build-librefit-together).
 
 ## 🚀 Features
 
