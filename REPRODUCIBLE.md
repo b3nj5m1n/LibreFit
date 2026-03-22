@@ -1,82 +1,33 @@
 # Reproducible Builds
 
 This project supports [Reproducible Builds](https://reproducible-builds.org/).
-This means you can verify that the APK distributed on GitHub or F-Droid matches the source code exactly, proving no hidden code was injected during the release process.
+This means the APK distributed on GitHub or F-Droid matches the source code exactly, proving no hidden code was injected during the release process.
 
 > [!TIP]
 > More info at: https://f-droid.org/docs/Reproducible_Builds/
 
-
-## Build environment
-To ensure determinism, a containerized build environment is used.
-
-*   **OS:** Ubuntu 22.04 (Pinned Digest)
-*   **Android Gradle Plugin:** 9.0+
-*   **Build Tools:** 36.0.0
-*   **Alignment:** 16KB (Android 15 Compliant)
-
-## Prerequisites
-*   Docker or Podman
-*   Git
-*   Python 3 (for verifying signed releases)
-
----
-
-## How to build from source
+## How to verify
 To reproduce the **Unsigned APK** exactly as it was built by the CI server:
 
-1.  **Clone the repository and checkout the tag/commit you want to verify:**
+1.  **Clone the repository and checkout the tag/commit to verify:**
     ```bash
     git clone https://github.com/LibreFitOrg/LibreFit.git
     cd LibreFit
-    # Specify version tag (e.g. v0.0.1)
-    git checkout v0.0.1
+    # Specify version tag (e.g. v0.1.0)
+    git checkout v0.1.0
     ```
 
-2.  **Build the Docker image:**
+2.  **Build the release APK locally:**
     ```bash
-    docker build -t android-repro-check -f Dockerfile.build .
+    ./gradlew clean assembleRelease --no-daemon
     ```
+    The APK will be at `app/build/outputs/apk/release/LibreFit-release-unsigned.apk`.
 
-3.  **Run the build script:**
+3.  **Verify APK built by CI server:**
+    Download the unsigned APK from CI server. To ensure the APKs are identical, their SHA256 must match.
+    A possible method is the following:
     ```bash
-    ./scripts/build.sh
+    # Output SHA256 of CI's APK and local APK
+    sha256sum LibreFit-unsigned.apk LibreFit-release-unsigned.apk
     ```
-
-4.  **Check the output:**
-    The artifact will be at `apks/LibreFit-unsigned.apk`.
-    The script will output the **SHA-256 hash**. Verification is successful if and only if hashes match.
-
----
-
-## How to verify a signed release
-Because this app targets Android 16 (Build Tools 36+), [it requires specific](https://f-droid.org/docs/Reproducible_Builds/) **16KB page alignment**. Standard tools (like `unzip` or `sha256sum`) cannot directly compare the Signed APK to the source code because the signing process alters the binary padding.
-
-Use `apksigcopier` instead to compare the APKs.
-
-1.  **Install verification tool:**
-    ```bash
-    pip3 install apksigcopier
-    ```
-
-2.  **Download the release:**
-    Download `LibreFit.apk` from the GitHub Releases page.
-
-3.  **Run comparison:**
-    Compare the official release against your local build:
-    ```bash
-    apksigcopier compare LibreFit.apk --unsigned apks/LibreFit-unsigned.apk
-    ```
-
-### Results
-*   ✅ **Exit Code 0:** The signed APK contains *exactly* the same compiled code, resources, and assets as the source code.
-*   ❌ **Exit Code 1:** The binary content differs. Open an issue if this error persists.
-
----
-
-## Technical details
-*   **Root directory:** `/project`
-*   **Build command:** `./gradlew clean assembleRelease --no-daemon`
-*   **Environment variables:**
-    *   `SOURCE_DATE_EPOCH=1700000000` (Fixes ZIP timestamps)
-    *   `GRADLE_OPTS=-Dorg.gradle.workers.max=1` (Ensures deterministic R8/DEX generation)
+    Verification is successful if and only if their SHA256 are identical.
