@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin' # Match JvmVendorSpec.ADOPTIUM toolchain
           cache: 'gradle'         # Speeds up builds
 
-      - name: Build Unsigned Release APK
+      - name: Build unsigned release APK
         env:
           SOURCE_DATE_EPOCH: 1700000000
         # --no-daemon ensures a fresh, reproducible environment in CI

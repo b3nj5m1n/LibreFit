@@ -7,7 +7,11 @@ This means the APK distributed on GitHub or F-Droid matches the source code exac
 > More info at: https://f-droid.org/docs/Reproducible_Builds/
 
 ## How to verify
-To reproduce the **Unsigned APK** exactly as it was built by the CI server:
+
+The proof of a reproducible build is when the SHA-256 hash of a locally built APK matches the CI's build.
+This guarantees the compiler, code, and resources are exactly the same.
+
+To reproduce the **APKs** exactly as it was built by the CI server:
 
 1.  **Clone the repository and checkout the tag/commit to verify:**
     ```bash
@@ -23,11 +27,11 @@ To reproduce the **Unsigned APK** exactly as it was built by the CI server:
     ```
     The APK will be at `app/build/outputs/apk/release/LibreFit-release-unsigned.apk`.
 
-3.  **Verify APK built by CI server:**
-    Download the unsigned APK from CI server. To ensure the APKs are identical, their SHA256 must match.
+3.  **Verify unsigned APK built by CI server:**
+    Download the unsigned APK (`Librefit-unsigned.apk`) from CI server. To ensure the APKs are identical, their SHA-256 must match.
     A possible method is the following:
     ```bash
-    # Output SHA256 of CI's APK and local APK
+    # Output SHA-256 of CI's APK and local APK
     sha256sum LibreFit-unsigned.apk LibreFit-release-unsigned.apk
     ```
-    Verification is successful if and only if their SHA256 are identical.
+    ✅ Verification is successful if and only if their hashes are identical.
