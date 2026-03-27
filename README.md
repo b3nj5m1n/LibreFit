@@ -19,10 +19,10 @@ exercise paired with **images** and step-by-step **instructions** covering setup
 Schedule single **sessions**, filter **exercises** by equipment, **muscle** group or difficulty with one tap.
 During workouts, **track** every set, rep, rest interval, and load in **real time**.
 
+</div>
+
 > [!CAUTION]
 > Free and Open-Source Android is under threat. Google will turn Android into a locked-down platform, restricting your essential freedom to install apps of your choice. Make your voice heard – [keepandroidopen.org](https://keepandroidopen.org).
-
-</div>
 
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="160" alt="Screenshot 1"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="160" alt="Screenshot 2"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="160" alt="Screenshot 3"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="160" alt="Screenshot 4"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" width="160" alt="Screenshot 5">
 
