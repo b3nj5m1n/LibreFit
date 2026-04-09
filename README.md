@@ -207,13 +207,13 @@ Thanks to everyone who helped the project!
 
 ### 🌐 Translators
 
-[Contribute to translations](CONTRIBUTING.md#translations) to be listed here.
-
 ### 🇳🇱 Dutch
 - [mwesten](https://github.com/mwesten)
 
 ### 🇩🇪 German
 - [doen1el](https://github.com/doen1el)
+
+> [Contribute to translations](CONTRIBUTING.md#translations) to be listed here.
 
 ---
 
