@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Show warning in images by default
 
 ### Fixed
+- Crash when deleting a custom exercise [#17](https://github.com/LibreFitOrg/LibreFit/issues/17)
 - Incorrect date handling in different time zones [#14](https://github.com/LibreFitOrg/LibreFit/issues/14)
 
 > [!TIP]
