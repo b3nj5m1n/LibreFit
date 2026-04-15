@@ -102,6 +102,7 @@
     <string name="crash_log">Crash log</string>
     <string name="report_github">Report on GitHub</string>
     <string name="url_github_search_issue" translatable="false">https://github.com/LibreFitOrg/LibreFit/issues?q=</string>
+    <string name="reorder">Reorder</string>
     <string name="stack_trace_not_available">Stack trace not available</string>
 
 

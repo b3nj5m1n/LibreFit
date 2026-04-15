@@ -115,6 +115,8 @@ import kotlin.math.roundToInt
  * the [org.librefit.ui.screens.infoExercise.InfoExerciseScreen].
  * @param onDelete A lambda function executed when the *Delete* icon is clicked, it should result in
  * the removal of the card.
+ * @param showDragHandle Whether a drag handle should be shown in the top-right corner.
+ * @param dragHandleModifier Modifier applied to the optional drag handle.
  * @param updateExerciseNotes A function to update notes based on [UiExercise.id]. For more details, refer to
  * [org.librefit.ui.screens.workout.WorkoutScreenViewModel.updateExerciseNotes] and
  * [org.librefit.ui.screens.editWorkout.EditWorkoutScreenViewModel.updateExerciseNotes].
@@ -164,6 +166,8 @@ fun SharedTransitionScope.ExerciseCard(
     addSet: (Long) -> Unit,
     onDetail: (Long, String) -> Unit,
     onDelete: (Long) -> Unit,
+    showDragHandle: Boolean = false,
+    dragHandleModifier: Modifier = Modifier,
     deleteSet: (Long) -> Unit,
     updateExerciseNotes: (String, Long) -> Unit,
     updateExerciseRestTime: (Int, Long) -> Unit,
@@ -229,11 +233,24 @@ fun SharedTransitionScope.ExerciseCard(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                IconButton(onClick = { onDelete(exerciseWithSets.exercise.id) }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delete),
-                        contentDescription = stringResource(R.string.delete)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (showDragHandle) {
+                        IconButton(
+                            modifier = dragHandleModifier,
+                            onClick = {}
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_drag_handle),
+                                contentDescription = stringResource(R.string.reorder)
+                            )
+                        }
+                    }
+                    IconButton(onClick = { onDelete(exerciseWithSets.exercise.id) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_delete),
+                            contentDescription = stringResource(R.string.delete)
+                        )
+                    }
                 }
             }
 

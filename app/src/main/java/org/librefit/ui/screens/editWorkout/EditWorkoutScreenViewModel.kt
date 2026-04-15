@@ -36,6 +36,22 @@ import org.librefit.ui.models.mappers.toUi
 import javax.inject.Inject
 import kotlin.random.Random
 
+internal fun List<UiExerciseWithSets>.withNormalizedExercisePositions(): List<UiExerciseWithSets> {
+    return mapIndexed { index, exerciseWithSets ->
+        exerciseWithSets.copy(exercise = exerciseWithSets.exercise.copy(position = index))
+    }
+}
+
+internal fun List<UiExerciseWithSets>.moveExercise(fromIndex: Int, toIndex: Int): List<UiExerciseWithSets> {
+    if (fromIndex == toIndex || fromIndex !in indices || toIndex !in indices) return this
+
+    return toMutableList()
+        .apply {
+            add(toIndex, removeAt(fromIndex))
+        }
+        .withNormalizedExercisePositions()
+}
+
 @HiltViewModel
 class EditWorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -111,7 +127,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
         )
 
         _exercises.update { exercises ->
-            exercises + newExercise
+            (exercises + newExercise).withNormalizedExercisePositions()
         }
     }
 
@@ -224,7 +240,15 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
     fun deleteExercise(exerciseId: Long) {
         _exercises.update { currentExercises ->
-            currentExercises.filter { it.exercise.id != exerciseId }
+            currentExercises
+                .filter { it.exercise.id != exerciseId }
+                .withNormalizedExercisePositions()
+        }
+    }
+
+    fun moveExercise(fromIndex: Int, toIndex: Int) {
+        _exercises.update { currentExercises ->
+            currentExercises.moveExercise(fromIndex = fromIndex, toIndex = toIndex)
         }
     }
 
@@ -253,7 +277,9 @@ class EditWorkoutScreenViewModel @Inject constructor(
             workoutRepository.addWorkoutWithExercisesAndSets(
                 WorkoutWithExercisesAndSets(
                     workout = workout.value.copy(state = state).toEntity(),
-                    exercisesWithSets = exercises.value.map { it.toEntity() }
+                    exercisesWithSets = exercises.value
+                        .withNormalizedExercisePositions()
+                        .map { it.toEntity() }
                 )
             )
         }
@@ -268,4 +294,3 @@ class EditWorkoutScreenViewModel @Inject constructor(
         return if (workout.value.id == 0L) null else isRoutine.value
     }
 }
-
