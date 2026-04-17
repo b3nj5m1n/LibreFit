@@ -316,7 +316,7 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                 items = exercisesWithSets,
                 key = { _, e -> e.exercise.id }
             ) { _, exerciseWithSets ->
-                    ReorderableItem(reorderableLazyListState, key = exerciseWithSets.exercise.id) { _ ->
+                    ReorderableItem(reorderableLazyListState, key = exerciseWithSets.exercise.id) { isDragging ->
                         ExerciseCard(
                             modifier = Modifier.animateItem(),
                             animatedVisibilityScope = animatedVisibilityScope,
@@ -328,10 +328,11 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                                     Route.InfoExerciseScreen(
                                         id,
                                         idExerciseDC
-                                    )
-                                ) { launchSingleTop = true }
+                                )
+                            ) { launchSingleTop = true }
                             },
                             onDelete = deleteExercise,
+                            isDragging = isDragging,
                             showDragHandle = true,
                             dragHandleModifier = Modifier.draggableHandle(
                                 onDragStarted = {
