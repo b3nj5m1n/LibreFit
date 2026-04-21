@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,15 +30,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -196,9 +197,9 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
     val lazyListState = rememberLazyListState()
     val hapticFeedback = LocalHapticFeedback.current
     // We track the exercise id so a release event from one card can't clear the collapse state while another card is still being pressed or dragged.
-    var pressedExerciseId by remember { mutableStateOf<Long?>(null) }
-    var draggingExerciseId by remember { mutableStateOf<Long?>(null) }
-    val isAnyExerciseCollapsed = pressedExerciseId != null || draggingExerciseId != null
+
+    var isReorderingEnabled by rememberSaveable { mutableStateOf(false) }
+
     val exerciseSectionStartIndex = 3
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         val fromExerciseIndex = from.index - exerciseSectionStartIndex
@@ -207,6 +208,8 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
 
         if (fromExerciseIndex in exercisesWithSets.indices && toExerciseIndex in exercisesWithSets.indices) {
             moveExercise(fromExerciseIndex, toExerciseIndex)
+
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
         }
     }
 
@@ -321,9 +324,10 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                     key = { _, e -> e.exercise.id }
                 ) { _, exerciseWithSets ->
                     ReorderableItem(reorderableLazyListState, key = exerciseWithSets.exercise.id) { isDragging ->
-                        val exerciseId = exerciseWithSets.exercise.id
                         ExerciseCard(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier
+                                .animateItem()
+                                .then(if (isDragging) Modifier.shadow(10.dp) else Modifier),
                             animatedVisibilityScope = animatedVisibilityScope,
                             exerciseWithSets = exerciseWithSets,
                             workout = typeOfEdit == false,
@@ -333,38 +337,21 @@ private fun SharedTransitionScope.EditWorkoutScreenContent(
                                     Route.InfoExerciseScreen(
                                         id,
                                         idExerciseDC
-                                )
-                            ) { launchSingleTop = true }
+                                    )
+                                ) { launchSingleTop = true }
                             },
                             onDelete = deleteExercise,
-                            isCollapsed = isAnyExerciseCollapsed || isDragging,
-                            showDragHandle = true,
-                            onDragHandlePressedChange = { isPressed ->
-                                if (isPressed) {
-                                    pressedExerciseId = exerciseId
-                                } else if (pressedExerciseId == exerciseId) {
-                                    pressedExerciseId = null
-                                }
-                            },
+                            isCollapsed = isReorderingEnabled,
                             dragHandleModifier = Modifier.draggableHandle(
                                 onDragStarted = {
-                                    draggingExerciseId = exerciseId
-                                    hapticFeedback.performHapticFeedback(
-                                        HapticFeedbackType.GestureThresholdActivate
-                                    )
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
                                 },
                                 onDragStopped = {
-                                    if (draggingExerciseId == exerciseId) {
-                                        draggingExerciseId = null
-                                    }
-                                    if (pressedExerciseId == exerciseId) {
-                                        pressedExerciseId = null
-                                    }
-                                    hapticFeedback.performHapticFeedback(
-                                        HapticFeedbackType.GestureEnd
-                                    )
+                                    isReorderingEnabled = false
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
                                 }
                             ),
+                            onReorderRequest = { isReorderingEnabled = true },
                             deleteSet = deleteSet,
                             updateExerciseNotes = updateExerciseNotes,
                             updateExerciseRestTime = updateExerciseRestTime,

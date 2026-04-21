@@ -8,6 +8,7 @@
 
 package org.librefit.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -18,8 +19,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -48,6 +49,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
@@ -117,10 +119,9 @@ import kotlin.math.roundToInt
  * the [org.librefit.ui.screens.infoExercise.InfoExerciseScreen].
  * @param onDelete A lambda function executed when the *Delete* icon is clicked, it should result in
  * the removal of the card.
- * @param isCollapsed When `true`, the card collapses its editable body to provide clearer reorder feedback.
- * @param showDragHandle Whether a drag handle should be shown in the top-right corner.
+ * @param isCollapsed When `true`, the card collapses its editable body to provide clearer reorder feedback. So it's true only when reordering.
  * @param dragHandleModifier Modifier applied to the optional drag handle.
- * @param onDragHandlePressedChange Reports whether the drag handle is currently pressed.
+ * @param onReorderRequest A lambda triggered when the `reorder` option from dropdown menu is pressed.
  * @param updateExerciseNotes A function to update notes based on [UiExercise.id]. For more details, refer to
  * [org.librefit.ui.screens.workout.WorkoutScreenViewModel.updateExerciseNotes] and
  * [org.librefit.ui.screens.editWorkout.EditWorkoutScreenViewModel.updateExerciseNotes].
@@ -171,9 +172,8 @@ fun SharedTransitionScope.ExerciseCard(
     onDetail: (Long, String) -> Unit,
     onDelete: (Long) -> Unit,
     isCollapsed: Boolean = false,
-    showDragHandle: Boolean = false,
     dragHandleModifier: Modifier = Modifier,
-    onDragHandlePressedChange: (Boolean) -> Unit = {},
+    onReorderRequest: () -> Unit,
     deleteSet: (Long) -> Unit,
     updateExerciseNotes: (String, Long) -> Unit,
     updateExerciseRestTime: (Int, Long) -> Unit,
@@ -186,13 +186,7 @@ fun SharedTransitionScope.ExerciseCard(
     updateIdSetWithRunningStopwatch: (Long?) -> Unit = {},
     applyPreviousSetPerformance: (Long) -> Unit = {}
 ) {
-    val dragHandleInteractionSource = remember { MutableInteractionSource() }
-    val isDragHandlePressed by dragHandleInteractionSource.collectIsPressedAsState()
-
-    LaunchedEffect(isDragHandlePressed) {
-        onDragHandlePressedChange(isDragHandlePressed)
-    }
-
+    var showMenu by rememberSaveable { mutableStateOf(false) }
     ElevatedCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.extraLarge
@@ -213,7 +207,7 @@ fun SharedTransitionScope.ExerciseCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(MaterialTheme.shapes.medium)
-                        .clickable {
+                        .clickable(enabled = !isCollapsed) {
                             onDetail(exerciseWithSets.exercise.id, exerciseWithSets.exerciseDC.id)
                         },
                     verticalAlignment = Alignment.CenterVertically
@@ -246,24 +240,66 @@ fun SharedTransitionScope.ExerciseCard(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (showDragHandle) {
-                        IconButton(
-                            modifier = dragHandleModifier,
-                            interactionSource = dragHandleInteractionSource,
-                            onClick = {}
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_drag_handle),
-                                contentDescription = stringResource(R.string.reorder)
-                            )
+                Column {
+                    AnimatedContent(
+                        targetState = isCollapsed,
+                        label = "DragHandleTransition",
+                    ) { isReordering ->
+                        if (isReordering) {
+                            IconButton(
+                                modifier = dragHandleModifier,
+                                onClick = {}
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_drag_handle),
+                                    contentDescription = stringResource(R.string.reorder)
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { showMenu = true }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_more_options),
+                                    contentDescription = stringResource(R.string.more_options)
+                                )
+                            }
+                            DropdownMenuPopup(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }) {
+                                DropdownMenuGroup(
+                                    shapes = MenuDefaults.groupShape(0, 1) // Top-level group shape
+                                ) {
+                                    // MenuDefaults.Label { Text("Header") }
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.reorder)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                painterResource(R.drawable.ic_reorder),
+                                                stringResource(R.string.reorder)
+                                            )
+                                        },
+                                        onClick = {
+                                            onReorderRequest()
+                                            showMenu = false
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.delete)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                painterResource(R.drawable.ic_delete),
+                                                stringResource(R.string.delete)
+                                            )
+                                        },
+                                        onClick = {
+                                            onDelete(exerciseWithSets.exercise.id)
+                                            showMenu = false
+                                        }
+                                    )
+                                }
+                            }
                         }
-                    }
-                    IconButton(onClick = { onDelete(exerciseWithSets.exercise.id) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete),
-                            contentDescription = stringResource(R.string.delete)
-                        )
                     }
                 }
             }
@@ -877,7 +913,8 @@ private fun ExerciseCardPreview() {
                                 }.toImmutableList()
                             )
                         }
-                    }
+                    },
+                    onReorderRequest = {}
                 )
             }
         }

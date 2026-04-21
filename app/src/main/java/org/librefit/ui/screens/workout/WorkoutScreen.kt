@@ -57,6 +57,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -307,15 +308,16 @@ private fun SharedTransitionScope.WorkoutScreenContent(
 ) {
     val lazyListState = rememberLazyListState()
     val hapticFeedback = LocalHapticFeedback.current
-    // We track the exercise id so a release event from one card can't clear the collapse state while another card is still being pressed or dragged.
-    var pressedExerciseId by remember { mutableStateOf<Long?>(null) }
-    var draggingExerciseId by remember { mutableStateOf<Long?>(null) }
-    val isAnyExerciseCollapsed = pressedExerciseId != null || draggingExerciseId != null
+
+    var isReorderingEnabled by rememberSaveable { mutableStateOf(false) }
+
     val exerciseSectionStartIndex = 1
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         val fromExerciseIndex = from.index - exerciseSectionStartIndex
         val toExerciseIndex = (to.index - exerciseSectionStartIndex)
             .coerceIn(0, exercisesWithSets.lastIndex)
+
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
 
         if (fromExerciseIndex in exercisesWithSets.indices && toExerciseIndex in exercisesWithSets.indices) {
             moveExercise(fromExerciseIndex, toExerciseIndex)
@@ -404,9 +406,10 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                 key = { _, exercise -> exercise.exercise.id }
             ) { i, exerciseWithSets ->
                 ReorderableItem(reorderableLazyListState, key = exerciseWithSets.exercise.id) { isDragging ->
-                    val exerciseId = exerciseWithSets.exercise.id
                     ExerciseCard(
-                        modifier = Modifier.animateItem(),
+                        modifier = Modifier
+                            .animateItem()
+                            .then(if (isDragging) Modifier.shadow(10.dp) else Modifier),
                         animatedVisibilityScope = animatedVisibilityScope,
                         exerciseWithSets = exerciseWithSets,
                         previousPerformances = previousPerformances.getOrNull(i),
@@ -415,34 +418,17 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                         addSet = addSetToExercise,
                         onDetail = onSelectedExerciseIdChange,
                         onDelete = deleteExercise,
-                        isCollapsed = isAnyExerciseCollapsed || isDragging,
-                        showDragHandle = true,
-                        onDragHandlePressedChange = { isPressed ->
-                            if (isPressed) {
-                                pressedExerciseId = exerciseId
-                            } else if (pressedExerciseId == exerciseId) {
-                                pressedExerciseId = null
-                            }
-                        },
+                        isCollapsed = isReorderingEnabled,
                         dragHandleModifier = Modifier.draggableHandle(
                             onDragStarted = {
-                                draggingExerciseId = exerciseId
-                                hapticFeedback.performHapticFeedback(
-                                    HapticFeedbackType.GestureThresholdActivate
-                                )
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
                             },
                             onDragStopped = {
-                                if (draggingExerciseId == exerciseId) {
-                                    draggingExerciseId = null
-                                }
-                                if (pressedExerciseId == exerciseId) {
-                                    pressedExerciseId = null
-                                }
-                                hapticFeedback.performHapticFeedback(
-                                    HapticFeedbackType.GestureEnd
-                                )
+                                isReorderingEnabled = false
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
                             }
                         ),
+                        onReorderRequest = { isReorderingEnabled = true },
                         deleteSet = deleteSet,
                         showInfo = showInfo,
                         updateIdSetWithRunningStopwatch = updateIdSetWithRunningStopwatch,
