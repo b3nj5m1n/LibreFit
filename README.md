@@ -35,6 +35,7 @@ During workouts, **track** every set, rep, rest interval, and load in **real tim
     - 💖 [Donate](README.md#-donate)
     - 🏗️ [Contribute to the source code](README.md#-contribute-to-source-code)
     - 🌐 [Translate](CONTRIBUTING.md#translations)
+  - 🏋 [Improve exercises' dataset](README.md#-improve-the-exercise-dataset)
 - ❓ [I Have A Question](README.md#-i-have-a-question)
 - ⚡ [Building LibreFit from source](README.md#-building-librefit-from-source)
 - 📜 [License](README.md#-license)
@@ -128,7 +129,7 @@ See [Contributing to translations](CONTRIBUTING.md#translations) to discover how
 
 ### 🏋 Improve the exercise dataset
 
-*Coming soon...* 🚧
+See [Contributing to exercises' dataset](CONTRIBUTING.md#improving-exercises-dataset)
 
 ## ❓ I Have a Question
 
@@ -200,6 +201,7 @@ Thanks to everyone who helped the project!
 
 ### 💖 Donators
 
+- FlashyGhost
 - Anonymous donators
 
 > [Donate](README.md#-donate) to be listed here.
@@ -211,8 +213,11 @@ Thanks to everyone who helped the project!
 
 ### 🌐 Translators
 
-- [mwesten](https://github.com/mwesten) 🇳🇱
 - [doen1el](https://github.com/doen1el)  🇩🇪
+- Odweta 🇨🇿
+- [kid1412621](https://github.com/kid1412621) 🇨🇳
+- [mwesten](https://github.com/mwesten) 🇳🇱
+- [VA5H-One](https://github.com/VA5H-One) 🇪🇸
 
 > [Contribute to translations](CONTRIBUTING.md#translations) to be listed here.
 
