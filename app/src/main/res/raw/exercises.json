@@ -22905,7 +22905,7 @@
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
-    "equipment": "other",
+    "equipment": "bands",
     "primaryMuscles": [
       "hamstrings"
     ],
@@ -23074,7 +23074,16 @@
       "lats"
     ],
     "instructions": [
-      "https://www.youtube.com/watch?v=UP0MPCSo_Bo"
+      "Anchor a light resistance band about shoulder height a few steps behind you and grab it with one hand.",
+      "Start with your arm vertical, hand behind your shoulder with thumb pointing back, elbow vertical.",
+      "Move to an external rotation with your upper arm parallel to the ground, forearm bent 90 degrees upwards and slightly back, thumb pointing back.",
+      "Straighten out your arm completely.",
+      "Rotate to an internal rotation until your thumb is pointing backwards again.",
+      "Without moving your shoulder, move your arm behind your back until the back of your hand touches your lower back in a handcuff position.",
+      "Reverse the movement by straightening out your arm into an internal rotation, move into external rotation, bend your arm so your upper arm is parallel to the ground, with your forearm bent 90 degrees upwards and slightly back, then move it back into the starting position behind your shoulder.",
+      "While keeping your arm bent, move it over your head until your hand touches your other shoulder.",
+      "Reverse back to the starting position.",
+      "Repeat this sequence, then switch sides."
     ],
     "category": "stretching",
     "images": [
@@ -23109,13 +23118,23 @@
     "force": "push",
     "level": "beginner",
     "mechanic": "isolation",
-    "equipment": "bands",
+    "equipment": "other",
     "primaryMuscles": [
+      "forearms"
     ],
     "secondaryMuscles": [
     ],
     "instructions": [
-      "https://www.youtube.com/watch?v=mSZWSQSSEjE"
+      "Start in a sitting kneel on soft ground. Perform 10-30 reps of the following exercises.",
+      "Finger Pulses: place the tips of your fingers in front of you and lightly bounce on them.",
+      "Palm Pulses: put your hands flat in front of you, pull your palms up and go back down.",
+      "Side-to-side Palm Rotations: place your hands in front of you, pull your palm up slightly and roll on your joints from side to side.",
+      "Front Facing Elbow Rotations: put your hands flat in front of you, rotate your elbows while keeping your arms straight.",
+      "Side-to-side Wrist Stretch: put your hands in front of you, with your fingers pointing to the sides, and rock from side to side. Keep the hand you're leaning towards flat on the ground while pushing off from the ground slightly with your other hand.",
+      "Rear Facing Wrist Stretch (Palms down): place your hands in front of you, with your fingers pointing to your knees, sit back while exhaling, adjust difficulty with distance of your hands to your knees.",
+      "Rear Facing Wrist Stretch (Palms up): the same as the previous step, but this time with your palms facing up.",
+      "Rear Facing Elbow Rotations: again with your hands in front of you, palms facing up, fingers pointing towards your knees, rotate your elbows while keeping your arms straight and without moving your fingers.",
+      "Forward Facing Wrist Stretch: put your hands in front of you, fingers pointing away from your knees, and lean forward while exhaling and keeping the heel of your hands flat on the ground."
     ],
     "category": "stretching",
     "images": [
