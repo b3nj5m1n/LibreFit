@@ -285,7 +285,7 @@ fun <T : ChartMode> LibreFitCartesianChart(
                         )
                     ),
                     // Curved line
-                    pointConnector = LineCartesianLayer.PointConnector.cubic()
+                    interpolator = LineCartesianLayer.Interpolator.cubic()
                 )
             }
 
