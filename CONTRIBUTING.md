@@ -210,6 +210,7 @@ these guidelines when adding or modifying exercises:
 #### Content Guidelines
 
 * **Copyright:** Only submit images that are your own work or explicitly copyright-free.
+* **Format:** Images must have a white background and be consistent with existing exercise imagery.
 * **Quality**: Instructions must be clear, step-by-step, and coherent with the provided images.
 * **Asset Organization:** Images must be stored in `app/src/main/res/raw/`. Create a folder for each
   exercise named exactly as the `id` in your JSON. Reference these in the JSON using the relative
