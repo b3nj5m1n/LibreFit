@@ -38,6 +38,7 @@ class SettingsScreenViewModel @Inject constructor(
     val restTimerSoundOn = userPreferences.restTimerSoundOn
     val isSupporter = userPreferences.isSupporter
     val isWorkoutHeaderSticky = userPreferences.isWorkoutHeaderSticky
+    val useScrollWheelForInput = userPreferences.useNumberPicker
 
 
     fun <T> savePreference(key: Preferences.Key<T>, value: T) {

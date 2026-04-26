@@ -84,6 +84,8 @@ fun SettingsScreen(
 
     val isWorkoutHeaderSticky by viewModel.isWorkoutHeaderSticky.collectAsStateWithLifecycle()
 
+    val useScrollWheelForInput by viewModel.useScrollWheelForInput.collectAsStateWithLifecycle()
+
     preferences?.let {
         PreferenceDialog(
             currentPreference = currentPreference,
@@ -103,6 +105,7 @@ fun SettingsScreen(
         keepWorkoutScreenOn = keepWorkoutScreenOn,
         restTimerSoundOn = restTimerSoundOn,
         isSupporter = isSupporter,
+        useScrollWheelForInput = useScrollWheelForInput,
         isWorkoutHeaderSticky = isWorkoutHeaderSticky,
         updatePreferences = viewModel::updatePreferences,
         saveBooleanValue = viewModel::savePreference
@@ -120,6 +123,7 @@ private fun SettingsScreenContent(
     restTimerSoundOn: Boolean,
     isSupporter: Boolean,
     isWorkoutHeaderSticky: Boolean,
+    useScrollWheelForInput: Boolean,
     updatePreferences: (List<DialogPreference>) -> Unit,
     saveBooleanValue: (Preferences.Key<Boolean>, value: Boolean) -> Unit
 ) {
@@ -228,6 +232,21 @@ private fun SettingsScreenContent(
                     settingName = stringResource(R.string.stick_status_bar)
                 )
             }
+
+            item {
+                SettingItem(
+                    isChecked = useScrollWheelForInput,
+                    onClick = {
+                        saveBooleanValue(
+                            UserPreferencesRepository.useNumberPickerKey,
+                            !useScrollWheelForInput
+                        )
+                    },
+                    icon = painterResource(R.drawable.ic_scroll_vertical),
+                    settingDesc = stringResource(if (useScrollWheelForInput) R.string.use_scroll_wheel_for_input_desc else R.string.not_use_scroll_wheel_for_input_desc),
+                    settingName = stringResource(R.string.use_scroll_wheel_for_input)
+                )
+            }
         }
     }
 }
@@ -302,6 +321,7 @@ fun SettingsScreenPreview() {
     var keepWorkoutScreenOn by remember { mutableStateOf(Random.nextBoolean()) }
     var restTimerSoundOn by remember { mutableStateOf(Random.nextBoolean()) }
     var isWorkoutHeaderSticky by remember { mutableStateOf(Random.nextBoolean()) }
+    var useNumberPicker by remember { mutableStateOf(Random.nextBoolean()) }
 
     val theme = ThemeMode.entries.random()
 
@@ -316,6 +336,7 @@ fun SettingsScreenPreview() {
             updatePreferences = {},
             isSupporter = Random.nextBoolean(),
             isWorkoutHeaderSticky = isWorkoutHeaderSticky,
+            useScrollWheelForInput = useNumberPicker,
             saveBooleanValue = { key, value ->
                 when (key) {
                     UserPreferencesRepository.materialModeKey -> {
@@ -328,6 +349,10 @@ fun SettingsScreenPreview() {
 
                     UserPreferencesRepository.restTimerSoundKey -> {
                         restTimerSoundOn = value
+                    }
+
+                    UserPreferencesRepository.useNumberPickerKey -> {
+                        useNumberPicker = value
                     }
                 }
             },
