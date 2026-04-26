@@ -136,6 +136,8 @@ fun SharedTransitionScope.WorkoutScreen(
 
     val isHeaderSticky by viewModel.isHeaderSticky.collectAsStateWithLifecycle()
 
+    val useScrollWheelForInput by viewModel.useScrollWheelForInput.collectAsStateWithLifecycle()
+
 
     //It keeps the screen turned on
     if (keepWorkoutScreenOn) {
@@ -217,6 +219,7 @@ fun SharedTransitionScope.WorkoutScreen(
                 isStopwatchPaused = isStopwatchPaused,
                 workoutProgress = workoutProgress,
                 isHeaderSticky = isHeaderSticky,
+                useScrollWheelForInput = useScrollWheelForInput,
                 toggleStopwatch = viewModel::toggleStopwatch,
                 updateIdSetWithRunningStopwatch = viewModel::updateIdSetWithRunningStopwatch,
                 onSelectedExerciseIdChange = { id, idExerciseDC ->
@@ -288,6 +291,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
     workoutProgress: Pair<Int, Int>,
     idSetWithRunningStopwatch: Long?,
     isHeaderSticky: Boolean,
+    useScrollWheelForInput: Boolean,
     toggleStopwatch: () -> Unit,
     updateIdSetWithRunningStopwatch: (Long?) -> Unit,
     addSetToExercise: (Long) -> Unit,
@@ -411,6 +415,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                         exerciseWithSets = exerciseWithSets,
                         previousPerformances = previousPerformances.getOrNull(i),
                         idSetWithRunningStopwatch = idSetWithRunningStopwatch,
+                        useScrollWheelForInput = useScrollWheelForInput,
                         workout = true,
                         addSet = addSetToExercise,
                         onDetail = onSelectedExerciseIdChange,
@@ -649,6 +654,7 @@ private fun WorkoutScreenPreview() {
                             isStopwatchPaused = false,
                             workoutProgress = workoutProgress,
                             isHeaderSticky = true,
+                            useScrollWheelForInput = true,
                             toggleStopwatch = {},
                             addSetToExercise = {},
                             updateSetTime = { _, _ -> },

@@ -51,10 +51,10 @@ import org.librefit.ui.models.UiExercise
 import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.models.UiWorkout
-import org.librefit.ui.models.moveExercise
-import org.librefit.ui.models.withNormalizedExercisePositions
 import org.librefit.ui.models.mappers.toEntity
 import org.librefit.ui.models.mappers.toUi
+import org.librefit.ui.models.moveExercise
+import org.librefit.ui.models.withNormalizedExercisePositions
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -535,4 +535,6 @@ class WorkoutScreenViewModel @Inject constructor(
 
 
     val isHeaderSticky = userPreferences.isWorkoutHeaderSticky
+
+    val useScrollWheelForInput = userPreferences.useScrollWheelForInput
 }
