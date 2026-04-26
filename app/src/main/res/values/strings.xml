@@ -62,6 +62,8 @@
     <string name="url_VA5H_One" translatable="false">https://github.com/VA5H-One</string>
     <string name="FlashyGhost" translatable="false">FlashyGhost</string>
     <string name="Odweta" translatable="false">Odweta</string>
+    <string name="dpusceddu" translatable="false">dpusceddu</string>
+    <string name="url_dpusceddu" translatable="false">https://github.com/dpusceddu</string>
 
 
     <!--Before saving screen-->
