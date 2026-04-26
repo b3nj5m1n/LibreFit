@@ -123,8 +123,8 @@ class MeasurementScreenViewModelTest {
     }
 
     @Test
-    fun `initial state - body weight is empty `() = runTest {
-        assertThat(viewModel.bodyWeight.value).isEmpty()
+    fun `initial state - body weight is 0,0 `() = runTest {
+        assertThat(viewModel.bodyWeight.value).isEqualTo(0.0)
     }
 
     @Test

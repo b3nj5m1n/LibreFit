@@ -146,6 +146,7 @@ fun SharedTransitionScope.BeforeSavingScreen(
             state = it,
             onValueChange = { newState ->
                 if (newState is InputModalBottomSheetState.HoursMinutesSeconds) {
+                    inputModalBottomSheetState = newState
                     viewModel.setTimeElapsed(newState.totalSeconds)
                 }
             },
@@ -281,23 +282,25 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .padding(top = 7.dp) // Thin offset to match inner shape
-                                .clip(MaterialTheme.shapes.largeIncreased)
-                                .clickable(enabled = useNumberPicker) {
-                                    onInputModalBottomSheetRequest(
-                                        workout.timeElapsed.seconds.toComponents { hours, minutes, seconds, _ ->
-                                            InputModalBottomSheetState.HoursMinutesSeconds(
-                                                hours = hours.toInt(),
-                                                minutes = minutes,
-                                                seconds = seconds
-                                            )
-                                        }
-                                    )
-                                }
-                        ) { }
+                        if (useNumberPicker) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .padding(top = 7.dp) // Thin offset to match inner shape
+                                    .clip(MaterialTheme.shapes.largeIncreased)
+                                    .clickable {
+                                        onInputModalBottomSheetRequest(
+                                            workout.timeElapsed.seconds.toComponents { hours, minutes, seconds, _ ->
+                                                InputModalBottomSheetState.HoursMinutesSeconds(
+                                                    hours = hours.toInt(),
+                                                    minutes = minutes,
+                                                    seconds = seconds
+                                                )
+                                            }
+                                        )
+                                    }
+                            ) { }
+                        }
                     }
                     OutlinedTextField(
                         shape = MaterialTheme.shapes.large,

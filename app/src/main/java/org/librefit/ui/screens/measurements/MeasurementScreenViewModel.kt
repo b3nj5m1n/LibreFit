@@ -102,22 +102,12 @@ class MeasurementScreenViewModel @Inject constructor(
     }
 
 
-    private val _bodyweight = MutableStateFlow("")
+    private val _bodyweight = MutableStateFlow<Double?>(null)
     val bodyWeight = _bodyweight.asStateFlow()
 
     fun updateBodyweight(newValue: String) {
         _bodyweight.update {
-            val value = Formatter.normalizeNumericString(newValue)
-
-            if (value.isEmpty()) {
-                value
-            } else if (value.indexOf(".") == -1) {
-                // Integer
-                value.toInt().coerceIn(0, 300).toString()
-            } else {
-                // Double
-                value.toDouble().coerceIn(0.0, 300.0).toString()
-            }
+            Formatter.parseDoubleFromString(newValue)
         }
     }
 
@@ -184,7 +174,7 @@ class MeasurementScreenViewModel @Inject constructor(
             // A new current measurement is emitted when idMeasurement changes and MeasurementCardState is EDIT
             currentMeasurement.collect { measurement ->
                 _notes.update { measurement.notes }
-                _bodyweight.update { measurement.bodyWeight.takeIf { it != 0.0 }?.toString() ?: "" }
+                _bodyweight.update { measurement.bodyWeight }
                 _leanMass.update { measurement.muscleMassPercentage.takeIf { it != 0 } }
                 _fatMass.update { measurement.bodyFatPercentage.takeIf { it != 0 } }
                 _date.update { measurement.date }
@@ -199,9 +189,7 @@ class MeasurementScreenViewModel @Inject constructor(
                 Measurement(
                     id = if (measurementCardState.value == MeasurementCardState.EDIT)
                         idMeasurement.value else 0L,
-                    bodyWeight = checkNotNull(bodyWeight.value.toDoubleOrNull()) {
-                        "Bodyweight must be a double when saving a new measurement. Actual value: ${bodyWeight.value}"
-                    },
+                    bodyWeight = bodyWeight.value ?: 0.0,
                     notes = notes.value,
                     muscleMassPercentage = leanMass.value ?: 0,
                     bodyFatPercentage = fatMass.value ?: 0,

@@ -84,6 +84,7 @@ import org.librefit.ui.models.InputModalBottomSheetState
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
 import org.librefit.util.Formatter.formatDetails
+import org.librefit.util.Formatter.getDecimalDigitsAsInteger
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -127,8 +128,10 @@ fun MeasurementScreen(
         InputModalBottomSheet(
             state = it,
             onValueChange = { newState ->
-                if (newState is InputModalBottomSheetState.Weight)
+                if (newState is InputModalBottomSheetState.Weight) {
+                    infoModalBottomSheetState = newState
                     viewModel.updateBodyweight("${newState.totalWeight}")
+                }
             },
             onDismiss = {
                 infoModalBottomSheetState = null
@@ -221,7 +224,7 @@ fun MeasurementScreen(
 private fun MeasurementScreenContent(
     measurements: List<Measurement>,
     listChartData: List<Point>,
-    bodyweight: String,
+    bodyweight: Double?,
     fatMass: String,
     leanMass: String,
     notes: String,
@@ -248,6 +251,8 @@ private fun MeasurementScreenContent(
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+
+    var bodyweightValue by remember(bodyweight) { mutableStateOf(bodyweight?.toString() ?: "") }
 
     LibreFitScaffold(
         title = AnnotatedString(stringResource(R.string.measurements)),
@@ -312,39 +317,41 @@ private fun MeasurementScreenContent(
                                 OutlinedTextField(
                                     shape = MaterialTheme.shapes.large,
                                     modifier = Modifier.focusRequester(focusRequester),
-                                    value = bodyweight,
+                                    value = bodyweightValue,
                                     label = { Text(text = stringResource(R.string.body_weight)) },
                                     suffix = { Text(stringResource(R.string.kg)) },
-                                    isError = bodyweight.isBlank(),
+                                    isError = bodyweightValue.isBlank(),
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Decimal,
                                         showKeyboardOnFocus = true
                                     ),
-                                    onValueChange = updateBodyweight
+                                    onValueChange = {
+                                        bodyweightValue = Formatter.normalizeNumericString(it)
+                                        updateBodyweight(bodyweightValue)
+                                    },
                                 )
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .padding(top = 7.dp) // Thin offset to match inner shape
-                                        .clip(MaterialTheme.shapes.largeIncreased)
-                                        .clickable(enabled = useNumberPicker) {
-                                            val value = Formatter.normalizeNumericString(bodyweight)
+                                if (useNumberPicker) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .padding(top = 7.dp) // Thin offset to match inner shape
+                                            .clip(MaterialTheme.shapes.largeIncreased)
+                                            .clickable {
+                                                val value =
+                                                    Formatter.normalizeNumericString(bodyweightValue)
 
-                                            val weight = if (value.isEmpty()) {
-                                                0.0
-                                            } else {
-                                                value.toDouble().coerceIn(0.0, 300.0)
-                                            }
+                                                val weight = Formatter.parseDoubleFromString(value)
 
-                                            onInputModalBottomSheetRequest(
-                                                InputModalBottomSheetState.Weight(
-                                                    integerWeight = weight.toInt(),
-                                                    decimalWeight = ((weight - weight.toInt()) * 100f).toInt()
+                                                onInputModalBottomSheetRequest(
+                                                    InputModalBottomSheetState.Weight(
+                                                        integerWeight = weight.toInt(),
+                                                        decimalWeight = weight.getDecimalDigitsAsInteger()
+                                                    )
                                                 )
-                                            )
-                                        }
-                                ) { }
+                                            }
+                                    ) { }
+                                }
                             }
                             Spacer(Modifier.width(10.dp))
                             OutlinedTextField(
@@ -440,7 +447,7 @@ private fun MeasurementScreenContent(
                                     if (measurementCardState == MeasurementCardState.NEW)
                                         R.drawable.ic_add else R.drawable.ic_edit
                                 ),
-                                enabled = bodyweight.isNotBlank() && bodyweight.toDoubleOrNull() != 0.0
+                                enabled = bodyweightValue.isNotBlank() && bodyweightValue.toDoubleOrNull() != null && bodyweightValue.toDoubleOrNull() != 0.0
                             ) {
                                 upsertMeasurement()
 
@@ -660,7 +667,7 @@ private fun MeasurementScreenPreview() {
             updateIdMeasurement = { idMeasurement.longValue = it },
             upsertMeasurement = {},
             updateChartMode = {},
-            bodyweight = "72",
+            bodyweight = 72.0,
             fatMass = "12",
             leanMass = "22",
             notes = "This is a note",

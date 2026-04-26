@@ -105,8 +105,8 @@ import org.librefit.ui.models.UiExerciseWithSets
 import org.librefit.ui.models.UiSet
 import org.librefit.ui.theme.LibreFitTheme
 import org.librefit.util.Formatter
+import org.librefit.util.Formatter.getDecimalDigitsAsInteger
 import kotlin.math.roundToInt
-import kotlin.math.truncate
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -793,21 +793,23 @@ private fun Set(
                             ),
                             readOnly = useNumberPicker
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clip(MaterialTheme.shapes.extraLarge)
-                                .clickable(enabled = useNumberPicker) {
-                                    timeValue.seconds.toComponents { _, minutes, seconds, _ ->
-                                        inputModalBottomSheetState =
-                                            InputModalBottomSheetState.MinutesSeconds(
-                                                minutes = minutes,
-                                                seconds = seconds
-                                            )
+                        if (useNumberPicker) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clip(MaterialTheme.shapes.extraLarge)
+                                    .clickable {
+                                        timeValue.seconds.toComponents { _, minutes, seconds, _ ->
+                                            inputModalBottomSheetState =
+                                                InputModalBottomSheetState.MinutesSeconds(
+                                                    minutes = minutes,
+                                                    seconds = seconds
+                                                )
+                                        }
+                                        inputSetId = set.id
                                     }
-                                    inputSetId = set.id
-                                }
-                        ) { }
+                            ) { }
+                        }
                     }
                 }
             } else {
@@ -833,18 +835,21 @@ private fun Set(
                             ),
                             readOnly = useNumberPicker
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clip(MaterialTheme.shapes.extraLarge)
-                                .clickable(enabled = useNumberPicker) {
-                                    inputModalBottomSheetState = InputModalBottomSheetState.Weight(
-                                        integerWeight = set.load.toInt(),
-                                        decimalWeight = ((set.load - truncate(set.load)) * 100f).toInt()
-                                    )
-                                    inputSetId = set.id
-                                }
-                        ) { }
+                        if (useNumberPicker) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clip(MaterialTheme.shapes.extraLarge)
+                                    .clickable {
+                                        inputModalBottomSheetState =
+                                            InputModalBottomSheetState.Weight(
+                                                integerWeight = set.load.toInt(),
+                                                decimalWeight = set.load.getDecimalDigitsAsInteger()
+                                            )
+                                        inputSetId = set.id
+                                    }
+                            ) { }
+                        }
                     }
                 }
                 //Reps
@@ -870,17 +875,19 @@ private fun Set(
                         ),
                         readOnly = useNumberPicker
                     )
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(MaterialTheme.shapes.extraLarge)
-                            .clickable(enabled = useNumberPicker) {
-                                inputModalBottomSheetState = InputModalBottomSheetState.Reps(
-                                    reps = repValue.toInt()
-                                )
-                                inputSetId = set.id
-                            }
-                    ) { }
+                    if (useNumberPicker) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clip(MaterialTheme.shapes.extraLarge)
+                                .clickable {
+                                    inputModalBottomSheetState = InputModalBottomSheetState.Reps(
+                                        reps = repValue.toInt()
+                                    )
+                                    inputSetId = set.id
+                                }
+                        ) { }
+                    }
                 }
             }
 
