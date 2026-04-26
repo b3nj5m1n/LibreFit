@@ -46,7 +46,7 @@ class SettingsScreenViewModelTest {
     private lateinit var restTimerSoundOn: MutableStateFlow<Boolean>
     private lateinit var isSupporter: MutableStateFlow<Boolean>
     private lateinit var isWorkoutHeaderSticky: MutableStateFlow<Boolean>
-    private lateinit var useNumberPicker: MutableStateFlow<Boolean>
+    private lateinit var useScrollWheelForInput: MutableStateFlow<Boolean>
 
     // Captured objects
     private val key = slot<Preferences.Key<Any>>()
@@ -63,7 +63,7 @@ class SettingsScreenViewModelTest {
         restTimerSoundOn = MutableStateFlow(true)
         isSupporter = MutableStateFlow(false)
         isWorkoutHeaderSticky = MutableStateFlow(true)
-        useNumberPicker = MutableStateFlow(true)
+        useScrollWheelForInput = MutableStateFlow(true)
 
         // Arrange: Tell the mock what to return when these are accessed
         every { userPreferencesRepository.language } returns language
@@ -73,7 +73,7 @@ class SettingsScreenViewModelTest {
         every { userPreferencesRepository.restTimerSoundOn } returns restTimerSoundOn
         every { userPreferencesRepository.isSupporter } returns isSupporter
         every { userPreferencesRepository.isWorkoutHeaderSticky } returns isWorkoutHeaderSticky
-        every { userPreferencesRepository.useNumberPicker } returns useNumberPicker
+        every { userPreferencesRepository.useScrollWheelForInput } returns useScrollWheelForInput
         coEvery {
             userPreferencesRepository.savePreference(
                 capture(key),

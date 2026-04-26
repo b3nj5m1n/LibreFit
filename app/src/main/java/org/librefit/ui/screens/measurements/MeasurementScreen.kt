@@ -120,7 +120,7 @@ fun MeasurementScreen(
 
     val date by viewModel.date.collectAsStateWithLifecycle()
 
-    val useNumberPicker by viewModel.useNumberPicker.collectAsStateWithLifecycle()
+    val useScrollWheelForInput by viewModel.useScrollWheelForInput.collectAsStateWithLifecycle()
 
     var infoModalBottomSheetState by remember { mutableStateOf<InputModalBottomSheetState?>(null) }
 
@@ -198,7 +198,7 @@ fun MeasurementScreen(
         fatMass = fatMass?.toString() ?: "",
         leanMass = leanMass?.toString() ?: "",
         notes = notes,
-        useNumberPicker = useNumberPicker,
+        useScrollWheelForInput = useScrollWheelForInput,
         measurementChart = measurementChart,
         updateBodyweight = viewModel::updateBodyweight,
         updateFatMass = viewModel::updateFatMass,
@@ -231,7 +231,7 @@ private fun MeasurementScreenContent(
     date: LocalDateTime,
     measurementChart: MeasurementChart,
     measurementCardState: MeasurementCardState,
-    useNumberPicker: Boolean,
+    useScrollWheelForInput: Boolean,
     updateBodyweight: (String) -> Unit,
     updateLeanMass: (String) -> Unit,
     updateFatMass: (String) -> Unit,
@@ -331,7 +331,7 @@ private fun MeasurementScreenContent(
                                         updateBodyweight(bodyweightValue)
                                     },
                                 )
-                                if (useNumberPicker) {
+                                if (useScrollWheelForInput) {
                                     Box(
                                         modifier = Modifier
                                             .matchParentSize()
@@ -677,7 +677,7 @@ private fun MeasurementScreenPreview() {
             updateNotes = {},
             updateMeasurementCardState = {},
             navigateBack = {},
-            useNumberPicker = true,
+            useScrollWheelForInput = true,
             onInputModalBottomSheetRequest = {}
         )
     }

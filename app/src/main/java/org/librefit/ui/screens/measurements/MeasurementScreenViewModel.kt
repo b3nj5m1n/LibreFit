@@ -39,7 +39,7 @@ class MeasurementScreenViewModel @Inject constructor(
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-    val useNumberPicker = userPreferencesRepository.useNumberPicker
+    val useScrollWheelForInput = userPreferencesRepository.useScrollWheelForInput
 
 
     private val _measurementChart = MutableStateFlow(MeasurementChart.BODY_WEIGHT)

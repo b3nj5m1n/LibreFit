@@ -95,7 +95,7 @@ fun SharedTransitionScope.BeforeSavingScreen(
 
     val routine by viewModel.routine.collectAsStateWithLifecycle()
 
-    val useNumberPicker by viewModel.useNumberPicker.collectAsStateWithLifecycle()
+    val useScrollWheelForInput by viewModel.useScrollWheelForInput.collectAsStateWithLifecycle()
 
 
     val showUnlikeRoutineDialog = remember { mutableStateOf(false) }
@@ -166,7 +166,7 @@ fun SharedTransitionScope.BeforeSavingScreen(
         routine = routine,
         volumeExercises = volume,
         animatedVisibilityScope = animatedVisibilityScope,
-        useNumberPicker = useNumberPicker,
+        useScrollWheelForInput = useScrollWheelForInput,
         isTitleTooLong = viewModel.isTitleTooLong(),
         isTitleEmpty = viewModel.isTitleEmpty(),
         updateWorkoutTitle = viewModel::updateWorkoutTitle,
@@ -192,7 +192,7 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
     isTitleTooLong: Boolean,
     isTitleEmpty: Boolean,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    useNumberPicker: Boolean,
+    useScrollWheelForInput: Boolean,
     updateWorkoutTitle: (String) -> Unit,
     updateWorkoutNotes: (String) -> Unit,
     saveExercisesWithWorkout: () -> Unit,
@@ -265,7 +265,7 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                         modifier = Modifier.weight(0.5f),
                     ) {
                         OutlinedTextField(
-                            readOnly = useNumberPicker,
+                            readOnly = useScrollWheelForInput,
                             shape = MaterialTheme.shapes.large,
                             value = formatTime(workout.timeElapsed),
                             label = { Text(stringResource(R.string.elapsed_time)) },
@@ -282,7 +282,7 @@ fun SharedTransitionScope.BeforeSavingScreenContent(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
-                        if (useNumberPicker) {
+                        if (useScrollWheelForInput) {
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
@@ -597,7 +597,7 @@ private fun BeforeSavingScreenPreview() {
                     volumeExercises = "$volume",
                     isTitleTooLong = false,
                     isTitleEmpty = false,
-                    useNumberPicker = true,
+                    useScrollWheelForInput = true,
                     updateWorkoutTitle = {},
                     updateWorkoutNotes = {},
                     saveExercisesWithWorkout = {},

@@ -175,7 +175,7 @@ fun SharedTransitionScope.ExerciseCard(
     previousPerformances: List<PreviousPerformanceSet>? = null,
     workout: Boolean = false,
     idSetWithRunningStopwatch: Long? = null,
-    useNumberPicker: Boolean = true,
+    useScrollWheelForInput: Boolean = true,
     addSet: (Long) -> Unit,
     onDetail: (Long, String) -> Unit,
     onDelete: (Long) -> Unit,
@@ -545,7 +545,7 @@ fun SharedTransitionScope.ExerciseCard(
                                         isStopwatchRunning = idSetWithRunningStopwatch == null,
                                         isThisSetStopwatchRunning = idSetWithRunningStopwatch == set.id,
                                         workout = workout,
-                                        useNumberPicker = useNumberPicker,
+                                        useScrollWheelForInput = useScrollWheelForInput,
                                         deleteSet = deleteSet,
                                         updateIdSetWithRunningStopwatch = updateIdSetWithRunningStopwatch,
                                         updateSetTime = updateSetTime,
@@ -583,7 +583,7 @@ private fun Set(
     isStopwatchRunning: Boolean,
     isThisSetStopwatchRunning: Boolean,
     workout: Boolean,
-    useNumberPicker: Boolean,
+    useScrollWheelForInput: Boolean,
     deleteSet: (Long) -> Unit,
     updateSetTime: (Int, Long) -> Unit,
     updateSetReps: (Int, Long) -> Unit,
@@ -791,9 +791,9 @@ private fun Set(
                                 focusedTextColor = contentColor,
                                 unfocusedTextColor = contentColor,
                             ),
-                            readOnly = useNumberPicker
+                            readOnly = useScrollWheelForInput
                         )
-                        if (useNumberPicker) {
+                        if (useScrollWheelForInput) {
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
@@ -833,9 +833,9 @@ private fun Set(
                                 focusedTextColor = contentColor,
                                 unfocusedTextColor = contentColor,
                             ),
-                            readOnly = useNumberPicker
+                            readOnly = useScrollWheelForInput
                         )
-                        if (useNumberPicker) {
+                        if (useScrollWheelForInput) {
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
@@ -873,9 +873,9 @@ private fun Set(
                             focusedTextColor = contentColor,
                             unfocusedTextColor = contentColor,
                         ),
-                        readOnly = useNumberPicker
+                        readOnly = useScrollWheelForInput
                     )
-                    if (useNumberPicker) {
+                    if (useScrollWheelForInput) {
                         Box(
                             modifier = Modifier
                                 .matchParentSize()

@@ -58,7 +58,7 @@ class UserPreferencesRepository @Inject constructor(
         val pastVersionCodeKey = longPreferencesKey("pastVersionCode")
         val isWorkoutHeaderStickyKey = booleanPreferencesKey("is_workout_header_sticky")
         val showKeepAndroidOpenKey = booleanPreferencesKey("showKeepAndroidOpenKey")
-        val useNumberPickerKey = booleanPreferencesKey("use_number_picker")
+        val useScrollWheelForInputKey = booleanPreferencesKey("use_number_picker")
     }
 
     val themeMode: StateFlow<ThemeMode> = dataStore.data
@@ -143,8 +143,8 @@ class UserPreferencesRepository @Inject constructor(
             initialValue = true
         )
 
-    val useNumberPicker: StateFlow<Boolean> = dataStore.data
-        .map { preferences -> preferences[useNumberPickerKey] != false }
+    val useScrollWheelForInput: StateFlow<Boolean> = dataStore.data
+        .map { preferences -> preferences[useScrollWheelForInputKey] != false }
         .stateIn(
             scope = applicationScope,
             started = SharingStarted.Eagerly,

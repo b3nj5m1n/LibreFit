@@ -45,7 +45,7 @@ class MeasurementScreenViewModelTest {
     // A controllable flow to simulate repository emissions
     private lateinit var measurementsFlow: MutableStateFlow<List<Measurement>>
 
-    private lateinit var useNumberPicker: MutableStateFlow<Boolean>
+    private lateinit var useScrollWheelForInput: MutableStateFlow<Boolean>
 
     // Captured objects
     private val upsertedMeasurementSlot = slot<Measurement>()
@@ -65,7 +65,7 @@ class MeasurementScreenViewModelTest {
         // Arrange: Create a mock for the repository
         measurementRepository = mockk()
         measurementsFlow = MutableStateFlow(emptyList())
-        useNumberPicker = MutableStateFlow(true)
+        useScrollWheelForInput = MutableStateFlow(true)
 
         userPreferencesRepository = mockk()
 
@@ -92,7 +92,7 @@ class MeasurementScreenViewModelTest {
             measurementsFlow.value = updatedList
         }
 
-        every { userPreferencesRepository.useNumberPicker } returns useNumberPicker
+        every { userPreferencesRepository.useScrollWheelForInput } returns useScrollWheelForInput
 
 
         viewModel = MeasurementScreenViewModel(

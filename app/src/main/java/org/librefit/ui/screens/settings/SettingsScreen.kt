@@ -238,7 +238,7 @@ private fun SettingsScreenContent(
                     isChecked = useScrollWheelForInput,
                     onClick = {
                         saveBooleanValue(
-                            UserPreferencesRepository.useNumberPickerKey,
+                            UserPreferencesRepository.useScrollWheelForInputKey,
                             !useScrollWheelForInput
                         )
                     },
@@ -321,7 +321,7 @@ fun SettingsScreenPreview() {
     var keepWorkoutScreenOn by remember { mutableStateOf(Random.nextBoolean()) }
     var restTimerSoundOn by remember { mutableStateOf(Random.nextBoolean()) }
     var isWorkoutHeaderSticky by remember { mutableStateOf(Random.nextBoolean()) }
-    var useNumberPicker by remember { mutableStateOf(Random.nextBoolean()) }
+    var useScrollWheelForInput by remember { mutableStateOf(Random.nextBoolean()) }
 
     val theme = ThemeMode.entries.random()
 
@@ -336,7 +336,7 @@ fun SettingsScreenPreview() {
             updatePreferences = {},
             isSupporter = Random.nextBoolean(),
             isWorkoutHeaderSticky = isWorkoutHeaderSticky,
-            useScrollWheelForInput = useNumberPicker,
+            useScrollWheelForInput = useScrollWheelForInput,
             saveBooleanValue = { key, value ->
                 when (key) {
                     UserPreferencesRepository.materialModeKey -> {
@@ -351,8 +351,8 @@ fun SettingsScreenPreview() {
                         restTimerSoundOn = value
                     }
 
-                    UserPreferencesRepository.useNumberPickerKey -> {
-                        useNumberPicker = value
+                    UserPreferencesRepository.useScrollWheelForInputKey -> {
+                        useScrollWheelForInput = value
                     }
                 }
             },
