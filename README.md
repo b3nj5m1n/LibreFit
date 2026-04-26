@@ -208,7 +208,9 @@ Thanks to everyone who helped the project!
 
 ### 🏗 Contributors
 
-[Contribute to source code](CONTRIBUTING.md#your-first-code-contribution) to be the **first** person listed.
+- [dpusceddu](https://github.com/dpusceddu)
+
+[Contribute to source code](CONTRIBUTING.md#your-first-code-contribution) to be listed here.
 
 
 ### 🌐 Translators

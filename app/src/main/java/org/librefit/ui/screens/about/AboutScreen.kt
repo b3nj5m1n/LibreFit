@@ -297,6 +297,20 @@ fun AboutScreen(navController: NavHostController) {
             }
 
             item {
+                HeadlineText(stringResource(R.string.contributors))
+            }
+
+            item {
+                AboutItem(
+                    icon = painterResource(R.drawable.ic_person),
+                    text = stringResource(R.string.dpusceddu),
+                    onClick = {
+                        url.value = resources.getString(R.string.url_dpusceddu)
+                    }
+                )
+            }
+
+            item {
                 HeadlineText(stringResource(R.string.donators))
             }
 
