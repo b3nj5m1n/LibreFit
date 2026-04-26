@@ -110,6 +110,13 @@ class SettingsScreenViewModelTest {
                     isSupporter.value = value as Boolean
                 }
 
+                UserPreferencesRepository.isWorkoutHeaderStickyKey -> {
+                    isWorkoutHeaderSticky.value = value as Boolean
+                }
+
+                UserPreferencesRepository.useScrollWheelForInputKey -> {
+                    useScrollWheelForInput.value = value as Boolean
+                }
                 else -> error("Invalid key")
             }
         }
@@ -330,6 +337,71 @@ class SettingsScreenViewModelTest {
 
             // Assert: update is correct
             assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `is workout header sticky updates correctly`() = runTest {
+        val expected = false
+
+        viewModel.isWorkoutHeaderSticky.test {
+            assertThat(awaitItem()).isEqualTo(true)
+            viewModel.savePreference(UserPreferencesRepository.isWorkoutHeaderStickyKey, expected)
+            assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `use scroll wheel for input updates correctly`() = runTest {
+        val expected = false
+
+        viewModel.useScrollWheelForInput.test {
+            assertThat(awaitItem()).isEqualTo(true)
+            viewModel.savePreference(UserPreferencesRepository.useScrollWheelForInputKey, expected)
+            assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `update dialog preference with language works`() = runTest {
+        val expected = Language.ENGLISH
+
+        viewModel.language.test {
+            assertThat(awaitItem()).isEqualTo(Language.SYSTEM)
+            viewModel.updateDialogPreference(expected)
+            assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `update dialog preference with theme mode works`() = runTest {
+        val expected = ThemeMode.DARK
+
+        viewModel.themeMode.test {
+            assertThat(awaitItem()).isEqualTo(ThemeMode.SYSTEM)
+            viewModel.updateDialogPreference(expected)
+            assertThat(awaitItem()).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `update preferences with empty list preserves current`() = runTest {
+        viewModel.preferences.test {
+            // Initial emission
+            assertThat(awaitItem()).isNull()
+
+            // Act: update preferences
+            val initialPreferences = Language.entries
+            viewModel.updatePreferences(initialPreferences)
+
+            // Assert: first update
+            assertThat(awaitItem()).isEqualTo(initialPreferences)
+
+            // Act: update with empty
+            viewModel.updatePreferences(emptyList())
+
+            // Assert: should not change (no new emission)
+            expectNoEvents()
         }
     }
 }
