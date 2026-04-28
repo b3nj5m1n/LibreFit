@@ -281,13 +281,14 @@ fun LibreFitTheme(
 
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-    val colors = when {
-        useDynamicColor && useDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        useDynamicColor && !useDarkTheme -> dynamicLightColorScheme(LocalContext.current)
-        useDarkTheme -> darkScheme
-        else -> lightScheme
-    }
-
+    val colors = animateColorScheme(
+        colorScheme = when {
+            useDynamicColor && useDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
+            useDynamicColor && !useDarkTheme -> dynamicLightColorScheme(LocalContext.current)
+            useDarkTheme -> darkScheme
+            else -> lightScheme
+        }
+    )
 
     MaterialExpressiveTheme(
         colorScheme = colors,
