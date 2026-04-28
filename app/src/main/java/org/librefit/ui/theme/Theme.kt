@@ -299,11 +299,11 @@ fun LibreFitTheme(
         if (!view.isInEditMode) {
             SideEffect {
                 val window = (view.context as Activity).window
-
-                //Changes status color bar according to the theme mode
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-                    !useDarkTheme
-
+                
+                WindowCompat.getInsetsController(window, view).apply {
+                    isAppearanceLightStatusBars = !useDarkTheme
+                    isAppearanceLightNavigationBars = !useDarkTheme
+                }
             }
         }
         content()
