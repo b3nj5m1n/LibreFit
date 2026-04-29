@@ -8,14 +8,11 @@
 
 package org.librefit.ui.screens.workout
 
-import android.content.Context
-import android.media.MediaPlayer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
@@ -33,7 +30,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.librefit.R
 import org.librefit.db.entity.ExerciseDC
 import org.librefit.db.relations.WorkoutWithExercisesAndSets
 import org.librefit.db.repository.DatasetRepository
@@ -46,6 +42,7 @@ import org.librefit.enums.SetMode
 import org.librefit.enums.WorkoutState
 import org.librefit.enums.exercise.Category
 import org.librefit.enums.exercise.Equipment
+import org.librefit.helpers.SoundPlayer
 import org.librefit.nav.Route
 import org.librefit.services.WorkoutService
 import org.librefit.services.WorkoutServiceManager
@@ -65,11 +62,11 @@ import kotlin.random.Random
 @HiltViewModel
 class WorkoutScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    @param:ApplicationContext private val context: Context,
     private val userPreferences: UserPreferencesRepository,
     private val workoutServiceManager: WorkoutServiceManager,
     private val workoutRepository: WorkoutRepository,
     private val datasetRepository: DatasetRepository,
+    private val soundPlayer: SoundPlayer,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @param:MainDispatcher private val mainDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -194,6 +191,11 @@ class WorkoutScreenViewModel @Inject constructor(
 
     // A Job to hold the running set's stopwatch coroutine
     private var stopwatchJob: Job? = null
+
+    override fun onCleared() {
+        super.onCleared()
+        stopwatchJob?.cancel()
+    }
 
     init {
         viewModelScope.launch {
@@ -470,11 +472,7 @@ class WorkoutScreenViewModel @Inject constructor(
                 // When timer is over and screen is visible, it plays alert sound only by respecting user preference
                 if (initialRestTime != 1 && newRestTime == 0 && isFocused) {
                     if (userPreferences.restTimerSoundOn.value) {
-                        val mediaPlayer = MediaPlayer.create(context, R.raw.alert_notification)
-                        mediaPlayer.setOnCompletionListener {
-                            it.release()
-                        }
-                        mediaPlayer.start()
+                        soundPlayer.playAlert()
                     }
                     initialRestTime = 1
                 }
