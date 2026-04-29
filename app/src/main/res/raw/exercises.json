@@ -22710,6 +22710,8 @@
     ],
     "category": "strength",
     "images": [
+      "Beginner_Shrimp_Squat/0.webp",
+      "Beginner_Shrimp_Squat/1.webp"
     ],
     "id": "Beginner_Shrimp_Squat"
   },
@@ -22736,6 +22738,8 @@
     ],
     "category": "strength",
     "images": [
+      "Intermediate_Shrimp_Squat/0.webp",
+      "Intermediate_Shrimp_Squat/1.webp"
     ],
     "id": "Intermediate_Shrimp_Squat"
   },
@@ -22762,6 +22766,8 @@
     ],
     "category": "strength",
     "images": [
+      "Shrimp_Squat/0.webp",
+      "Shrimp_Squat/1.webp"
     ],
     "id": "Shrimp_Squat"
   },
@@ -22808,6 +22814,7 @@
     ],
     "category": "strength",
     "images": [
+      "Parallel_Bar_Support_Hold/0.webp"
     ],
     "id": "Parallel_Bar_Support_Hold"
   },
@@ -22831,6 +22838,8 @@
     ],
     "category": "strength",
     "images": [
+      "Eccentric_Parallel_Bar_Dip/0.webp",
+      "Eccentric_Parallel_Bar_Dip/1.webp"
     ],
     "id": "Eccentric_Parallel_Bar_Dip"
   },
@@ -22852,6 +22861,7 @@
     ],
     "category": "strength",
     "images": [
+      "Ring_Support_Hold/0.webp"
     ],
     "id": "Ring_Support_Hold"
   },
@@ -22874,6 +22884,7 @@
     ],
     "category": "strength",
     "images": [
+      "RTO_Support_Hold/0.webp"
     ],
     "id": "RTO_Support_Hold"
   },
@@ -22897,6 +22908,8 @@
     ],
     "category": "strength",
     "images": [
+      "Banded_Nordic_Curl_Negatives/0.webp",
+      "Banded_Nordic_Curl_Negatives/1.webp"
     ],
     "id": "Banded_Nordic_Curl_Negatives"
   },
@@ -22921,6 +22934,9 @@
     ],
     "category": "strength",
     "images": [
+      "Banded_Nordic_Curl_Negatives/0.webp",
+      "Banded_Nordic_Curl_Negatives/1.webp",
+      "Banded_Nordic_Curl_Negatives/0.webp"
     ],
     "id": "Banded_Nordic_Curl"
   },
@@ -22945,6 +22961,8 @@
     ],
     "category": "strength",
     "images": [
+      "Nordic_Curl/0.webp",
+      "Nordic_Curl/1.webp"
     ],
     "id": "Nordic_Curl"
   },
@@ -22964,11 +22982,13 @@
     ],
     "instructions": [
       "Grab the bar/rings and hang from them with your body vertical.",
-      "Pull your chest towards the bar and squeeze your shoulder blades together.",
-      "Lower yourself back down slowly"
+      "Pull your chest towards the bar/rings and squeeze your shoulder blades together.",
+      "Lower yourself back down slowly."
     ],
     "category": "strength",
     "images": [
+      "Vertical_Row/0.webp",
+      "Vertical_Row/1.webp"
     ],
     "id": "Vertical_Row"
   },
@@ -22988,11 +23008,13 @@
     ],
     "instructions": [
       "Grab the bar/rings and hang from them with your body somewhere between vertical and horizontal.",
-      "Pull your chest towards the bar and squeeze your shoulder blades together.",
-      "Lower yourself back down slowly"
+      "Pull your chest towards the bar/rings and squeeze your shoulder blades together.",
+      "Lower yourself back down slowly."
     ],
     "category": "strength",
     "images": [
+      "Incline_Row/0.webp",
+      "Incline_Row/1.webp"
     ],
     "id": "Incline_Row"
   },
@@ -23012,13 +23034,156 @@
     ],
     "instructions": [
       "Grab the bar/rings and hang under them with your body straight.",
-      "Pull your chest towards the bar and squeeze your shoulder blades together.",
-      "Lower yourself back down slowly"
+      "Pull your chest towards the bar/rings and squeeze your shoulder blades together.",
+      "Lower yourself back down slowly."
     ],
     "category": "strength",
     "images": [
     ],
     "id": "Horizontal_Row"
+  },
+  {
+    "name": "Wide Row",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "rings",
+    "primaryMuscles": [
+      "middle back",
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "forearms"
+    ],
+    "instructions": [
+      "Grab the bar/rings about 1.5 times shoulder width apart and hang under them with your body straight.",
+      "On rings, your forearms should stay orthogonal to the floor.",
+      "Pull your chest towards the bar/rings and squeeze your shoulder blades together.",
+      "Lower yourself back down slowly."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "Wide_Row"
+  },
+  {
+    "name": "Weighted Horizontal Row",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "rings",
+    "primaryMuscles": [
+      "middle back",
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "forearms"
+    ],
+    "instructions": [
+      "Grab the bar/rings and hang under them with your body straight.",
+      "Use a weighted vest or a dip belt on your waist or chest if you are elevated enough.",
+      "Pull your chest towards the bar/rings and squeeze your shoulder blades together.",
+      "Lower yourself back down slowly."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "Weighted_Horizontal_Row"
+  },
+  {
+    "name": "Pseudo Planche Pushup",
+    "force": "push",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "abdominals"
+    ],
+    "instructions": [
+      "Start in a pushup position with your hands facing sideways, move your hands back to increase intensity.",
+      "Ideally touch a wall with your feet and mark & record your hand position relative to the wall for consistent difficulty.",
+      "Lower yourself until you touch the ground with your chest while keeping a straight line with your body, then push up until your arms are straight."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "Pseudo_Planche_Pushup"
+  },
+  {
+    "name": "Ring Pushup",
+    "force": "push",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "rings",
+    "primaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "abdominals"
+    ],
+    "instructions": [
+      "Start in a pushup position on rings, with the rings turned out.",
+      "Turn the rings to be parallel to your body and perform a pushup, turn the rings out again at the top."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "Ring_Pushup"
+  },
+  {
+    "name": "RTO Pushup",
+    "force": "push",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "rings",
+    "primaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "abdominals"
+    ],
+    "instructions": [
+      "Start in a pushup position on rings, with the rings turned out.",
+      "Perform a pushup while keeping the rings turned out."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "RTO_Pushup"
+  },
+  {
+    "name": "RTO Pseudo Planche Pushup",
+    "force": "push",
+    "level": "expert",
+    "mechanic": "compound",
+    "equipment": "rings",
+    "primaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "abdominals"
+    ],
+    "instructions": [
+      "Start in a pseudo planche position on rings, with the rings turned out.",
+      "Perform a pushup while maintaining the forward lean and keeping the rings turned out."
+    ],
+    "category": "strength",
+    "images": [
+    ],
+    "id": "RTO_PPPU"
   },
   {
     "name": "Tucked Hanging Leg Raises",
