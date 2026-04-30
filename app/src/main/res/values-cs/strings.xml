@@ -285,7 +285,7 @@
     <string name="force_push">Tlačit</string>
     <string name="level_beginner">Začátečník</string>
     <string name="mechanic_compound">Sloučenina</string>
-    <string name="equipment_medicine_ball">Medicinbal</string>
+    <string name="equipment_medicine_ball">Lékařská koule</string>
     <string name="equipment_bands">Bands</string>
     <string name="equipment_dumbbell">Činky</string>
     <string name="equipment_kettlebells">Kettlebelly</string>
@@ -307,7 +307,7 @@
     <string name="muscle_shoulders">Ramena</string>
     <string name="muscle_traps">Pasti</string>
     <string name="muscle_triceps">trojhlavý sval</string>
-    <string name="category_powerlifting">Power lifting</string>
+    <string name="category_powerlifting">Powerlifting</string>
     <string name="category_strength">Pevnost</string>
     <string name="category_stretching">Protahování</string>
     <string name="category_cardio">Kardio</string>
