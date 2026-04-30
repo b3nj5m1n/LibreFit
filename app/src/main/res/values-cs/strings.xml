@@ -150,7 +150,7 @@
     <string name="workout">Workout</string>
     <string name="quit_workout_question">Ukončit workout?</string>
     <string name="quit_workout_text">Opravdu ukončit workout? Nebude uložen</string>
-    <string name="resume">Pokračovat</string>
+    <string name="resume">obnovit</string>
     <string name="pause">Pozastavit</string>
     <string name="add_to_empty_workout">Začněte přidáním cviku do vašeho workoutu</string>
     <string name="elapsed_time">Uplynulý čas</string>
@@ -224,8 +224,20 @@
     <string name="motivation_3">LibreFit je možné pouze s vaší podporou, ať už darováním nebo tím, že přispíváte k kódu nebo překladům.</string>
     <string name="motivation_4">Všichni donators a přispěvatelé dostanou podporu verzi a kredit v aplikaci a na GitHubu.</string>
     <string name="insert_code">Vložte kód</string>
-    <string name="step">Čeština</string>
+    <string name="step">Krok</string>
     <string name="tutorial">Čeština</string>
     <string name="tut_create_routine_headline">Routines jsou vaše opakované cvičení šablony. Naplánujte si cvičení, sety a reps, poté začněte trénink z rutiny kdykoliv snadno sledovat výkon a pokrok v průběhu času.</string>
     <string name="tut_create_routine_1">Klepněte na tlačítko + v pravém dolním rohu a začněte vytvářet novou rutinu.</string>
+    <string name="donators">Dárci</string>
+    <string name="reorder">Znovu objednat</string>
+    <string name="language_czech">Čech</string>
+    <string name="language_spanish">španělština</string>
+    <string name="language_chinese_simplified">Zjednodušená čínština</string>
+    <string name="use_scroll_wheel_for_input">Pro vstup použijte rolovací kolečko</string>
+    <string name="thank_supporter">Děkujeme - váš příspěvek je důležitý.</string>
+    <string name="verify_companion_app">Ověření doprovodné aplikace</string>
+    <string name="status">Stavy</string>
+    <string name="tut_create_routine_2">Zadejte název své rutiny a volitelnou poznámku a poté klepněte na tlačítko + v pravém dolním rohu pro přidání cviků.</string>
+    <string name="tut_create_routine_3">Vyhledejte a vyberte požadované cviky a poté klepněte na tlačítko „Přidat“ v pravém horním rohu.</string>
+    <string name="tut_create_routine_4">Upravte série, opakování a pořadí cviků. Až budete připraveni, klepněte na tlačítko „Uložit“ v pravém horním rohu.</string>
 </resources>
