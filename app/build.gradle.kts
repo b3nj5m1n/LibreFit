@@ -21,7 +21,7 @@ plugins {
 
 android {
     namespace = "org.librefit"
-    compileSdk = 36
+    compileSdk = 37
 
     buildFeatures {
         buildConfig = true
@@ -37,10 +37,10 @@ android {
     defaultConfig {
         applicationId = "org.librefit.app"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
 
-        versionName = "0.1.5"
-        versionCode = 10501
+        versionName = "0.2.0"
+        versionCode = 20001
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

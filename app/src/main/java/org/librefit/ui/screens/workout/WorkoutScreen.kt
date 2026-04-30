@@ -72,7 +72,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 import org.librefit.R
@@ -135,6 +134,8 @@ fun SharedTransitionScope.WorkoutScreen(
     val runningWorkoutId by viewModel.runningWorkoutId.collectAsStateWithLifecycle()
 
     val isHeaderSticky by viewModel.isHeaderSticky.collectAsStateWithLifecycle()
+
+    val useScrollWheelForInput by viewModel.useScrollWheelForInput.collectAsStateWithLifecycle()
 
 
     //It keeps the screen turned on
@@ -217,6 +218,7 @@ fun SharedTransitionScope.WorkoutScreen(
                 isStopwatchPaused = isStopwatchPaused,
                 workoutProgress = workoutProgress,
                 isHeaderSticky = isHeaderSticky,
+                useScrollWheelForInput = useScrollWheelForInput,
                 toggleStopwatch = viewModel::toggleStopwatch,
                 updateIdSetWithRunningStopwatch = viewModel::updateIdSetWithRunningStopwatch,
                 onSelectedExerciseIdChange = { id, idExerciseDC ->
@@ -249,19 +251,8 @@ fun SharedTransitionScope.WorkoutScreen(
 
 
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    // Save state of running workout when this screen is the primary focus
-    LaunchedEffect(Unit) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.runningWorkoutState.collect {
-                viewModel.saveRunningWorkout(it)
-            }
-        }
-    }
-
-
     // Keep track of focus to play alter sound or not
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -288,6 +279,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
     workoutProgress: Pair<Int, Int>,
     idSetWithRunningStopwatch: Long?,
     isHeaderSticky: Boolean,
+    useScrollWheelForInput: Boolean,
     toggleStopwatch: () -> Unit,
     updateIdSetWithRunningStopwatch: (Long?) -> Unit,
     addSetToExercise: (Long) -> Unit,
@@ -411,6 +403,7 @@ private fun SharedTransitionScope.WorkoutScreenContent(
                         exerciseWithSets = exerciseWithSets,
                         previousPerformances = previousPerformances.getOrNull(i),
                         idSetWithRunningStopwatch = idSetWithRunningStopwatch,
+                        useScrollWheelForInput = useScrollWheelForInput,
                         workout = true,
                         addSet = addSetToExercise,
                         onDetail = onSelectedExerciseIdChange,
@@ -649,6 +642,7 @@ private fun WorkoutScreenPreview() {
                             isStopwatchPaused = false,
                             workoutProgress = workoutProgress,
                             isHeaderSticky = true,
+                            useScrollWheelForInput = true,
                             toggleStopwatch = {},
                             addSetToExercise = {},
                             updateSetTime = { _, _ -> },

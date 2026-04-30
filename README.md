@@ -141,6 +141,7 @@ If you then still feel the need to ask a question and need clarification, we rec
 following:
 
 - Open a [Discussion](https://github.com/LibreFitOrg/LibreFit/discussions/new).
+- Join our [Simplex Group](https://smp8.simplex.im/g#8i6S-FJPVTn_DqIBBqQcTarcVgkaMqUP6a3piCqpnLA).
 - Provide as much context as you can about what you're running into.
 - Provide project and platform versions, depending on what seems relevant.
 
@@ -208,7 +209,9 @@ Thanks to everyone who helped the project!
 
 ### 🏗 Contributors
 
-[Contribute to source code](CONTRIBUTING.md#your-first-code-contribution) to be the **first** person listed.
+- [dpusceddu](https://github.com/dpusceddu)
+
+[Contribute to source code](CONTRIBUTING.md#your-first-code-contribution) to be listed here.
 
 
 ### 🌐 Translators

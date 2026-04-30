@@ -30,7 +30,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
-import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.truncate
 
 object Formatter {
     fun exerciseEnumToStringId(enum: ExerciseProperty?): Int {
@@ -237,18 +238,18 @@ object Formatter {
      *
      * @param string The input string to be converted.
      * @param maxIntegerDigits Takes the first [maxIntegerDigits] from integer part of [string] starting from the left.
-     * @param maxFractionalDigits Takes the first [maxFractionalDigits] from fractional part of [string] starting from the left.
-     * @throws IllegalArgumentException if [maxIntegerDigits] or [maxFractionalDigits] are not a value
+     * @param maxDecimalDigits Takes the first [maxDecimalDigits] from fractional part of [string] starting from the left.
+     * @throws IllegalArgumentException if [maxIntegerDigits] or [maxDecimalDigits] are not a value
      * between 0 and 8
      */
     fun normalizeNumericString(
         string: String,
         @IntRange(0, 8) maxIntegerDigits: Int = 3,
-        @IntRange(0, 8) maxFractionalDigits: Int = 3,
+        @IntRange(0, 8) maxDecimalDigits: Int = 2,
     ): String {
-        require(maxIntegerDigits in 0..8 && maxFractionalDigits in 0..8) {
+        require(maxIntegerDigits in 0..8 && maxDecimalDigits in 0..8) {
             "maxIntegerDigits and maxFractionalDigits must be between 0 and 8. maxIntegerDigits: $maxIntegerDigits. " +
-                    "maxFractionalDigits: $maxFractionalDigits."
+                    "maxFractionalDigits: $maxDecimalDigits."
         }
 
         // Keep only digits and dots.
@@ -268,7 +269,7 @@ object Formatter {
             val fractionalPart = sanitized
                 .substring(decimalSeparatorIndex + 1)
                 .replace(".", "")
-                .take(maxFractionalDigits)
+                .take(maxDecimalDigits)
 
             "$integerPart.$fractionalPart"
         } else {
@@ -307,42 +308,23 @@ object Formatter {
     }
 
     /**
-     * This function parses a raw digit string, treating it like a calculator input,
-     * and converts it into a total number of seconds for an HH:MM:SS format.
-     *
-     * It is robust, readable, and follows best practices for integer parsing.
-     *
-     * Examples:
-     * ```
-     *   parseTimeInputToSeconds("0")            -> 0
-     *   parseTimeInputToSeconds("59")           -> 59
-     *   parseTimeInputToSeconds("1:23")         -> 83
-     *   parseTimeInputToSeconds("1:23:45")      -> 4525
-     *   parseTimeInputToSeconds("12:34:56")     -> 45296
-     *   parseTimeInputToSeconds("12:34:75")     -> 45299
-     * ```
+     * Parses a time input string (e.g., "1:23:45", "1:23", or "90") into total seconds.
+     * Treats the right-most part as seconds, the next as minutes, and any remaining as hours.
      */
     fun parseTimeInputToSeconds(input: String): Int {
-        val digitsOnly = input.filter { it.isDigit() }
-        val relevantDigits = digitsOnly.takeLast(6)
+        val parts = input.split(':').map { it.filter { char -> char.isDigit() } }
 
-        if (relevantDigits.isEmpty()) {
-            return 0
-        }
+        val seconds = parts.last().toIntOrNull() ?: 0
+        val minutes = if (parts.size > 1) parts[parts.size - 2].toIntOrNull() ?: 0 else 0
+        val hours = if (parts.size > 2) parts[parts.size - 3].toIntOrNull() ?: 0 else 0
 
-        val number = relevantDigits.toInt()
+        return (hours * 3600) + (minutes * 60) + seconds
+    }
 
 
-        val s = number % 100
-        val m = (number / 100) % 100
-        val h = number / 10000
-
-        // 3. Apply constraints to the extracted parts. This is the correct place to do it.
-        val validSeconds = min(s, 59)
-        val validMinutes = min(m, 59)
-
-        // 4. Calculate total seconds. This logic is now clean and easy to verify.
-        return (h * 3600) + (validMinutes * 60) + validSeconds
+    fun Double.getDecimalDigitsAsInteger(@IntRange(0, 8) numberOfDigits: Int = 2): Int {
+        val factor = 10.0.pow(numberOfDigits)
+        return ((this - truncate(this)) * factor).toInt()
     }
 }
 
