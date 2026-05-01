@@ -58,10 +58,9 @@ import kotlin.random.Random
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SettingsScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
-
-    val viewModel: SettingsScreenViewModel = hiltViewModel()
 
 
     val selectedLanguage by viewModel.language.collectAsStateWithLifecycle()
