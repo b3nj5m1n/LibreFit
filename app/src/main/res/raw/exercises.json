@@ -8289,8 +8289,10 @@
     ],
     "category": "strength",
     "images": [
-        "Hanging_Leg_Raise/0.webp",
-        "Hanging_Leg_Raise/1.webp"
+        "Pike_Hanging_Leg_Raises/0.webp",
+        "Pike_Hanging_Leg_Raises/3.webp",
+        "Pike_Hanging_Leg_Raises/2.webp",
+        "Pike_Hanging_Leg_Raises/3.webp"
     ],
     "id": "Hanging_Leg_Raise"
   },
@@ -22637,6 +22639,8 @@
     ],
     "category": "strength",
     "images": [
+      "Arch_Hang/0.webp",
+      "Arch_Hang/1.webp"
     ],
     "id": "Arch_Hang"
   },
@@ -22661,6 +22665,9 @@
     ],
     "category": "strength",
     "images": [
+      "Eccentric_Pullups/0.webp",
+      "Eccentric_Pullups/1.webp",
+      "Eccentric_Pullups/2.webp"
     ],
     "id": "Eccentric_Pullups"
   },
@@ -22684,6 +22691,8 @@
     ],
     "category": "strength",
     "images": [
+      "Assisted_Bodyweight_Squat/0.webp",
+      "Assisted_Bodyweight_Squat/1.webp"
     ],
     "id": "Assisted_Bodyweight_Squat"
   },
@@ -22772,6 +22781,32 @@
     "id": "Shrimp_Squat"
   },
   {
+    "name": "Partial ROM Pistol Squat",
+    "force": "push",
+    "level": "expert",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes",
+      "hamstrings"
+    ],
+    "instructions": [
+      "Stand on one leg and extend the other leg forward.",
+      "While keeping your chest upright, lower yourself slowly without letting the extended leg touch the floor.",
+      "Push through the standing foot to get back up."
+    ],
+    "category": "strength",
+    "images": [
+      "Partial_ROM_Pistol_Squat/0.webp",
+      "Partial_ROM_Pistol_Squat/1.webp"
+    ],
+    "id": "Partial_ROM_Pistol_Squat"
+  },
+  {
     "name": "Pistol Squat",
     "force": "push",
     "level": "expert",
@@ -22792,6 +22827,9 @@
     ],
     "category": "strength",
     "images": [
+      "Pistol_Squat/0.webp",
+      "Pistol_Squat/1.webp",
+      "Pistol_Squat/2.webp"
     ],
     "id": "Pistol_Squat"
   },
@@ -22839,7 +22877,8 @@
     "category": "strength",
     "images": [
       "Eccentric_Parallel_Bar_Dip/0.webp",
-      "Eccentric_Parallel_Bar_Dip/1.webp"
+      "Eccentric_Parallel_Bar_Dip/1.webp",
+      "Eccentric_Parallel_Bar_Dip/2.webp"
     ],
     "id": "Eccentric_Parallel_Bar_Dip"
   },
@@ -22889,6 +22928,108 @@
     "id": "RTO_Support_Hold"
   },
   {
+    "name": "Eccentric Hamstring Slide",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes"
+    ],
+    "instructions": [
+      "Start with a glute bridge and, if necessary, something under your feet so they can slide.",
+      "Slowly slide your legs out away from you until your butt is touching the ground and your knees are extended.",
+      "Return to the starting position."
+    ],
+    "category": "strength",
+    "images": [
+      "Eccentric_Hamstring_Slide/0.webp",
+      "Eccentric_Hamstring_Slide/1.webp",
+      "Eccentric_Hamstring_Slide/2.webp"
+    ],
+    "id": "Eccentric_Hamstring_Slide"
+  },
+  {
+    "name": "Hamstring Slide",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes"
+    ],
+    "instructions": [
+      "Start with a glute bridge and, if necessary, something under your feet so they can slide.",
+      "Slowly slide your legs out away from you until your butt is touching the ground and your knees are extended.",
+      "Return to the starting position by pulling your feet back using your hamstrings and glutes."
+    ],
+    "category": "strength",
+    "images": [
+      "Hamstring_Slide/0.webp",
+      "Hamstring_Slide/1.webp"
+    ],
+    "id": "Hamstring_Slide"
+  },
+  {
+    "name": "Eccentric Single Leg Hamstring Slide",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes"
+    ],
+    "instructions": [
+      "Start with a glute bridge on one leg, the other leg raised or on your working leg and, if necessary, something under your feet so they can slide.",
+      "Slowly slide your leg out away from you until your butt is touching the ground and your knee is extended.",
+      "Return to the starting position."
+    ],
+    "category": "strength",
+    "images": [
+      "Eccentric_Single_Leg_Hamstring_Slide/0.webp",
+      "Eccentric_Single_Leg_Hamstring_Slide/1.webp",
+      "Eccentric_Single_Leg_Hamstring_Slide/2.webp"
+    ],
+    "id": "Eccentric_Single_Leg_Hamstring_Slide"
+  },
+  {
+    "name": "Single Leg Hamstring Slide",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes"
+    ],
+    "instructions": [
+      "Start with a glute bridge on one leg, the other leg raised or on your working leg and, if necessary, something under your feet so they can slide.",
+      "Slowly slide your leg out away from you until your butt is touching the ground and your knee is extended.",
+      "Return to the starting position by pulling your foot back using your hamstrings and glutes."
+    ],
+    "category": "strength",
+    "images": [
+      "Single_Leg_Hamstring_Slide/0.webp",
+      "Single_Leg_Hamstring_Slide/1.webp"
+    ],
+    "id": "Single_Leg_Hamstring_Slide"
+  },
+  {
     "name": "Banded Nordic Curl Negatives",
     "force": "push",
     "level": "intermediate",
@@ -22909,7 +23050,8 @@
     "category": "strength",
     "images": [
       "Banded_Nordic_Curl_Negatives/0.webp",
-      "Banded_Nordic_Curl_Negatives/1.webp"
+      "Banded_Nordic_Curl_Negatives/1.webp",
+      "Banded_Nordic_Curl_Negatives/2.webp"
     ],
     "id": "Banded_Nordic_Curl_Negatives"
   },
@@ -22936,7 +23078,8 @@
     "images": [
       "Banded_Nordic_Curl_Negatives/0.webp",
       "Banded_Nordic_Curl_Negatives/1.webp",
-      "Banded_Nordic_Curl_Negatives/0.webp"
+      "Banded_Nordic_Curl_Negatives/2.webp",
+      "Banded_Nordic_Curl_Negatives/1.webp"
     ],
     "id": "Banded_Nordic_Curl"
   },
@@ -22962,6 +23105,8 @@
     "category": "strength",
     "images": [
       "Nordic_Curl/0.webp",
+      "Nordic_Curl/1.webp",
+      "Nordic_Curl/2.webp",
       "Nordic_Curl/1.webp"
     ],
     "id": "Nordic_Curl"
@@ -23039,6 +23184,8 @@
     ],
     "category": "strength",
     "images": [
+      "Horizontal_Row/0.webp",
+      "Horizontal_Row/1.webp"
     ],
     "id": "Horizontal_Row"
   },
@@ -23064,6 +23211,8 @@
     ],
     "category": "strength",
     "images": [
+      "Wide_Row/0.webp",
+      "Wide_Row/1.webp"
     ],
     "id": "Wide_Row"
   },
@@ -23089,6 +23238,8 @@
     ],
     "category": "strength",
     "images": [
+      "Weighted_Horizontal_Row/0.webp",
+      "Weighted_Horizontal_Row/1.webp"
     ],
     "id": "Weighted_Horizontal_Row"
   },
@@ -23113,6 +23264,8 @@
     ],
     "category": "strength",
     "images": [
+      "Pseudo_Planche_Pushup/0.webp",
+      "Pseudo_Planche_Pushup/1.webp"
     ],
     "id": "Pseudo_Planche_Pushup"
   },
@@ -23136,6 +23289,7 @@
     ],
     "category": "strength",
     "images": [
+      "Ring_Pushup/0.webp"
     ],
     "id": "Ring_Pushup"
   },
@@ -23159,6 +23313,7 @@
     ],
     "category": "strength",
     "images": [
+      "RTO_Pushup/0.webp"
     ],
     "id": "RTO_Pushup"
   },
@@ -23182,6 +23337,7 @@
     ],
     "category": "strength",
     "images": [
+      "RTO_PPPU/0.webp"
     ],
     "id": "RTO_PPPU"
   },
@@ -23202,6 +23358,8 @@
     ],
     "category": "strength",
     "images": [
+      "Tucked_Hanging_Leg_Raises/0.webp",
+      "Tucked_Hanging_Leg_Raises/1.webp"
     ],
     "id": "Tucked_Hanging_Leg_Raises"
   },
@@ -23222,8 +23380,34 @@
     ],
     "category": "strength",
     "images": [
+      "Pike_Hanging_Leg_Raises/0.webp",
+      "Pike_Hanging_Leg_Raises/1.webp",
+      "Pike_Hanging_Leg_Raises/2.webp",
+      "Pike_Hanging_Leg_Raises/3.webp"
     ],
     "id": "Pike_Hanging_Leg_Raises"
+  },
+  {
+    "name": "Bodyweight Reverse Hyperextension",
+    "force": "pull",
+    "level": "beginner",
+    "mechanic": null,
+    "equipment": "body only",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "calves",
+      "glutes"
+    ],
+    "instructions": [
+    ],
+    "category": "strength",
+    "images": [
+      "Bodyweight_Reverse_Hyperextension/0.webp",
+      "Bodyweight_Reverse_Hyperextension/1.webp"
+    ],
+    "id": "Bodyweight_Reverse_Hyperextension"
   },
   {
     "name": "Yuri's Shoulder Band Warmup",
@@ -23252,6 +23436,16 @@
     ],
     "category": "stretching",
     "images": [
+      "Yuri_Shoulder_Band_Warmup/0.webp",
+      "Yuri_Shoulder_Band_Warmup/1.webp",
+      "Yuri_Shoulder_Band_Warmup/2.webp",
+      "Yuri_Shoulder_Band_Warmup/3.webp",
+      "Yuri_Shoulder_Band_Warmup/4.webp",
+      "Yuri_Shoulder_Band_Warmup/3.webp",
+      "Yuri_Shoulder_Band_Warmup/2.webp",
+      "Yuri_Shoulder_Band_Warmup/1.webp",
+      "Yuri_Shoulder_Band_Warmup/0.webp",
+      "Yuri_Shoulder_Band_Warmup/5.webp"
     ],
     "id": "Yuri_Shoulder_Band_Warmup"
   },
@@ -23275,6 +23469,8 @@
     ],
     "category": "stretching",
     "images": [
+      "Squat_Sky_Reaches/0.webp",
+      "Squat_Sky_Reaches/1.webp"
     ],
     "id": "Squat_Sky_Reaches"
   },
@@ -23303,6 +23499,14 @@
     ],
     "category": "stretching",
     "images": [
+      "GMB_Wrist_Prep/0.webp",
+      "GMB_Wrist_Prep/1.webp",
+      "GMB_Wrist_Prep/2.webp",
+      "GMB_Wrist_Prep/3.webp",
+      "GMB_Wrist_Prep/4.webp",
+      "GMB_Wrist_Prep/5.webp",
+      "GMB_Wrist_Prep/6.webp",
+      "GMB_Wrist_Prep/7.webp"
     ],
     "id": "GMB_Wrist_Prep"
   }
