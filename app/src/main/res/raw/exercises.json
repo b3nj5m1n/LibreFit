@@ -14519,8 +14519,10 @@
     ],
     "category": "strength",
     "images": [
-        "Pullups/0.webp",
-        "Pullups/1.webp"
+        "Eccentric_Pullups/2.webp",
+        "Eccentric_Pullups/1.webp",
+        "Eccentric_Pullups/0.webp",
+        "Eccentric_Pullups/1.webp"
     ],
     "id": "Pullups"
   },
@@ -23505,8 +23507,7 @@
       "GMB_Wrist_Prep/3.webp",
       "GMB_Wrist_Prep/4.webp",
       "GMB_Wrist_Prep/5.webp",
-      "GMB_Wrist_Prep/6.webp",
-      "GMB_Wrist_Prep/7.webp"
+      "GMB_Wrist_Prep/6.webp"
     ],
     "id": "GMB_Wrist_Prep"
   }
