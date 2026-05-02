@@ -14519,10 +14519,6 @@
     ],
     "category": "strength",
     "images": [
-        "Eccentric_Pullups/2.webp",
-        "Eccentric_Pullups/1.webp",
-        "Eccentric_Pullups/0.webp",
-        "Eccentric_Pullups/1.webp"
     ],
     "id": "Pullups"
   },
@@ -22031,6 +22027,8 @@
     "category": "strength",
     "images": [
         "Weighted_Pull_Ups/0.webp",
+        "Weighted_Pull_Ups/1.webp",
+        "Weighted_Pull_Ups/2.webp",
         "Weighted_Pull_Ups/1.webp"
     ],
     "id": "Weighted_Pull_Ups"
@@ -22667,9 +22665,9 @@
     ],
     "category": "strength",
     "images": [
-      "Eccentric_Pullups/0.webp",
-      "Eccentric_Pullups/1.webp",
-      "Eccentric_Pullups/2.webp"
+      "Pullups/2.webp",
+      "Pullups/1.webp",
+      "Pullups/0.webp"
     ],
     "id": "Eccentric_Pullups"
   },
