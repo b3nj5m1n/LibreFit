@@ -218,7 +218,10 @@ fun MeasurementScreen(
         updateMeasurementCardState = viewModel::updateMeasurementCardState,
         navigateBack = navigateBack,
         onInputModalBottomSheetRequest = {
-            infoModalBottomSheetState = it
+            infoModalBottomSheetState = InputModalBottomSheetState.Weight(
+                integerWeight = bodyweight?.toInt() ?: 0,
+                decimalWeight = bodyweight?.getDecimalDigitsAsInteger() ?: 0
+            )
         }
     )
 }
@@ -247,7 +250,7 @@ private fun MeasurementScreenContent(
     updateMeasurementCardState: (MeasurementCardState) -> Unit,
     updateChartMode: (MeasurementChart) -> Unit,
     navigateBack: () -> Unit,
-    onInputModalBottomSheetRequest: (InputModalBottomSheetState) -> Unit
+    onInputModalBottomSheetRequest: () -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -341,19 +344,7 @@ private fun MeasurementScreenContent(
                                             .matchParentSize()
                                             .padding(top = 7.dp) // Thin offset to match inner shape
                                             .clip(MaterialTheme.shapes.largeIncreased)
-                                            .clickable {
-                                                val value =
-                                                    Formatter.normalizeNumericString(bodyweightValue)
-
-                                                val weight = Formatter.parseDoubleFromString(value)
-
-                                                onInputModalBottomSheetRequest(
-                                                    InputModalBottomSheetState.Weight(
-                                                        integerWeight = weight.toInt(),
-                                                        decimalWeight = weight.getDecimalDigitsAsInteger()
-                                                    )
-                                                )
-                                            }
+                                            .clickable { onInputModalBottomSheetRequest() }
                                     ) { }
                                 }
                             }

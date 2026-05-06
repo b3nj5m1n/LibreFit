@@ -598,8 +598,8 @@ private fun Set(
     applyPreviousSet: (Long) -> Unit
 ) {
     val timeValue by rememberUpdatedState(set.elapsedTime)
-    var repValue by remember(set.reps) { mutableStateOf(set.reps.toString()) }
-    var weightValue by remember(set.load) { mutableStateOf(set.load.toString()) }
+    var repValue by rememberSaveable(set.reps) { mutableStateOf(set.reps.toString()) }
+    var weightValue by rememberSaveable { mutableStateOf(set.load.toString()) }
 
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
@@ -828,7 +828,11 @@ private fun Set(
                             value = weightValue,
                             onValueChange = { string ->
                                 weightValue = Formatter.normalizeNumericString(string)
-                                updateSetLoad(Formatter.parseDoubleFromString(weightValue), set.id)
+
+                                updateSetLoad(
+                                    Formatter.parseDoubleFromString(weightValue) ?: 0.0,
+                                    set.id
+                                )
                             },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
