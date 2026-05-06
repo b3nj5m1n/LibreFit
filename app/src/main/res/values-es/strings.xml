@@ -142,4 +142,10 @@
     <string name="privacy_notice">Aviso de privacidad</string>
     <string name="privacy_notice_summary">LibreFit ofrece **la máxima privacidad**, ya que **no puede conectarse a Internet**. Además, todos los permisos son **opcionales** y no permiten la recopilación de datos.</string>
     <string name="privacy_notice_optional_perm">Permisos opcionales</string>
+    <string name="bodyweight_with_load">Peso corporal con carga</string>
+    <string name="reorder">Reordenar</string>
+    <string name="second_abbreviation">s</string>
+    <string name="privacy_notice_notification_perm">**Notificaciones**: Este permiso permite que la aplicación envíe notificaciones sobre tus sesiones de entrenamiento en curso y alertas cuando finalicen los períodos de descanso.</string>
+    <string name="privacy_notice_default_perm">Permiso concedido por defecto</string>
+    <string name="privacy_notice_foreground_perm">**Servicio en primer plano**: Este permiso se otorga automáticamente al instalar LibreFit y permite que se ejecute en primer plano durante un entrenamiento.</string>
 </resources>
