@@ -212,4 +212,16 @@
     <string name="tut_complete_workout_1">Para iniciar a registrar tus entrenamientos, comienza una sesión de una de tus rutinas o elige una sesión en blanco para entrenar de forma espontánea.</string>
     <string name="tut_complete_workout_2">Si has iniciado una rutina, los ejercicios planificados estarán cargados. Puedes añadir más sobre la marcha.</string>
     <string name="tut_complete_workout_3">Registra el peso y repetición para cada serie. Cuando marques una serie como completado, el temporizador aparecerá en automático.</string>
+    <string name="past_week">Semana pasada</string>
+    <string name="past_month">Mes pasado</string>
+    <string name="day">Día</string>
+    <string name="days">Días</string>
+    <string name="month">Mes</string>
+    <string name="months">Meses</string>
+    <string name="year">Año</string>
+    <string name="years">Años</string>
+    <string name="muscles_distribution">Distribución de músculos</string>
+    <string name="exercises_distribution">Distribución de ejercicios</string>
+    <string name="workout_saved">Entrenamiento guardado</string>
+    <string name="librefit_made_by_you">Hecha con ❤\n. para ti por gente como tú</string>
 </resources>
